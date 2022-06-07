@@ -22,7 +22,7 @@ service.interceptors.response.use(
 	response => {
 		const res = response.data
 		
-		if (res.code !== 200) {
+		if (res.code !== 0) {
 			Dialog.alert({
 				title: '提示',
 				message: res.msg || JSON.stringify(res),
