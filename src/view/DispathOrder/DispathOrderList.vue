@@ -1,0 +1,243 @@
+<template>
+    <div class="not-class" ref="notClass">
+        <van-tabs type="card" :sticky="true"  v-model="activeIndex"   :animated="true"  offset-top="0px">
+            <van-tab title="待派单" :name="0">
+                <van-pull-refresh v-model="dispatchRefreshLoading" @refresh="dispatchRefresh" success-text="刷新成功">
+                    <van-list v-model="dispatchLoading" offset="30" :finished="dispatchFinished" finished-text="没有更多了..." @load="dispatchDispatchList">
+                        <div class="list-container" v-for="(item, index) in dispatchList" :key="index">
+                            <div class="log-title">{{index}}</div>
+                            <ul :class="['list-ul', childItem.cLongDistance === '是'?'longway':''] " v-for="(childItem, childIndex) in item" :key="childIndex" @click="goOrderDetailClick(childItem.nAutoId, 1)">
+                                <li class="list-li">
+                                    <div class="li-address"><b class="b1">{{childItem.sFromAddr.split(',')[2]}}</b><b class="b2">{{childItem.sTargetAddr.split(',')[2]}}</b></div>
+                                    <div class="li-timestu"><time>{{childItem.dDepartureTime | timeAgo('{h}:{i}')}}</time><span>出发</span><b class="b-status">{{childItem.state}}</b></div>
+                                </li>
+                                <li class="info-label"><span>详细地址：</span><span class="infor-overflow">{{childItem.sFromAddr.split(',')[3]}} 到 {{childItem.sTargetAddr.split(',')[3]}}</span></li>
+                                <li class="info-label"><span>分派车辆：</span><span class="infor-overflow">{{childItem.brand + ' ' + childItem.sArrangedCar}}</span></li>
+                                <li class="info-label"><span>分派司机：</span><span>{{childItem.driverName}}</span></li>
+                                <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.sReqNo}}</span></li>
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+            <van-tab title="已派单" :name="1">
+                <van-pull-refresh v-model="dispatchedRefreshLoading" @refresh="dispatchedRefresh" success-text="刷新成功">
+                    <van-list v-model="dispatchedLoading" offset="30" :finished="dispatchedFinished" finished-text="没有更多了..." @load="dispatchDispatchedList">
+                        <div class="list-container" v-for="(item, index) in dispatchedList" :key="index">
+                            <div class="log-title">{{index}}</div>
+                            <ul :class="['list-ul', childItem.cLongDistance === '是'?'longway':''] " v-for="(childItem, childIndex) in item" :key="childIndex" @click="goOrderDetailClick(childItem.nAutoId, 1)">
+                                <li class="list-li">
+                                    <div class="li-address"><b class="b1">{{childItem.sFromAddr.split(',')[2]}}</b><b class="b2">{{childItem.sTargetAddr.split(',')[2]}}</b></div>
+                                    <div class="li-timestu"><time>{{childItem.dDepartureTime | timeAgo('{h}:{i}')}}</time><span>出发</span><b class="b-status">{{childItem.state}}</b></div>
+                                </li>
+                                <li class="info-label"><span>详细地址：</span><span class="infor-overflow">{{childItem.sFromAddr.split(',')[3]}} 到 {{childItem.sTargetAddr.split(',')[3]}}</span></li>
+                                <li class="info-label"><span>分派车辆：</span><span class="infor-overflow">{{childItem.brand + ' ' + childItem.sArrangedCar}}</span></li>
+                                <li class="info-label"><span>分派司机：</span><span>{{childItem.driverName}}</span></li>
+                                <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.sReqNo}}</span></li>
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+            <van-tab title="历史订单" :name="2">
+                <van-pull-refresh v-model="historyRefreshLoading" @refresh="historyRefresh" success-text="刷新成功">
+                    <van-list v-model="historyLoading" offset="30" :finished="historyFinished" finished-text="没有更多了..." @load="dispatchHistoryList">
+                        <div class="list-container" v-for="(item, index) in historyList" :key="index">
+                            <div class="log-title">{{index}}</div>
+                            <ul :class="['list-ul', childItem.cLongDistance === '是'?'longway':''] " v-for="(childItem, childIndex) in item" :key="childIndex" @click="goOrderDetailClick(childItem.nAutoId, 1)">
+                                <li class="list-li">
+                                    <div class="li-address"><b class="b1">{{childItem.sFromAddr.split(',')[2]}}</b><b class="b2">{{childItem.sTargetAddr.split(',')[2]}}</b></div>
+                                    <div class="li-timestu"><time>{{childItem.dDepartureTime | timeAgo('{h}:{i}')}}</time><span>出发</span><b class="b-status">{{childItem.state}}</b></div>
+                                </li>
+                                <li class="info-label"><span>详细地址：</span><span class="infor-overflow">{{childItem.sFromAddr.split(',')[3]}} 到 {{childItem.sTargetAddr.split(',')[3]}}</span></li>
+                                <li class="info-label"><span>分派车辆：</span><span class="infor-overflow">{{childItem.brand + ' ' + childItem.sArrangedCar}}</span></li>
+                                <li class="info-label"><span>分派司机：</span><span>{{childItem.driverName}}</span></li>
+                                <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.sReqNo}}</span></li>
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+        </van-tabs>
+
+        <div class="add-btn" @click="goStartDispatch"></div>
+
+    </div>
+</template>
+<script>
+import {dispatchDispatchList, dispatchDispatchedList, historyList} from '@/api/dispatch'
+import {mapGetters} from 'vuex'
+export default {
+    computed: mapGetters('DispathOrder', ['isFefresh']),
+    beforeRouteEnter (to, from, next) {
+        if (from.name === 'SubSuccess') {
+            to.meta.keepAlive = false;
+        } else {
+            to.meta.keepAlive = true;
+        };
+        next((vm) => {
+            let timer = setTimeout(() => {
+                vm.$refs.notClass.scrollTop = to.meta.scrollTop;
+                clearTimeout(timer);
+            }, 0);
+        });
+    },
+    beforeRouteLeave (to, from, next) {
+        if (to.name === 'DispathDetails') {   // 去往详情页
+            let notClass = this.$refs.notClass;
+            let top = notClass.scrollTop;
+            from.meta.scrollTop = top;
+        };
+        next();
+    },
+    data () {
+        return {
+            activeIndex: 0,
+            dispatchLoading: false,
+            dispatchFinished: false,
+            dispatchRefreshLoading: false,
+            dispatchList: {},
+            dispatchQuery: {
+                pageSize: 20,
+                pageIndex: 0
+            },
+
+            dispatchedLoading: false,
+            dispatchedFinished: false,
+            dispatchedRefreshLoading: false,
+            dispatchedList: {},
+            dispatchedQuery: {
+                pageSize: 10,
+                pageIndex: 0
+            },
+
+            historyLoading: false,
+            historyFinished: false,
+            historyRefreshLoading: false,
+            historyList: {},
+            historyQuery: {
+                pageSize: 10,
+                pageIndex: 0
+            }
+        }
+
+    },
+    methods: {
+        dispatchRefresh () {
+            //清空
+            this.dispatchFinished = false;
+            this.dispatchQuery.pageIndex = 0;
+            //重新加载
+            this.dispatchRefreshLoading = true;
+            this.dispatchDispatchList();
+        },
+        historyRefresh () {
+            //清空
+            this.historyFinished = false;
+            this.historyQuery.pageIndex = 0;
+            //重新加载
+            this.historyRefreshLoading = true;
+            this.dispatchHistoryList();
+        },
+        dispatchedRefresh () {
+            //清空
+            this.dispatchedFinished = false;
+            this.dispatchedQuery.pageIndex = 0;
+            //重新加载
+            this.dispatchedRefreshLoading = true;
+            this.dispatchDispatchedList();
+        },
+        dispatchDispatchList() {    // 待派单
+            let pageIndex = this.dispatchQuery.pageIndex;
+            this.dispatchLoading = true;
+            this.dispatchQuery.pageIndex = pageIndex + 1;
+            dispatchDispatchList(this.dispatchQuery).then(({data}) => {
+                if(this.dispatchRefreshLoading && this.dispatchQuery.pageIndex === 1){
+                    this.dispatchList = {};
+                }
+                this.dispatchRefreshLoading = false;
+                if (Object.keys(data).length===0) {
+                    this.dispatchFinished = true;
+                };
+                this.dispatchLoading = false;
+                this.dispatchList = this.computedGroupDate(data, 'dispatchList')
+            });
+        },
+        dispatchDispatchedList () {  // 已派单
+            let pageIndex = this.dispatchedQuery.pageIndex;
+            this.dispatchedLoading = true;
+            this.dispatchedQuery.pageIndex = pageIndex + 1;
+            dispatchDispatchedList(this.dispatchedQuery).then(({data}) => {
+                if(this.dispatchedRefreshLoading && this.dispatchedQuery.pageIndex === 1){
+                    this.dispatchedList = {};
+                }
+                this.dispatchedRefreshLoading = false;
+                if (Object.keys(data).length===0) {
+                    this.dispatchedFinished = true;
+                };
+                this.dispatchedLoading = false;
+                this.dispatchedList = this.computedGroupDate(data, 'dispatchedList')
+            });
+        },
+        dispatchHistoryList () {  // 历史订单
+            let pageIndex = this.historyQuery.pageIndex;
+            this.historyLoading = true;
+            this.historyQuery.pageIndex = pageIndex + 1;
+            historyList(this.historyQuery).then(({data}) => {
+                if(this.historyRefreshLoading && this.historyQuery.pageIndex === 1){
+                    this.historyList = {};
+                }
+                this.historyRefreshLoading = false;
+                if (Object.keys(data).length===0) {
+                    this.historyFinished = true;
+                };
+                this.historyLoading = false;
+                this.historyList = this.computedGroupDate(data, 'historyList')
+            });
+        },
+        computedGroupDate (data, dataKey) { 
+            let list = this[dataKey];
+            for (let key in data){
+                if (Object.keys(list).includes(key)) {
+                    list[key] = list[key].concat(data[key]);
+                } else {
+                    list[key] = data[key];
+                };
+            };
+            return list;
+        },
+        goStartDispatch () {
+            this.$router.push({
+                name: 'DispathApply',
+                params: {autoId: '0'}
+            });
+        },
+        goOrderDetailClick (autoId, type) {
+            this.$router.push({
+                name: 'DispathDetails',
+                params: {autoId, type}
+            });
+        }
+    },
+    activated () {
+        if(this.$route.query.refresh){
+            this.dispatchRefresh();
+        }
+        if (this.isFefresh) {
+            if (this.activeIndex === 0) {
+                this.dispatchRefresh();
+            } else if (this.activeIndex === 1) {
+                this.dispatchedRefresh();
+            } else if (this.activeIndex === 2){
+                this.historyRefresh();
+            };
+            
+            let timer = setTimeout(() => {
+                this.$refs.notClass.scrollTop = 0;
+                clearTimeout(timer);
+            },0);
+            this.$store.dispatch('DispathOrder/triggerFefresh', false);
+        };
+    },
+}
+</script>
