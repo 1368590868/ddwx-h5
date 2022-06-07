@@ -8,3 +8,11 @@ export function sysAuth(params) {
 		params
 	})
 }
+
+export function authAuth(params) {
+	return request({
+		url: '/auth/auth',
+		method: 'GET',
+		params
+	})
+}

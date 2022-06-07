@@ -1,4 +1,4 @@
-import {sysAuth} from '@/api/auth'
+import {sysAuth,authAuth} from '@/api/auth'
 import { getIdToken, setToken, removeToken } from '@/utils/auth'
 import {messageGetNoReadCount} from '@/api/message'
 const state = {
@@ -16,11 +16,20 @@ const mutations = {
 }
 
 const actions = {
+	authAuth({commit}){
+		return new Promise((resolve, reject) => {
+			authAuth({id_token: getIdToken()}).then(({data}) => {
+				setToken(data.token)
+				resolve(data)
+			}).catch(error => {
+				reject(error)
+			});
+		})
+	},
 	sysAuth ({ commit }) {
         return new Promise((resolve, reject) => {
-			sysAuth({id_token: getIdToken()}).then(({data}) => {
+			sysAuth().then(({data}) => {
 				commit('SET_USERINFO', data);
-				setToken(data.token)
 				resolve(data)
 			}).catch(error => {
 				reject(error)
