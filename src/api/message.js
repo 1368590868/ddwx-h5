@@ -2,7 +2,8 @@ import request from '@/utils/request'
 
 export function messageGetMessage(params) {     // 获取用户消息
 	return request({
-		url: '/message/getMessage',
+		// url: '/message/getMessage',
+		url: '/notice/user',
 		method: 'GET',
 		params
 	})
@@ -27,7 +28,7 @@ export function messageMarkRead(data) {     // 标记已读
 
 export function messageGetNoReadCount() {     // 获取未读消息数量
 	return request({
-		url: '/message/getNoReadCount',
+		url: '/notice/unreadCount',
 		method: 'GET',
 	})
 }

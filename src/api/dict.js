@@ -23,3 +23,10 @@ export function dictGetReqReason(params) {  // 获取用车事由字典
 		params
 	})
 }
+// 获取通用字典  parentId 上级字典id
+export function getListByParentId(parentId) {
+  return request({
+    url: `/dict/getListByParentId/${parentId}`,
+    method: 'GET',
+  })
+}
