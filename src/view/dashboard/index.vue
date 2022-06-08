@@ -4,15 +4,22 @@
         <div class="dashboard-menu">
             <div class="menu-title">
                 <h3>公务用车管理系统</h3>
-                <p>用户名：{{userInfo.name}}</p>
+                <p>用户名：{{userInfo.username}}</p>
             </div>
             <div class="menu-btnlist">
-                <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('ORDER')" type="primary" :icon="dash1" block to="/CarApplication/OutstandOrder">申请用车</van-button>
-                <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('APPROVAL')" type="primary" :icon="dash2" block to="/CarApproval">用车审批</van-button>
+                <!-- <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('ORDER')" type="primary" :icon="dash1" block to="/CarApplication/OutstandOrder">申请用车</van-button>
+                <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('APPROVAL')" type="primary" :icon="dash2" block to="/CarApproval">用车审批</van-button> -->
                 <!-- <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('DISPATCH')" type="primary" :icon="dash3" block to="/DispatchAdminstration">调度管理</van-button> -->
-                <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('DISPATCH')" type="primary" :icon="dash3" block to="/DispathOrder">调度管理</van-button>
+                <!-- <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('DISPATCH')" type="primary" :icon="dash3" block to="/DispathOrder">调度管理</van-button>
                 <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('DRIVING')" type="primary" :icon="dash4" block to="/DrivingManage">出车管理</van-button>
-                <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('STATISTIC')" type="primary" :icon="dash4" block to="/StatisticalStatement">统计报表</van-button>
+                <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('STATISTIC')" type="primary" :icon="dash4" block to="/StatisticalStatement">统计报表</van-button> -->
+
+                 <van-button color="#3681ee" v-if="checkMenuDisplay('myCar')" type="primary" :icon="dash1" block to="/CarApplication/OutstandOrder">申请用车</van-button>
+                <van-button color="#3681ee" v-if="checkMenuDisplay('examineCar')" type="primary" :icon="dash2" block to="/CarApproval">用车审批</van-button>
+                <!-- <van-button color="#3681ee" v-if="(userInfo.auth || []).includes('DISPATCH')" type="primary" :icon="dash3" block to="/DispatchAdminstration">调度管理</van-button> -->
+                <van-button color="#3681ee" v-if="checkMenuDisplay('dispatch')" type="primary" :icon="dash3" block to="/DispathOrder">调度管理</van-button>
+                <van-button color="#3681ee" v-if="checkMenuDisplay('driverWorkBench')" type="primary" :icon="dash4" block to="/DrivingManage">出车管理</van-button>
+                <van-button color="#3681ee" v-if="checkMenuDisplay('statis')" type="primary" :icon="dash4" block to="/StatisticalStatement">统计报表</van-button>
             </div>
         </div>
     </div>
@@ -24,6 +31,7 @@ import dash1 from '@/assets/icon/dash1.png';
 import dash2 from '@/assets/icon/dash2.png';
 import dash3 from '@/assets/icon/dash3.png';
 import dash4 from '@/assets/icon/dash4.png';
+import {userMenu} from '@/api/auth'
 import {mapGetters} from 'vuex'
 export default {
     components: {Lottie},
@@ -33,7 +41,9 @@ export default {
             dash1,
             dash2,
             dash3,
-            dash4
+            dash4,
+            //菜单数据
+            menuData:[]
         }
     },
     methods: {
@@ -48,10 +58,31 @@ export default {
                 },
                 onFail: function(err) {}
             });
+        },
+        //获取首页菜单信息
+        async getIndexMenu(){
+            console.log("获取菜单信息")
+            await userMenu().then(({data}) => {
+                console.log(data);
+                this.menuData = data;
+            }).catch((err) => {
+                
+            })
+        },
+        //首页菜单条目是否显示判断
+        checkMenuDisplay(menuUrl){
+            let display = false;
+            this.menuData.forEach((item) => {
+                if(item.menuUrl===menuUrl){
+                    display = true;
+                }
+            })
+            return display;
         }
 	},
 	mounted (){
         this.bizNavigationSetRight();
+        this.getIndexMenu();
 	}
 }
 </script>
