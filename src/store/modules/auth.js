@@ -13,9 +13,6 @@ const mutations = {
   SET_BADGENO: (state, data) => {
     state.badgeNo = data;
   },
-  SET_USER_INFO_TOKEN: (state, token) => {
-    state.userInfo.token = token;
-  },
 };
 
 const actions = {
@@ -23,7 +20,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       authAuth({ id_token: getIdToken() })
         .then(({ data }) => {
-					commit('SET_USER_INFO_TOKEN', data.token)
+          console.log("🚀 ~ file: auth.js ~ line 33 ~ .then ~ data", data);
           setToken(data.token);
           resolve(data);
         })
