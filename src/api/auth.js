@@ -23,3 +23,11 @@ export function authInfo(params) {
 		params
 	})
 }
+// h5用户菜单
+export function userMenu(params) {
+	return request({
+		url: '/user/h5menu',
+		method: 'GET',
+		params
+	})
+}

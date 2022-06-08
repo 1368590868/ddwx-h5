@@ -124,6 +124,12 @@ export const routes = [
 				name:'Suggestion',
 				meta: {title: '意见反馈'},
 				component: () => import('@/view/MyManager/Suggestion/index')
+			},
+			{
+				path:'address',
+				name:'Address',
+				meta: {title: '常用地址'},
+				component: () => import('@/view/MyManager/Address/index')
 			}
 		]
 	},

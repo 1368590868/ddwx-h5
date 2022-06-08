@@ -15,6 +15,7 @@
             </ul>
             <div class="bu">
                 <van-button  @click="goSuggestion" type="info" block>意见反馈</van-button>
+                <van-button  @click="goAddress" type="info" block>常用地址</van-button>
                 <!-- <van-button type="default" block>修改密码</van-button> -->
                 <!-- <van-button plain type="info" block>退出登录</van-button> -->
                 <!-- <van-button plain type="info" block @click="$router.push({name: 'jsapi'})">跳往测试</van-button>  -->
@@ -33,6 +34,11 @@ export default {
         goSuggestion(){
             this.$router.push({
                 name: 'Suggestion',
+            });
+        },
+        goAddress(){
+             this.$router.push({
+                name: 'Address',
             });
         }
     }
