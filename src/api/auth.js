@@ -1,17 +1,24 @@
 import request from '@/utils/request'
 
-
-export function sysAuth(params) {
+/**
+ * @function authAuth
+ * @description 根据url地址携带的参数获取用户的token
+ * @param params.id_token { String } 编码
+ * @return void
+ */
+export function authAuth(params) {
 	return request({
-		url: '/sys/auth',
+		url: '/auth/auth',
 		method: 'GET',
 		params
 	})
 }
 
-export function authAuth(params) {
+
+// 根据token获取用户信息
+export function authInfo(params) {
 	return request({
-		url: '/auth/auth',
+		url: '/auth/info',
 		method: 'GET',
 		params
 	})

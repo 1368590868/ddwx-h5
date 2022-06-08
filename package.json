@@ -5,7 +5,7 @@
 	"author": "beisir <hsy7426@163.com>",
 	"license": "MIT",
 	"scripts": {
-		"serve": "vue-cli-service serve ",
+		"dev": "vue-cli-service serve ",
     "zjs": "vue-cli-service serve --open --mode zjs.local",
 		"build": "vue-cli-service build",
 		"lint": "vue-cli-service lint"
