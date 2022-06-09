@@ -18,10 +18,10 @@ export function orderGetOrderDetail(params) {	// 获取订单详情
 	})
 }
 
-
+// 用车申请列表  H5 获取详情则传递id
 export function orderRequestList(params) {	// 用车申请未完成列表
 	return request({
-		url: '/order/requestList',
+		url: '/gcywVehicleRequest/dispatchListInfoH5',
 		method: 'GET',
 		params
 	})

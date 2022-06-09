@@ -44,10 +44,10 @@ export const routes = [
 				meta: {title: '提交成功'},
 				component: () => import('@/view/CarApplication/SubSuccess')
 			}, {
-				path: 'Orderdetails/:autoId',
-				name: 'Orderdetails',
+				path: 'OrderDetails/:id',
+				name: 'OrderDetails',
 				meta: {title: '订单详情'},
-				component: () => import('@/view/CarApplication/Orderdetails')
+				component: () => import('@/view/CarApplication/OrderDetails')
 			}, {
 				path: 'OutstandOrder',
 				name: 'OutstandOrder',
