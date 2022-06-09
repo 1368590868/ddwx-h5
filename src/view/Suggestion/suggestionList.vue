@@ -1,5 +1,5 @@
 <template>
-  <div class="apply-container container">
+  <div class="not-class">
     <van-list
       v-model="loading"
       :error.sync="error"
@@ -13,24 +13,31 @@
         class="list-item"
         v-for="item in list"
         :key="item.id"
-        @click="viewDetail(item.id)"
+        @click="viewDetail(item)"
       >
-        <div class="item-left">
-          <div class="suggestion-info item-info">
-            <div>{{ suggestionTypeFormatObj[item.suggestion] }}</div>
-            <div class="content">
-              {{ item.suggestionContext }}
+        <h5>{{ item.creaetDate | timeAgo('{y}年{m}月{d}日') }}</h5>
+        <div class="item-content">
+          <div class="item-left">
+            <div class="suggestion-info item-info">
+              <div>反馈类别:&nbsp;{{ suggestionTypeFormatObj[item.suggestion] }}</div>
+              <div class="content">
+                {{ item.suggestionContext }}
+              </div>
+            </div>
+            <div class="replay-info item-info">
+              <div>反馈回复:</div>
+              <div class="content">{{ item.replyContext }}</div>
             </div>
           </div>
-          <div class="replay-info item-info">
-            <div>反馈回复</div>
-            <div class="content">{{ item.replyContext }}</div>
+          <div class="item-right">
+            <van-icon name="arrow" />
           </div>
         </div>
-        <div class="item-right">
-          >
-        </div>
       </div>
+      <div
+        class="add-btn"
+        @click="$router.push({path: 'createSuggestion'})"
+      ></div>
     </van-list>
   </div>
 </template>
@@ -82,11 +89,11 @@ export default {
       this.suggestionTypeFormatObj = Object.fromEntries(suggestionType.map(item => [item.code, item.name]))
       console.log("🚀 ~ file: index.vue ~ line 77 ~ getOperateDict ~ this.suggestionTypeFormatObj", this.suggestionTypeFormatObj)
     },
-    viewDetail(id) {
+    viewDetail(item) {
       this.$router.push({
         path: 'suggestionDetail',
-        params: {
-          id
+        query: {
+          ...item
         }
       });
     }
@@ -97,15 +104,26 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.container {
+  background-color: #eee;
+}
 .list-item {
-  // background-color: #ccc;
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-  // background-color: #ccc;
+  & > h5 {
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: normal;
+    color: #ccc;
+    background-color: #eee;
+  }
+  .item-content {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: #fff;
+  }
   .item-left {
     // background-color: purple;
-    width: 100%;
+    width: 95%;
   }
   .item-right {
     width: 30px;
@@ -115,20 +133,25 @@ export default {
     align-items: center;
   }
   .item-info {
-    display: flex;
+    // display: flex;
     width: 100%;
     // background-color: pink;
     margin-bottom: 5px;
     & > div:nth-of-type(1) {
-      width: 20%;
-      margin-right: 10px;
+      // width: 20%;
+      // margin-right: 5px;
       // background-color: red;
+      padding-left: 15px;
+      margin: 5px 0;
     }
     & > div:nth-of-type(2) {
-      width: 75%;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
+      // width: 75%;
       // background-color: blue;
+      // overflow: hidden;
+      padding-left: 15px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 }

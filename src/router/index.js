@@ -120,24 +120,6 @@ export const routes = [
 				component: () => import('@/view/MyManager/index')
 			},
 			{
-				path:'suggestion',
-				name:'Suggestion',
-				meta: {title: '意见反馈'},
-				component: () => import('@/view/MyManager/Suggestion/index')
-			},
-			{
-				path:'createSuggestion',
-				name:'createSuggestion',
-				meta: {title: '意见反馈'},
-				component: () => import('@/view/MyManager/Suggestion/createSuggestion')
-			},
-			{
-				path:'suggestionDetail',
-				name:'suggestionDetail',
-				meta: {title: '意见反馈详情'},
-				component: () => import('@/view/MyManager/Suggestion/suggestionDetail')
-			},
-			{
 				path:'address',
 				name:'Address',
 				meta: {title: '常用地址'},
@@ -293,6 +275,32 @@ export const routes = [
 				meta: {title: '统计报表'},
 				component: () => import('@/view/StatisticalStatement/StatisticalCar')
 			}
+		]
+	},
+	{
+		path: '/Suggestion',
+		component: () => import('@/view/Suggestion/index.vue'),
+		redirect: '/Suggestion/index',
+		meta: {title: '意见反馈'},
+		children: [
+			{
+				path:'index',
+				name:'Suggestion',
+				meta: {title: '意见反馈'},
+				component: () => import('@/view/Suggestion/suggestionList.vue')
+			},
+			{
+				path:'createSuggestion',
+				name:'createSuggestion',
+				meta: {title: '意见反馈'},
+				component: () => import('@/view/Suggestion/createSuggestion')
+			},
+			{
+				path:'suggestionDetail',
+				name:'suggestionDetail',
+				meta: {title: '意见反馈详情'},
+				component: () => import('@/view/Suggestion/suggestionDetail')
+			},
 		]
 	},		
 	{

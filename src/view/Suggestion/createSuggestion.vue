@@ -77,7 +77,7 @@ export default {
         } else {
           this.$toast.success("提交成功！")
           this.$router.push({
-            path: '/MyManager',
+            path: 'index',
           });
         }
       } catch (e) {
