@@ -38,7 +38,7 @@ export default {
         },
         goAddress(){
              this.$router.push({
-                name: 'Address',
+                path: '/address',
             });
         }
     }

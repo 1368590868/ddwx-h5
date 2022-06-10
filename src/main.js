@@ -16,7 +16,7 @@ import NotEmpty from '@/components/NotEmpty'
 Vue.component("NotEmpty", NotEmpty);
 import { Row,Col,Button, Tabbar, TabbarItem, NavBar, Form, Field, Area, Popup, Picker, RadioGroup, Radio, Tag, Step, Steps, 
 	Tabs, Tab, Badge, DatetimePicker, Calendar, Notify, ActionSheet, List, Dialog, NoticeBar, PullRefresh, Cell, CellGroup,
-	Sticky,  Collapse, CollapseItem,Icon, Image as VanImage, Panel,
+	Sticky,  Collapse, CollapseItem,Icon, Image as VanImage, Panel,Switch,Cascader
 } from 'vant';
 Vue.use(Row);
 Vue.use(Col);
@@ -52,6 +52,8 @@ Vue.use(Tabbar);
 Vue.use(TabbarItem);
 Vue.use(Icon);
 Vue.use(Panel);
+Vue.use(Switch);
+Vue.use(Cascader);
 
 Vue.use(VanImage);
 

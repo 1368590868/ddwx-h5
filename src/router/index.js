@@ -118,13 +118,33 @@ export const routes = [
 				path: 'index',
 				meta: {title: '我的'},
 				component: () => import('@/view/MyManager/index')
+			}
+		]
+	},
+	{
+		path:'/address',
+		redirect:"/address/index",
+		component: () => import('@/view/Address'),
+		meta: {title: '常用地址'},
+		children: [
+			{
+				path:'index',
+				name:'AddressList',
+				meta: {title: '常用地址'},
+				component: () => import('@/view/Address/AddressList')
 			},
 			{
-				path:'address',
-				name:'Address',
-				meta: {title: '常用地址'},
-				component: () => import('@/view/MyManager/Address/index')
-			}
+				path:'create',
+				name:'CreateAddress',
+				meta: {title: '新建常用地址'},
+				component: () => import('@/view/Address/CreateAddress')
+			},
+			{
+				path:'detail',
+				name:'AddressDetail',
+				meta: {title: '常用地址详情'},
+				component: () => import('@/view/Address/AddressDetail')
+			},
 		]
 	},
 	{

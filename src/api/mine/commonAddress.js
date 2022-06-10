@@ -50,4 +50,13 @@ export function deleteCommonAddress(data) {
   })
 }
 
+//行政区划-行政区划列表-不分页
+export function gcjcDivisionList(params) {
+  return request({
+    url: `/gcjcDivision/list`,
+    method: 'get',
+    params
+  })
+}
+
 
