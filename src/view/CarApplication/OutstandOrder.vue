@@ -235,7 +235,7 @@ export default {
         // 订单状态
         statusDict: '1522830760585670657',
         // 期望车型I
-        hopeBrandDict: '1018'
+        hopeBrandDict: '101801'
       },
       dictData: {
         statusDict: '',
