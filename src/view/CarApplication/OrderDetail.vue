@@ -7,8 +7,8 @@
           size="large"
           round
           type="primary"
-          :color="orderDetail.stateCode | colors"
-        >{{orderDetail.state}}</van-tag>
+          :color="orderDetail.status | colors"
+        >{{dictData.statusDict[orderDetail.status]}}</van-tag>
       </div>
       <div
         class="reject-box"
@@ -83,7 +83,7 @@
         <li class="info-label"><span>用车需求：</span><span>{{orderDetail.demand}}</span></li>
         <li class="info-label"><span>用车时长：</span><span>{{orderDetail.timeLength}}小时</span></li>
         <li class="info-label"><span>是否长途：</span><span>{{orderDetail.longDistanceTag == '1' ? '是' : '否'}}</span></li>
-        <li class="info-label"><span>期望车型：</span><span>{{orderDetail.hopeBrand}}</span></li>
+        <li class="info-label"><span>期望车型：</span><span>{{dictData.hopeBrandDict[orderDetail.hopeBrand] }}</span></li>
         <template v-if="orderDetail.cartype!= ''">
           <li class="info-label"><span>实际车型：</span><span
               :class="orderDetail.cartype === orderDetail.hopeCarType?'':'warnning'"
@@ -213,9 +213,18 @@ export default {
       isCancelVis: false, //  是否取消订单弹窗
       cancelReason: '',   // 取消原因
       orderDetail: {},
-      apprlogList: [],     
-      // 期望车型字典
-      hopeBrandFormatObj: {},
+      apprlogList: [],
+      // 字典编号
+      dictIds: {
+        // 订单状态
+        statusDict: '1522830760585670657',
+        // 期望车型I
+        hopeBrandDict: '1018'
+      },
+      dictData: {
+        statusDict: '',
+        hopeBrandDict: '',
+      },
     };
   },
   methods: {
@@ -244,11 +253,12 @@ export default {
       });
 
     },
-    // 获取字典
-    async getHopeBrandTypeDict(parentId = '') {
-      // 期望车型字典
-      const hopeBrandType = (await this.getCommonDictList(parentId) ?? []) || [];
-      this.hopeBrandFormatObj = Object.fromEntries(hopeBrandType.map(item => [item.code, item.name]))
+    // 获取当前页面的通用字典下拉数据
+    async handleSystemCardDict(dict = {}) {
+      for (const item in dict) {
+        const res = await this.getCommonDictList(dict[item]) || [];
+        this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
+      }
     },
     // 获取订单详情
     getOrderDetail() {
@@ -302,8 +312,9 @@ export default {
       });
     }
   },
-  created() {
+  async created() {
     this.getOrderDetail();
+    await this.handleSystemCardDict(this.dictIds);
     // this.orderApprovalLog();
   }
 }

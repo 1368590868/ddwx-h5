@@ -52,7 +52,7 @@
                   <div class="li-timestu">
                     <time>{{item.usageTime}}</time>
                     <span>出发</span>
-                    <b class="b-status">{{item.state}}</b>
+                    <b class="b-status">{{dictData.statusDict[item.status]}}</b>
                   </div>
                 </li>
                 <li class="info-label">
@@ -135,7 +135,7 @@
                   <div class="li-timestu">
                     <time>{{item.usageTime}}</time>
                     <span>出发</span>
-                    <b class="b-status">{{item.state}}</b>
+                    <b class="b-status">{{dictData.statusDict[item.status]}}</b>
                   </div>
                 </li>
                 <li class="info-label">
@@ -185,8 +185,10 @@
 </template>
 <script>
 import { orderRequestList } from '@/api/order'
+import getDict from "@/view/mixins/getDict"
 import { mapGetters } from 'vuex'
 export default {
+  mixins: [getDict],
   computed: mapGetters('CarApplication', ['isFefresh']),
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -197,7 +199,7 @@ export default {
     });
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'OrderDetails') {   // 去往详情页
+    if (to.name === 'OrderDetail') {   // 去往详情页
       let notClass = this.$refs.notClass;
       let top = notClass.scrollTop;
       from.meta.scrollTop = top;
@@ -226,7 +228,19 @@ export default {
       historyQuery: {
         pageSize: 10,
         pageIndex: 0
-      }
+      },
+
+      // 字典编号
+      dictIds: {
+        // 订单状态
+        statusDict: '1522830760585670657',
+        // 期望车型I
+        hopeBrandDict: '1018'
+      },
+      dictData: {
+        statusDict: '',
+        hopeBrandDict: '',
+      },
     }
   },
   methods: {
@@ -285,6 +299,13 @@ export default {
         this.historyLoading = false;
       });
     },
+    // 获取当前页面的通用字典下拉数据
+    async handleSystemCardDict(dict = {}) {
+      for (const item in dict) {
+        const res = await this.getCommonDictList(dict[item]) || [];
+        this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
+      }
+    },
     goStartApplyClick() {
       this.$router.push({
         name: 'StartApplying',
@@ -293,7 +314,7 @@ export default {
     },
     goOrderDetailClick(id) {
       this.$router.push({
-        name: 'OrderDetails',
+        name: 'OrderDetail',
         params: { id }
       });
     },
@@ -315,5 +336,8 @@ export default {
       this.$store.dispatch('CarApplication/triggerFefresh', false);
     }
   },
+  async created() {
+    await this.handleSystemCardDict(this.dictIds);
+  }
 }
 </script>
