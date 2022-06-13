@@ -37,7 +37,7 @@ export function getAvailableCar(params) {  // 获取车辆
 }
 export function getCarCount(params) {  // 获取车辆总数
 	return request({
-		url: '/dispatch/getCarCount',
+		url: '/vehicleInfo/getAssignCount',
 		method: 'GET',
 		params
 	})

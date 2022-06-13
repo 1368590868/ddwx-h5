@@ -43,12 +43,13 @@
             </van-field>
             <div style="margin: 16px;" >
                 <van-button round block type="info" native-type="submit">保存</van-button>
+                <van-button round block type="info" native-type="button" style="margin-top:20px;" @click="handleDeleteClick()">删除</van-button>
             </div>
         </van-form>
     </div>
 </template>
 <script>
-import { gcjcDivisionList ,addCommonAddress } from "@/api/mine/commonAddress"
+import { gcjcDivisionList,addCommonAddress,deleteCommonAddress} from "@/api/mine/commonAddress"
 export default {
     data () {
         return {
@@ -89,10 +90,10 @@ export default {
         //获取地址类型
         this.form = Object.assign({}, this.$route.params.addressInfo);
         this.isDefualtTag = this.form.defualtTag === "0"? false:true;
+        this.cascaderValue = this.form.areaId;
         this.getProvinceOptions(0);
         this.getCityOptions(this.form.provinceId);
         this.getAreaOptions(this.form.cityId);
-        this.cascaderValue = this.form.areaId;
     },
     methods: {
         //获取省级数据
@@ -120,7 +121,6 @@ export default {
         async getAreaOptions(pid){
             await gcjcDivisionList({pid}).then(({data}) => {
                 this.areaOptions = data.list;
-                  console.log(this.provinceOptions)
                 let province = this.provinceOptions.find((item) => {
                     return item.divisionId===this.form.provinceId;
                 })
@@ -138,7 +138,33 @@ export default {
         handleDefaultTagChage(){
             this.form.defualtTag = this.isDefualtTag?"1":"0";
         },
+        //保存
         async onSubmit(values) {
+            this.form.deleteTag = "0";
+            await addCommonAddress(Object.assign({}, this.form)).then(({message}) => {
+                this.$notify({
+                    type: 'success',
+                    message: message
+                });
+                this.$router.back();
+            }).catch((err) => {
+                
+            })
+        },
+        //删除点击
+        handleDeleteClick(){
+            this.$dialog.confirm({
+                title: '提示',
+                message: '是否要删除该常用地址?',
+            }).then(() => {
+                this.deleteCommonAddress()
+            }).catch((err) => {
+                
+            })
+        },
+        //删除地址
+        async deleteCommonAddress(){
+            this.form.deleteTag = "1";
             await addCommonAddress(Object.assign({}, this.form)).then(({message}) => {
                 this.$notify({
                     type: 'success',
@@ -167,7 +193,7 @@ export default {
                 this.showPop = false;
                 this.form.areaLongName = selectedOptions.map((option) => option.divisionName).join('/');
             }
-    },
+        },
   },
 }
 </script>

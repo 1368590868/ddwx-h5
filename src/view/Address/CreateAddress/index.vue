@@ -19,6 +19,7 @@
             <van-field 
                 label="省市区：" 
                 label-align="right" 
+                readonly
                 @click="showPop = true" 
                 placeholder="请选择省市区" 
                 v-model="form.areaLongName"
@@ -72,6 +73,8 @@ export default {
             cascaderValue: '',
              //表单数据
             form:{
+                id:"",
+                deleteTag: '0', //保存：0;删除：1
                 name:"",    //别名
                 address:"", //详细地址
                 defualtTag:"0",//是否默认0否 1是
@@ -95,7 +98,7 @@ export default {
                 this.provinceOptions = data.list;
             }).catch((err) => {
 
-})
+            })
         },
         //获取市级数据
         async getCityOptions(pid){
@@ -130,6 +133,7 @@ export default {
         handleDefaultTagChage(){
             this.form.defualtTag = this.isDefualtTag?"1":"0";
         },
+        //保存
         async onSubmit(values) {
             await addCommonAddress(Object.assign({}, this.form)).then(({message}) => {
                 this.$notify({
@@ -159,7 +163,7 @@ export default {
                 this.showPop = false;
                 this.form.areaLongName = selectedOptions.map((option) => option.divisionName).join('/');
             }
-    },
+        },
   },
 }
 </script>

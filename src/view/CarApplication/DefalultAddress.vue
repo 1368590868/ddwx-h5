@@ -1,35 +1,17 @@
 <template lang="">
     <div class="app-container">
-        <!--出发地-->
         <div class="title-address">
             <div>
-                <van-icon name="location-o" class="icon-address"/><span>出发地</span>
+                <van-icon name="location-o" class="icon-address"/><span>{{title}}</span>
             </div>
-            <van-icon name="plus"  class="icon-address" @click="startAddressAdd()"/>
         </div>
-        <div v-for="item in startAddressList" :key="item.id" class="item-address" @click="handleDetail(item)">
+        <div v-for="item in addressList" :key="item.id" class="item-address" @click="handleDetail(item)">
             <span class="span-alias">{{item.name}}</span>
             <div class="div-address">
                 <p>{{item.areaLongName}}{{item.areaLongName}}</p>
                 <p>{{item.address}}</p>
             </div>
             <span class="span-default" v-show="item.defualtTag==='1'">默认</span>
-        </div>
-        <!--目的地-->
-        <div class="title-address">
-            <div>
-                <van-icon name="location-o" class="icon-address"/><span>目的地</span>
-            </div>
-            <van-icon name="plus"  class="icon-address" @click="endAddressAdd()"/>
-        </div>
-        <div v-for="item in endAddressList" :key="item.id" class="item-address" @click="handleDetail(item)">
-            <span class="span-alias">{{item.name}}</span>
-            <div class="div-address">
-                <p>{{item.areaLongName}}{{item.areaLongName}}</p>
-                <p>{{item.address}}</p>
-            </div>
-                <span class="span-default" v-show="item.defualtTag==='1'">默认</span>
-            </div>
         </div>
     </div>
 </template>
@@ -38,48 +20,47 @@ import { commonAddressListAll } from "@/api/mine/commonAddress"
 export default {
     data () {
         return {
-            //出发地
-            startAddressList:[],
-            //目的地
-            endAddressList:[],
+            //标题
+            title:"",
+            //地址信息
+            addressList:[],
+            //地址类型
+            addressType:"",
         }
     },
     mounted(){
         this.getCommonAddress();
+        this.addressType = this.$route.params.addressType;
+        this.$nextTick(() => {
+            if(this.addressType==="1"){
+                this.title = "出发地";
+            }else if(this.addressType==="2"){
+                this.title = "目的地";
+            }
+        })
     },
     methods:{
         //获取常用地址信息
         async getCommonAddress(){
             await commonAddressListAll().then(({data}) => {
                 data.forEach((item) => {
-                    if(item.addressType==="1"){
-                        this.startAddressList.push(item);
-                    }else{
-                        this.endAddressList.push(item);
+                    if(this.addressType==="1"){
+                        if(item.addressType==="1"){
+                            this.addressList.push(item);
+                        }
+                    }else if(this.addressType==="2"){
+                        if(item.addressType==="2"){
+                            this.addressList.push(item);
+                        }
                     }
                 })
             }).catch((err) => {
+
             })
         },
-        //出发地添加
-        startAddressAdd(){
-            this.$router.push({
-                name: 'CreateAddress',
-                params:{addressType:"1"}
-            });
-        },
-        //目的地添加
-        endAddressAdd(){
-            this.$router.push({
-                name: 'CreateAddress',
-                params:{addressType:"2"}
-            });
-        },
         handleDetail(item){
-            this.$router.push({
-                name: 'AddressDetail',
-                params:{addressInfo:item}
-            });
+            localStorage.setItem('address',JSON.stringify(item));
+            this.$router.back();
         }
     }
 }
