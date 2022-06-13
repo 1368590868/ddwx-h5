@@ -53,6 +53,11 @@ export const routes = [
 				name: 'OutstandOrder',
 				meta: {title: '用车申请单', keepAlive: true},
 				component: () => import('@/view/CarApplication/OutstandOrder')
+			},{
+				path: 'DefalultAddress',
+				name: 'DefalultAddress',
+				meta: {title: '常用地址'},
+				component: () => import('@/view/CarApplication/DefalultAddress')
 			}
 		]
 	},
