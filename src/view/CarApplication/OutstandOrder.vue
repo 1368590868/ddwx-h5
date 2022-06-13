@@ -272,7 +272,6 @@ export default {
           this.requestFinished = true;
         }
         this.requestList = [...this.requestList, ...data.list];
-        console.log("🚀 ~ file: OutstandOrder.vue ~ line 275 ~ orderRequestList ~ this.requestList", this.requestList)
       }).catch((error) => {
         console.log('getOrderList', error)
       }).finally(() => {
