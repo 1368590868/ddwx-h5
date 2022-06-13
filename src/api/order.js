@@ -74,7 +74,16 @@ export function rejectApprovalOrder(data) {	// 驳回审批单
 		data
 	})
 }
-export function rejectApprovalAgree(data) {	// 同意审批单
+// 下一级审批人列表
+export function activityAssigneeList(data) {
+	return request({
+			url: `/activiti/assigneeList`,
+			method: 'post',
+			data
+	})
+}
+
+export function agreeApprovalOrder(data) {	// 同意审批单
 	return request({
 		url: '/gcywVehicleRequest/activiti/complete',
 		method: 'POST',

@@ -9,7 +9,7 @@
 
     <div
       class="button-box"
-      v-if="orderDetail.isApproval == 'Y' || true"
+      v-if="orderDetail.isApproval == '1'"
     >
       <van-button
         block
@@ -55,10 +55,50 @@
         </div>
       </van-form>
     </van-popup>
+    <!-- 下一级审批人 -->
+    <van-popup
+      v-model="selectAssigneeShow"
+      position="bottom"
+    >
+      <van-field
+        v-model="assignee"
+        required
+        is-link
+        readonly
+        label="下一级审批人"
+        placeholder="请选择下一级审批人"
+        @click="assigneeShow = true"
+      />
+      <!-- <div class="form-button">
+        <van-button
+          block
+          type="info"
+          native-type="button"
+        >确认</van-button>
+      </div> -->
+    </van-popup>
+    <van-popup
+      v-model="assigneeShow"
+      round
+      position="bottom"
+    >
+      <van-cascader
+        v-model="cascaderValue"
+        title="请选择所在地区"
+        :field-names="fieldNames"
+        :options="assigneeList"
+        @close="assigneeShow = false"
+        @finish="onFinish"
+      />
+    </van-popup>
   </div>
 </template>
 <script>
-import { rejectApprovalAgree, rejectApprovalOrder } from '@/api/order'
+import {
+  agreeApprovalOrder,
+  rejectApprovalOrder,
+  activityAssigneeList,
+} from '@/api/order'
 import {
   orderRequestList,
   orderApprovalLog,
@@ -74,6 +114,22 @@ export default {
         comment: '',
         status: 1
       },
+      // 下一级审批人的id
+      assignee: '',
+      // 审批人级联选择器是否展示
+      selectAssigneeShow: false,
+      assigneeShow: false,
+      // 自定义选择
+      fieldNames: {
+        text: 'name',
+        value: 'code',
+        children: 'children',
+      },
+      // 审批人列表信息
+      assigneeListInfo: {},
+      // 下级审批人的列表
+      assigneeList: [],
+      // 订单详情
       orderDetail: {},
       approveLogList: [],
       // 字典编号
@@ -87,6 +143,7 @@ export default {
         statusDict: '',
         hopeBrandDict: '',
       },
+      cascaderValue: '',
     };
   },
   methods: {
@@ -159,24 +216,76 @@ export default {
         this.$toast.fail("驳回失败!");
       });
     },
-    approvalOrderChange() {
-      this.$dialog.confirm({
-        title: '提示',
-        message: '是否要审批通过?',
-        beforeClose: this.approvalOrder
-      });
-    },
-    approvalOrder(action, done) {
-      let id = this.$route.params.id;
-      let param = {
-        ...this.formData,
+    // 通过按钮
+    async approvalOrderChange() {
+      this.selectAssigneeShow = true;
+      const res = await activityAssigneeList({
         businessId: this.$route.params.id || this.orderDetail.id,
         procInstId: this.orderDetail.procInstId,
-        taskId: this.orderDetail.taskId,
+        actId: this.orderDetail.actId,
+      })
+      console.log('activityAssigneeList', res);
+      if (res.code === 0 || 1 > 0) {
+        const data = res.data || [];
+        this.assigneeListInfo = data;
+        this.assigneeList = this.dealTreeListEmptyChildren(data?.assigneeList) || [];
       }
+
+      // TODO 删除下面多余的
+      // this.assigneeList = this.dealTreeListEmptyChildren([
+      //   {
+      //     "id": null,
+      //     "code": "11",
+      //     "name": "测试单位1",
+      //     "type": "1",
+      //     "children": [
+      //       {
+      //         "id": null,
+      //         "code": "1535099123127439360",
+      //         "name": "经管事业群",
+      //         "type": "2",
+      //         "children": [
+      //           {
+      //             "id": null,
+      //             "code": "1535101376877973504",
+      //             "name": "经管主任",
+      //             "type": "5",
+      //             "children": [],
+      //             "userList": null
+      //           }
+      //         ],
+      //         "userList": null
+      //       }
+      //     ],
+      //     "userList": null
+      //   }
+      // ]);
+    },
+    // 去除空数组
+    dealTreeListEmptyChildren(arr = []) {
+      arr.forEach(item => {
+        if (!item?.children?.length) {
+          delete item.children;
+        } else {
+          this.dealTreeListEmptyChildren(item.children)
+        }
+      });
+      return arr;
+    },
+    // 确定通过
+    async approvalOrder(action, done) {
+      const id = this.$route.params.id;
       if (action === 'confirm') {
-        rejectApprovalAgree({ id: id, status: 0 }).then((data) => {
-          this.$router.push({ name: 'approvalSuccess', params: { id: id } });
+        let param = {
+          assignee: this.cascaderValue,
+          businessId: id || this.orderDetail.id,
+          procInstId: this.orderDetail.procInstId,
+          comment: '',
+          taskId: this.orderDetail.taskId,
+        }
+        // eslint-disable-next-line no-unused-vars
+        agreeApprovalOrder(param).then((_data) => {
+          this.$router.push({ name: 'approvalSuccess', params: { id } });
           // this.$notify({
           //     type: 'success',
           //     message: '成功!'
@@ -185,10 +294,20 @@ export default {
         }).catch(() => {
           done(false);
         });
-        //return false;
+        return false;
       }
       done();
-    }
+    },
+    // 全部选项选择完毕后，会触发 finish 事件 选择完人员之后
+    onFinish({ selectedOptions }) {
+      this.assigneeShow = false;
+      this.$dialog.confirm({
+        title: '提示',
+        message: '是否要审批通过?',
+        beforeClose: this.approvalOrder
+      });
+      this.assignee = selectedOptions.map((option) => option.name).join('/');
+    },
   },
   created() {
     this.handleSystemCardDict(this.dictIds);
