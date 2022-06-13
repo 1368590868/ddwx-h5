@@ -13,7 +13,9 @@ Vue.use(MobilePlatform);
 import "./permission"; // permission control
 
 import NotEmpty from "@/components/NotEmpty";
+import AllOrderDetail from "@/components/AllOrderDetail";
 Vue.component("NotEmpty", NotEmpty);
+Vue.component("AllOrderDetail", AllOrderDetail);
 import {
   Row,
   Col,

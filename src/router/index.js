@@ -74,10 +74,10 @@ export const routes = [
 				meta: {title: '待审批', keepAlive: true},
 				component: () => import('@/view/CarApproval/ApprovalPending')
 			},{
-				path: 'Approvaldetails/:autoId',
-				name: 'Approvaldetails',
+				path: 'ApprovalDetail/:id',
+				name: 'ApprovalDetail',
 				meta: {title: '订单详情'},
-				component: () => import('@/view/CarApproval/Approvaldetails')
+				component: () => import('@/view/CarApproval/ApprovalDetail')
 			},
 			// {
 			// 	path: 'reject/:autoId',

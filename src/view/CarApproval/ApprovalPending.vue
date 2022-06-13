@@ -37,7 +37,7 @@
                 v-for="(childItem, index) in item"
                 :class="['list-ul', childItem.longDistanceTag == 1 ? 'longway':''] "
                 :key="childItem.reqNo + index"
-                @click="goOrderDetailClick(childItem.nAutoId)"
+                @click="goOrderDetailClick(childItem.id)"
               >
                 <li class="list-li">
                   <div class="li-address"><b class="b1">
@@ -103,10 +103,14 @@
                 v-for="(childItem, index) in item"
                 :class="['list-ul', childItem.longDistanceTag == 1 ? 'longway':''] "
                 :key="childItem.reqNo + index"
-                @click="goOrderDetailClick(childItem.nAutoId)"
+                @click="goOrderDetailClick(childItem.id)"
               >
                 <li class="list-li">
-                  <div class="li-address"><b class="b1">
+                  <div
+                    class="li-address"
+                    v-if="childItem.fromAddr && childItem.toAddr"
+                  >
+                    <b class="b1">
                       {{childItem.fromAddr.split('/')[2].split(' ')[0]}}
                     </b>
                     <b class="b2">
@@ -122,7 +126,7 @@
                   </div>
                 </li>
                 <li class="info-label"><span>详细地址：</span>
-                  <span>
+                  <span v-if="childItem.fromAddr && childItem.toAddr">
                     {{childItem.fromAddr.split('/')[2].split(' ')[1]}}
                     &nbsp;到&nbsp;
                     {{childItem.toAddr.split('/')[2].split(' ')[1]}}
@@ -166,11 +170,12 @@ export default {
     });
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'Approvaldetails') {   // 去往详情页
+    if (to.name === 'ApprovalDetail') {   // 去往详情页
       let notClass = this.$refs.notClass;
       let top = notClass.scrollTop;
       from.meta.scrollTop = top;
     }
+    console.log("🚀 ~ file: ApprovalPending.vue ~ line 173 ~ beforeRouteLeave ~ to", to)
     next();
   },
   data() {
@@ -255,10 +260,11 @@ export default {
         let list = data?.list || [];
         list = this.dealArrToObject(list, 'usageDate') || [];
         this.approvalOrderList = this.computedGroupDate(list, 'approvalOrderList')
-        this.requestLoading = false;
       }).catch((e) => {
         console.error(e);
         alert("错误");
+      }).finally(() => {
+        this.requestLoading = false;
       });
     },
     orderHistoryOrderList() {  // 用车审批已审批列表
@@ -281,9 +287,10 @@ export default {
         let list = data?.list || [];
         list = this.dealArrToObject(list, 'usageDate') || [];
         this.approvedOrderList = this.computedGroupDate(list, 'approvedOrderList')
-        this.historyLoading = false;
       }).catch(() => {
         alert("错误");
+      }).finally(() => {
+        this.historyLoading = false;
       });
     },
     computedGroupDate(data, dataKey) {
@@ -299,7 +306,7 @@ export default {
     },
     goOrderDetailClick(id) {
       this.$router.push({
-        name: 'Approvaldetails',
+        name: 'ApprovalDetail',
         params: { id }
       });
     },

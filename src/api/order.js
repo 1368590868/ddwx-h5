@@ -67,6 +67,20 @@ export function approvalOrder(data) {	// 审批订单
 		data
 	})
 }
+export function rejectApprovalOrder(data) {	// 驳回审批单
+	return request({
+		url: '/gcywVehicleRequest/activiti/reject',
+		method: 'POST',
+		data
+	})
+}
+export function rejectApprovalAgree(data) {	// 同意审批单
+	return request({
+		url: '/gcywVehicleRequest/activiti/complete',
+		method: 'POST',
+		data
+	})
+}
 export function approvalOrderList(params) {	// 获取待审批列表
 	return request({
 		url: '/gcywVehicleRequest/listPage',
