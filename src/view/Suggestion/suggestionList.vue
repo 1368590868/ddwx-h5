@@ -52,7 +52,7 @@ export default {
     return {
       pageQuery: {
         pageSize: 10,
-        pageIndex: 0
+        pageNum: 0
       },
       // 意见分类
       suggestionTypeFormatObj: {},
@@ -71,9 +71,9 @@ export default {
     },
     // 获取反馈意见历史
     getSuggestionList() {
-      let pageIndex = this.pageQuery.pageIndex;
+      let pageNum = this.pageQuery.pageNum;
       this.loading = true;
-      this.pageQuery.pageIndex = pageIndex + 1;
+      this.pageQuery.pageNum = pageNum + 1;
       getSelfSuggestion(this.pageQuery).then(({ data }) => {
         this.list = data.list || [];
         // if (data.list.length === 0) {

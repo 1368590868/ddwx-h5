@@ -74,7 +74,7 @@ export default {
             to.meta.keepAlive = false;
         } else {
             to.meta.keepAlive = true;
-        };
+        }
         next((vm) => {
             let timer = setTimeout(() => {
                 vm.$refs.notClass.scrollTop = to.meta.scrollTop;
@@ -87,7 +87,7 @@ export default {
             let notClass = this.$refs.notClass;
             let top = notClass.scrollTop;
             from.meta.scrollTop = top;
-        };
+        }
         next();
     },
     data () {
@@ -99,7 +99,7 @@ export default {
             dispatchList: {},
             dispatchQuery: {
                 pageSize: 20,
-                pageIndex: 0
+                pageNum: 0
             },
 
             dispatchedLoading: false,
@@ -108,7 +108,7 @@ export default {
             dispatchedList: {},
             dispatchedQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             },
 
             historyLoading: false,
@@ -117,7 +117,7 @@ export default {
             historyList: {},
             historyQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             }
         }
 
@@ -126,7 +126,7 @@ export default {
         dispatchRefresh () {
             //清空
             this.dispatchFinished = false;
-            this.dispatchQuery.pageIndex = 0;
+            this.dispatchQuery.pageNum = 0;
             //重新加载
             this.dispatchRefreshLoading = true;
             this.dispatchDispatchList();
@@ -134,7 +134,7 @@ export default {
         historyRefresh () {
             //清空
             this.historyFinished = false;
-            this.historyQuery.pageIndex = 0;
+            this.historyQuery.pageNum = 0;
             //重新加载
             this.historyRefreshLoading = true;
             this.dispatchHistoryList();
@@ -142,55 +142,55 @@ export default {
         dispatchedRefresh () {
             //清空
             this.dispatchedFinished = false;
-            this.dispatchedQuery.pageIndex = 0;
+            this.dispatchedQuery.pageNum = 0;
             //重新加载
             this.dispatchedRefreshLoading = true;
             this.dispatchDispatchedList();
         },
         dispatchDispatchList() {    // 待派单
-            let pageIndex = this.dispatchQuery.pageIndex;
+            let pageNum = this.dispatchQuery.pageNum;
             this.dispatchLoading = true;
-            this.dispatchQuery.pageIndex = pageIndex + 1;
+            this.dispatchQuery.pageNum = pageNum + 1;
             dispatchDispatchList(this.dispatchQuery).then(({data}) => {
-                if(this.dispatchRefreshLoading && this.dispatchQuery.pageIndex === 1){
+                if(this.dispatchRefreshLoading && this.dispatchQuery.pageNum === 1){
                     this.dispatchList = {};
                 }
                 this.dispatchRefreshLoading = false;
                 if (Object.keys(data).length===0) {
                     this.dispatchFinished = true;
-                };
+                }
                 this.dispatchLoading = false;
                 this.dispatchList = this.computedGroupDate(data, 'dispatchList')
             });
         },
         dispatchDispatchedList () {  // 已派单
-            let pageIndex = this.dispatchedQuery.pageIndex;
+            let pageNum = this.dispatchedQuery.pageNum;
             this.dispatchedLoading = true;
-            this.dispatchedQuery.pageIndex = pageIndex + 1;
+            this.dispatchedQuery.pageNum = pageNum + 1;
             dispatchDispatchedList(this.dispatchedQuery).then(({data}) => {
-                if(this.dispatchedRefreshLoading && this.dispatchedQuery.pageIndex === 1){
+                if(this.dispatchedRefreshLoading && this.dispatchedQuery.pageNum === 1){
                     this.dispatchedList = {};
                 }
                 this.dispatchedRefreshLoading = false;
                 if (Object.keys(data).length===0) {
                     this.dispatchedFinished = true;
-                };
+                }
                 this.dispatchedLoading = false;
                 this.dispatchedList = this.computedGroupDate(data, 'dispatchedList')
             });
         },
         dispatchHistoryList () {  // 历史订单
-            let pageIndex = this.historyQuery.pageIndex;
+            let pageNum = this.historyQuery.pageNum;
             this.historyLoading = true;
-            this.historyQuery.pageIndex = pageIndex + 1;
+            this.historyQuery.pageNum = pageNum + 1;
             historyList(this.historyQuery).then(({data}) => {
-                if(this.historyRefreshLoading && this.historyQuery.pageIndex === 1){
+                if(this.historyRefreshLoading && this.historyQuery.pageNum === 1){
                     this.historyList = {};
                 }
                 this.historyRefreshLoading = false;
                 if (Object.keys(data).length===0) {
                     this.historyFinished = true;
-                };
+                }
                 this.historyLoading = false;
                 this.historyList = this.computedGroupDate(data, 'historyList')
             });
@@ -202,8 +202,8 @@ export default {
                     list[key] = list[key].concat(data[key]);
                 } else {
                     list[key] = data[key];
-                };
-            };
+                }
+            }
             return list;
         },
         goStartDispatch () {
@@ -230,14 +230,14 @@ export default {
                 this.dispatchedRefresh();
             } else if (this.activeIndex === 2){
                 this.historyRefresh();
-            };
+            }
             
             let timer = setTimeout(() => {
                 this.$refs.notClass.scrollTop = 0;
                 clearTimeout(timer);
             },0);
             this.$store.dispatch('DispathOrder/triggerFefresh', false);
-        };
+        }
     },
 }
 </script>

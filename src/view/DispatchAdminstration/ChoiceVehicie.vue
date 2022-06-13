@@ -36,7 +36,7 @@ export default {
             to.meta.keepAlive = false;
         } else {
             to.meta.keepAlive = true;
-        };
+        }
         next((vm) => {
             let timer = setTimeout(() => {
                 vm.$refs.notClass.scrollTop = to.meta.scrollTop;
@@ -49,7 +49,7 @@ export default {
             let notClass = this.$refs.notClass;
             let top = notClass.scrollTop;
             from.meta.scrollTop = top;
-        };
+        }
         next();
     },
     data () {
@@ -63,7 +63,7 @@ export default {
             list: [],
             requestQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             },
             typeVehicie: '',
         }
@@ -74,7 +74,7 @@ export default {
             this.requestRefreshLoading = true;
             this.requestFinished = false;
             this.requestLoading = true;
-            this.requestQuery.pageIndex = 0;
+            this.requestQuery.pageNum = 0;
             //重新加载
             this.getAvailableCar();
         },
@@ -83,17 +83,17 @@ export default {
             this.radio = val.carNumber;
         },
         getAvailableCar () {
-            let pageIndex = this.requestQuery.pageIndex;
+            let pageNum = this.requestQuery.pageNum;
             this.requestLoading = true;
-            this.requestQuery.pageIndex = pageIndex + 1;
+            this.requestQuery.pageNum = pageNum + 1;
             getAvailableCar(this.requestQuery).then(({data}) => {
-                if(this.requestRefreshLoading && this.requestQuery.pageIndex === 1){
+                if(this.requestRefreshLoading && this.requestQuery.pageNum === 1){
                     this.list = [];
                 }
                 this.requestRefreshLoading = false;
                 if (data.length===0) {
                     this.requestFinished = true;
-                };
+                }
                 this.requestLoading = false;
                 let list = this.list;
                 this.list = list.concat(data);

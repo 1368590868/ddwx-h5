@@ -52,7 +52,7 @@ export default {
             to.meta.keepAlive = false;
         } else {
             to.meta.keepAlive = true;
-        };
+        }
         next((vm) => {
             let timer = setTimeout(() => {
                 vm.$refs.notClass.scrollTop = to.meta.scrollTop;
@@ -65,7 +65,7 @@ export default {
             let notClass = this.$refs.notClass;
             let top = notClass.scrollTop;
             from.meta.scrollTop = top;
-        };
+        }
         next();
     },
     data () {
@@ -77,7 +77,7 @@ export default {
             requestKeys: 0,
             requestQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             },
             historyrefresh: false,
             historyLoading: false,
@@ -85,7 +85,7 @@ export default {
             historyList: {},
             historyQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             }
         }
 
@@ -93,28 +93,28 @@ export default {
     methods: {
         orderOnRefresh() {
             this.requestFinished = false;
-            this.requestQuery.pageIndex = 0;
+            this.requestQuery.pageNum = 0;
             this.requestLoading = true;
             this.drivingDrivingList();
         },
         histyOnRefresh () {
             this.historyFinished = false;
-            this.historyQuery.pageIndex = 0;
+            this.historyQuery.pageNum = 0;
             this.historyLoading = true;
             this.drivingHistoryList();
         },
         drivingDrivingList() {    // 用车申请未完成列表
-            let pageIndex = this.requestQuery.pageIndex;
+            let pageNum = this.requestQuery.pageNum;
             this.requestLoading = true;
-            this.requestQuery.pageIndex = pageIndex + 1;
+            this.requestQuery.pageNum = pageNum + 1;
             drivingDrivingList(this.requestQuery).then(({data}) => {
-                if (this.requestrefresh && this.requestQuery.pageIndex === 1) {
+                if (this.requestrefresh && this.requestQuery.pageNum === 1) {
                     this.requestList = {};
-                };
+                }
                 this.requestrefresh = false;
                 if (Object.keys(data).length===0) {
                     this.requestFinished = true;
-                };
+                }
                 this.requestList = this.computedGroupDate(data, 'requestList')
                 this.requestLoading = false;
             }).catch(()=>{
@@ -122,17 +122,17 @@ export default {
             });
         },
         drivingHistoryList () {  // 用车申请历史订单列表
-            let pageIndex = this.historyQuery.pageIndex;
+            let pageNum = this.historyQuery.pageNum;
             this.historyLoading = true;
-            this.historyQuery.pageIndex = pageIndex + 1;
+            this.historyQuery.pageNum = pageNum + 1;
             drivingHistoryList(this.historyQuery).then(({data}) => {
-                if (this.historyrefresh && this.historyQuery.pageIndex === 1) { 
+                if (this.historyrefresh && this.historyQuery.pageNum === 1) { 
                     this.historyList = {};
-                };
+                }
                 this.historyrefresh = false;
                 if (Object.keys(data).length===0) {
                     this.historyFinished = true;
-                };
+                }
                 this.historyList = this.computedGroupDate(data, 'historyList')
                 this.historyLoading = false;
             }).catch(()=>{
@@ -146,8 +146,8 @@ export default {
                     list[key] = list[key].concat(data[key]);
                 } else {
                     list[key] = data[key];
-                };
-            };
+                }
+            }
             return list;
         },
         goStartApplyClick () {

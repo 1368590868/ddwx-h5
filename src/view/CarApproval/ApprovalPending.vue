@@ -52,7 +52,7 @@ export default {
             to.meta.keepAlive = false;
         } else {
             to.meta.keepAlive = true;
-        };
+        }
         next((vm) => {
             let timer = setTimeout(() => {
                 vm.$refs.notClass.scrollTop = to.meta.scrollTop;
@@ -65,7 +65,7 @@ export default {
             let notClass = this.$refs.notClass;
             let top = notClass.scrollTop;
             from.meta.scrollTop = top;
-        };
+        }
         next();
     },
     data () {
@@ -80,7 +80,7 @@ export default {
             requestKeys: 0,
             requestQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             },
             historyrefresh: false,
             historyLoading: false,
@@ -88,7 +88,7 @@ export default {
             approvaledOrderList: {},
             historyQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             }
         }
 
@@ -96,28 +96,28 @@ export default {
     methods: {
         orderOnRefresh() {
             this.requestFinished = false;
-            this.requestQuery.pageIndex = 0;
+            this.requestQuery.pageNum = 0;
             this.requestLoading = true;
             this.orderRequestList();
         },
         histyOnRefresh(){
             this.historyFinished = false;
-            this.historyQuery.pageIndex = 0;
+            this.historyQuery.pageNum = 0;
             this.historyLoading = true;
             this.orderHistoryOrderList();
         },
         orderRequestList() {    // 用车审批待审批列表
-            let pageIndex = this.requestQuery.pageIndex;
+            let pageNum = this.requestQuery.pageNum;
             this.requestLoading = true;
-            this.requestQuery.pageIndex = pageIndex + 1;
+            this.requestQuery.pageNum = pageNum + 1;
             approvalOrderList(this.requestQuery).then(({data}) => {
-                if (this.requestrefresh && this.requestQuery.pageIndex === 1) {
+                if (this.requestrefresh && this.requestQuery.pageNum === 1) {
                     this.approvalOrderList = {};
-                };
+                }
                 this.requestrefresh = false;
                 if (Object.keys(data).length===0) {
                     this.requestFinished = true;
-                };
+                }
                 this.approvalOrderList = this.computedGroupDate(data, 'approvalOrderList')
                 this.requestLoading = false;
             }).catch(()=>{
@@ -125,17 +125,17 @@ export default {
             });
         },
         orderHistoryOrderList () {  // 用车审批已审批列表
-            let pageIndex = this.historyQuery.pageIndex;
+            let pageNum = this.historyQuery.pageNum;
             this.historyLoading = true;
-            this.historyQuery.pageIndex = pageIndex + 1;
+            this.historyQuery.pageNum = pageNum + 1;
             approvaledOrderList(this.historyQuery).then(({data}) => {
-                if (this.historyrefresh && this.historyQuery.pageIndex === 1) { 
+                if (this.historyrefresh && this.historyQuery.pageNum === 1) { 
                     this.approvaledOrderList = {};
-                };
+                }
                 this.historyrefresh = false;
                 if (Object.keys(data).length===0) {
                     this.historyFinished = true;
-                };
+                }
                 this.approvaledOrderList = this.computedGroupDate(data, 'approvaledOrderList')
                 this.historyLoading = false;
             }).catch(()=>{
@@ -149,8 +149,8 @@ export default {
                     list[key] = list[key].concat(data[key]);
                 } else {
                     list[key] = data[key];
-                };
-            };
+                }
+            }
             return list;
         },
         goOrderDetailClick (autoId) {
@@ -168,14 +168,14 @@ export default {
             } else {
                 this.requestrefresh = true;
                 this.orderOnRefresh();
-            };
+            }
             
             let timer = setTimeout(() => {
                 this.$refs.notClass.scrollTop = 0;
                 clearTimeout(timer);
             },0);
             this.$store.dispatch('CarApplication/triggerFefresh', false);
-        };
+        }
     },
 }
 </script>

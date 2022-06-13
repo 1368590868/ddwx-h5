@@ -218,7 +218,7 @@ export default {
       requestKeys: 0,
       requestQuery: {
         pageSize: 10,
-        pageIndex: 0
+        pageNum: 0
       },
 
       historyRefresh: false,
@@ -227,7 +227,7 @@ export default {
       historyList: [],
       historyQuery: {
         pageSize: 10,
-        pageIndex: 0
+        pageNum: 0
       },
 
       // 字典编号
@@ -246,21 +246,21 @@ export default {
   methods: {
     orderOnRefresh() {
       this.requestFinished = false;
-      this.requestQuery.pageIndex = 0;
+      this.requestQuery.pageNum = 0;
       this.requestLoading = true;
       this.getOrderList();
     },
     historyOnRefresh() {
       this.historyFinished = false;
-      this.historyQuery.pageIndex = 0;
+      this.historyQuery.pageNum = 0;
       this.historyLoading = true;
       this.getOrderHistoryOrderList();
     },
     // 用车申请列表 1为历史订单，2为未完成订单
     getOrderList() {
-      let pageIndex = this.requestQuery.pageIndex;
+      let pageNum = this.requestQuery.pageNum;
       this.requestLoading = true;
-      this.requestQuery.pageIndex = pageIndex + 1;
+      this.requestQuery.pageNum = pageNum + 1;
       const params = {
         ...this.requestQuery,
         // 1为历史订单，2为未完成订单
@@ -268,31 +268,32 @@ export default {
       }
       orderRequestList(params).then(({ data }) => {
         this.requestRefresh = false;
-        // if (data?.length === 0) {
-        this.requestFinished = true;
-        // }
-        this.requestList = data.list;
+        if (data?.list?.length === 0) {
+          this.requestFinished = true;
+        }
+        this.requestList = [...this.requestList, ...data.list];
+        console.log("🚀 ~ file: OutstandOrder.vue ~ line 275 ~ orderRequestList ~ this.requestList", this.requestList)
       }).catch((error) => {
         console.log('getOrderList', error)
       }).finally(() => {
-        this.requestFinished = true;
         this.requestLoading = false;
       });
     },
     getOrderHistoryOrderList() {  // 用车申请历史订单列表
-      let pageIndex = this.historyQuery.pageIndex;
+      let pageNum = this.historyQuery.pageNum;
       this.historyLoading = true;
-      this.historyQuery.pageIndex = pageIndex + 1;
+      this.historyQuery.pageNum = pageNum + 1;
       const params = {
         ...this.requestQuery,
         // 1为历史订单，2为未完成订单
         isFinsh: '1',
       }
+      this.historyFinished = false;
       orderRequestList(params).then(({ data }) => {
-        // if (data?.length === 0) {
-        this.historyFinished = true;
-        // }
-        this.historyList = data.list;
+        if (data?.list?.length === 0) {
+          this.historyFinished = true;
+        }
+        this.historyList = [...this.historyList, ...data.list];
       }).catch(() => {
         alert('err')
       }).finally(() => {

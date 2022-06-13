@@ -54,7 +54,7 @@ export default {
     return {
       messageQuery: {
         pageSize: 10,
-        pageIndex: 0
+        pageNum: 0
       },
       messageList: {},
       messageLoading: false,
@@ -63,9 +63,9 @@ export default {
   },
   methods: {
     messageGetMessage() {
-      // let pageIndex = this.messageQuery.pageIndex;
+      // let pageNum = this.messageQuery.pageNum;
       this.messageLoading = true;
-      // this.messageQuery.pageIndex = pageIndex + 1;
+      // this.messageQuery.pageNum = pageNum + 1;
       // messageGetMessage(this.messageQuery).then(({data}) => {
       //     if (Object.keys(data).length===0) {
       //         this.messageFinished = true;

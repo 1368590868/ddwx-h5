@@ -37,7 +37,7 @@ export default {
             to.meta.keepAlive = false;
         } else {
             to.meta.keepAlive = true;
-        };
+        }
         next((vm) => {
             let timer = setTimeout(() => {
                 vm.$refs.notClass.scrollTop = to.meta.scrollTop;
@@ -50,7 +50,7 @@ export default {
             let notClass = this.$refs.notClass;
             let top = notClass.scrollTop;
             from.meta.scrollTop = top;
-        };
+        }
         next();
     },
     data () {
@@ -63,7 +63,7 @@ export default {
             list: [],
             requestQuery: {
                 pageSize: 10,
-                pageIndex: 0
+                pageNum: 0
             },
             typeDriver: ''
         }
@@ -85,7 +85,7 @@ export default {
             this.requestRefreshLoading = true;
             this.requestFinished = false;
             this.requestLoading = true;
-            this.requestQuery.pageIndex = 0;
+            this.requestQuery.pageNum = 0;
             this.getAvailableDriver(); //重新加载
         },
         radioClick (val) {
@@ -93,18 +93,18 @@ export default {
             this.radio = val.id;
         },
         getAvailableDriver (index) {
-            let pageIndex = this.requestQuery.pageIndex;
+            let pageNum = this.requestQuery.pageNum;
             this.requestLoading = true;
             if( index === 1){
-                this.requestQuery.pageIndex = index
+                this.requestQuery.pageNum = index
             }else{
-                this.requestQuery.pageIndex = pageIndex + 1;
+                this.requestQuery.pageNum = pageNum + 1;
             }
             let autoId = ''
             if(this.$route.params.autoId!=0){
                 autoId = this.$route.params.autoId?this.$route.params.autoId:''
             }
-            // this.requestQuery.pageIndex = pageIndex + 1;
+            // this.requestQuery.pageNum = pageNum + 1;
             // let startTime = this.CarPerfect.dDepartureTime;
             // let reqUnitCode = this.CarPerfect.reqUnitCode?this.CarPerfect.reqUnitCode:this.CarPerfect.sUnitCode; 
             let params = {
@@ -113,13 +113,13 @@ export default {
                 autoId:autoId
             }
             getAvailableDriver(Object.assign({},this.requestQuery,params)).then(({data}) => {
-                if(this.requestRefreshLoading && this.requestQuery.pageIndex === 1){
+                if(this.requestRefreshLoading && this.requestQuery.pageNum === 1){
                     this.list = [];
                 }
                 this.requestRefreshLoading = false;
                 if (data.length===0) {
                     this.requestFinished = true;
-                };
+                }
                 this.requestLoading = false;
                 let list = this.list;
                 if(index === 1){
@@ -146,7 +146,7 @@ export default {
                 let autoId = this.$route.params.autoId;
                 if (type == '1') {  // type ==1  是从详情过来的正常派单
                     type = 2;
-                };
+                }
                 this.$router.push({
                     name: 'DispathDetails',
                     params: {autoId, type}

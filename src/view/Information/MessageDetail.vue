@@ -37,7 +37,7 @@ export default {
             listQuery: {
                 sendUser,
                 pageSize: 6,
-                pageIndex: 0 
+                pageNum: 0 
             }
         }
     },
@@ -54,13 +54,13 @@ export default {
             // });
 
 
-            let pageIndex = this.listQuery.pageIndex;
+            let pageNum = this.listQuery.pageNum;
             this.msgDetaiLoading = true;
-            this.listQuery.pageIndex = pageIndex + 1;
+            this.listQuery.pageNum = pageNum + 1;
             messageGetMessageBySender(this.listQuery).then(({data}) => {
                 if (Object.keys(data).length===0) {
                     this.msgDetaiFinished = true;
-                };
+                }
                 this.msgDetaiLoading = false;
                 this.msgDetailList = this.computedGroupDate(data, 'msgDetailList');
             }).catch(()=>{
@@ -74,8 +74,8 @@ export default {
                     list[key] = list[key].concat(data[key]);
                 } else {
                     list[key] = data[key];
-                };
-            };
+                }
+            }
             return list;
         },
     },
