@@ -69,7 +69,7 @@ export function approvalOrder(data) {	// 审批订单
 }
 export function approvalOrderList(params) {	// 获取待审批列表
 	return request({
-		url: '/order/approvalOrderList',
+		url: '/gcywVehicleRequest/listPage',
 		method: 'GET',
 		params
 	})
