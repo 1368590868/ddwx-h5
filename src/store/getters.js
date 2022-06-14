@@ -3,6 +3,7 @@ const getters = {
   permission_routes: state => state.permission.routes,
   userInfo: state => state.auth.userInfo,
   badgeNo: state => state.auth.badgeNo,
+  getKeepPages:state=>state.keepPages.keepPages
   // size: state => state.app.size,
   // device: state => state.app.device,
   // visitedViews: state => state.tagsView.visitedViews,

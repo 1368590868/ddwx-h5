@@ -377,13 +377,15 @@ export default {
     // 复制按钮
     CopyOrderChange() {
       let id = this.$route.params.id;
+      console.log(id)
       this.$router.push({
         name: 'StartApplying',
-        params: { id }
+        params: { autoId:id }
       });
     }
   },
   async created() {
+    this.$store.commit('removeThisPage', 'StartApplying');
     this.getOrderDetail();
     await this.handleSystemCardDict(this.dictIds);
     this.orderApprovalLog();

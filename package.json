@@ -6,11 +6,12 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "vue-cli-service serve ",
-    "zjs": "vue-cli-service serve --open --mode zjs.local",
+		"zjs": "vue-cli-service serve --open --mode zjs.local",
 		"build": "vue-cli-service build",
 		"lint": "vue-cli-service lint"
 	},
 	"dependencies": {
+		"@riophae/vue-treeselect": "^0.4.0",
 		"amfe-flexible": "^2.2.1",
 		"axios": "^0.21.1",
 		"core-js": "^3.4.3",
@@ -29,12 +30,12 @@
 		"@vue/cli-service": "^4.1.1",
 		"babel-eslint": "^10.0.3",
 		"babel-plugin-import": "^1.12.0",
+		"eslint": "7.15.0",
+		"eslint-plugin-vue": "7.2.0",
 		"less": "^3.8.1",
 		"less-loader": "^5.0.0",
 		"postcss-pxtorem": "^4.0.1",
-		"vue-template-compiler": "^2.6.10",
-		"eslint": "7.15.0",
-		"eslint-plugin-vue": "7.2.0"
+		"vue-template-compiler": "^2.6.10"
 	},
 	"eslintConfig": {
 		"root": true,

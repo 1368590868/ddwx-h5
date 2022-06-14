@@ -126,3 +126,30 @@ export function getDeptByUnit(params) {  // 部门列表
 	})
 }
 
+//我的用车单-提交
+export function addVehicleRequest(data) {
+	return request({
+	  url: `/gcywVehicleRequest/addVehicleRequest`,
+	  method: 'post',
+	  data
+	})
+}
+
+//根据单据类型获取发起人列表
+export function activitiAssigneeListByType(params) {
+	return request({
+		url: `/activiti/assigneeListByType`,
+		method: 'get',
+		params
+	})
+}
+
+//获取用车单详情
+export function gcywVehicleRequestDispatchList(params) {
+	return request({
+	  url: `/gcywVehicleRequest/dispatchList`,
+	  method: 'get',
+	  params
+	})
+}
+

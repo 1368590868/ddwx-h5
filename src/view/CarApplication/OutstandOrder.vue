@@ -337,6 +337,7 @@ export default {
     }
   },
   async created() {
+    this.$store.commit('removeThisPage', 'StartApplying')
     await this.handleSystemCardDict(this.dictIds);
   }
 }

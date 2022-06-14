@@ -158,7 +158,7 @@
                     type: 'warning',
                     message: '请先填写用车申请基本信息!',
                     onClose: ()=> {
-                        this.$router.push({name: 'StartApplying'});
+                        this.$router.push({name: 'StartApplying',params: { autoId:'0' }});
                     }
                 });
             };

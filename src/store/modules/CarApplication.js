@@ -13,14 +13,11 @@ const getters = {
 }
 const mutations = {
 	SET_CARONEDATA: (state, data) => {
-        let sFromAddr = data.sFromAddr.split('/').join(',');
-        let sTargetAddr = data.sTargetAddr.split('/').join(',');
-        let dDepartureTimeDetail = data.dDepartureTimeDetail +':00';
         state.CarOneHist = data;
         state.CarOneData = {
-            sFromAddr: sFromAddr + ',' + data.sFromAddrDetail,      // (string, optional): 出发地 ,
-            sTargetAddr: sTargetAddr + ',' + data.sTargetAddrDetail,    // (string, optional): 目的地
-            dDepartureTime: data.dDepartureTime + ' ' +dDepartureTimeDetail // (string, optional): 出发时刻 ,
+            sFromAddr: data.sFromAddr + ' ' +data.sFromAddrDetail,      // (string, optional): 出发地 ,
+            sTargetAddr:  data.sTargetAddr + ' ' +data.sTargetAddrDetail,    // (string, optional): 目的地
+            dDepartureTime: data.dDepartureTime + ' ' +data.dDepartureTimeDetail // (string, optional): 出发时刻 ,
         };
     },
     CLEAR_CARONEDATA: (state) => {

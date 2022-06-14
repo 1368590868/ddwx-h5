@@ -1,4 +1,4 @@
-import {dictGetModelType, dictGetReqRange, dictGetReqReason} from '@/api/dict'
+import {getListByParentId} from '@/api/dict'
 
 const state = {
     dictModelType: [],  // 获取车型字典
@@ -24,37 +24,40 @@ const mutations = {
 }
 
 const actions = {
+    //获取车型字典
 	dictGetModelType ({ commit, state}) {
         return new Promise((resolve) => {
             if (state.dictModelType.length !== 0) {
                 resolve(state.dictModelType);
                 return false;
             };
-            dictGetModelType().then(({data}) => {
+            getListByParentId("101801").then(({data}) => {
                 commit('SET_MODELTYPE', data);
                 resolve(data);
             });
         });
     },
+    //获取用车需求字典
     dictGetReqRange ({ commit, state}) {
         return new Promise((resolve) => {
             if (state.dictReqRange.length !== 0) {
                 resolve(state.dictReqRange);
                 return false;
             };
-            dictGetReqRange().then(({data}) => {
+            getListByParentId("10018").then(({data}) => {
                 commit('SET_REQRANGE', data);
                 resolve(data);
             });
         });
     },
+    //获取用车事由字典
     dictGetReqReason ({ commit, state}) {
         return new Promise((resolve) => {
             if (state.dictReqReason.length !== 0) {
                 resolve(state.dictReqReason);
                 return false;
             };
-            dictGetReqReason().then(({data}) => {
+            getListByParentId("1016").then(({data}) => {
                 commit('SET_REQREASON', data);
                 resolve(data);
             });

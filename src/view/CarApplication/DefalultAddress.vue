@@ -17,6 +17,8 @@
 </template>
 <script>
 import { commonAddressListAll } from "@/api/mine/commonAddress"
+import eventBus from '@/utils/eventBus.js'
+
 export default {
     data () {
         return {
@@ -59,7 +61,7 @@ export default {
             })
         },
         handleDetail(item){
-            localStorage.setItem('address',JSON.stringify(item));
+            eventBus.$emit('defaultAddress',item);
             this.$router.back();
         }
     }

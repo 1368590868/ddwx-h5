@@ -1,26 +1,19 @@
 <template>
-    <!-- <transition name="fade-transform" mode="out-in"> -->
-    <div class="not-scroll">
-        <keep-alive>
-            <router-view v-if="$route.meta.keepAlive" :key="key" />
-        </keep-alive>
-        <router-view v-if="!$route.meta.keepAlive" :key="key" />
-    </div>
-    <!-- </transition> -->
+    <keep-alive :include="keepPages">
+        <router-view></router-view>
+    </keep-alive>
 </template>
 
 
 <script>
 export default {
-    data () {
-        return {
-
-        }
+    data() {
+        return {};
     },
     computed: {
-        key() {
-            return this.$route.path
-        }
-    }
-}
+        keepPages() {
+            return this.$store.getters.getKeepPages;
+        },
+    },
+};
 </script>

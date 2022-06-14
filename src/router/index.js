@@ -29,9 +29,9 @@ export const routes = [
 		hidden: true,
 		children: [
 			{
-				path: 'index/:autoId',
+				path: 'index',
 				name: 'StartApplying',
-				meta: {title: '开始申请',},
+				meta: {title: '开始申请'},
 				component: () => import('@/view/CarApplication/StartApplying')
 			}, {
 				path: 'PerfectInfo',
