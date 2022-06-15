@@ -70,16 +70,20 @@
 <script>
     import {mapGetters} from 'vuex'
     import {addVehicleRequest,activitiAssigneeListByType} from '@/api/order'
+    import {getListByParentId} from '@/api/dict'
 
     export default {
         computed: {
             ...mapGetters(['userInfo']),
             ...mapGetters('CarApplication', ['CarOneData', 'CarCopData','CarOneHist']),
-            ...mapGetters('dict', ['dictReqReason', 'dictReqRange', 'dictModelType'])
         },
         data() {
             return {
                 pattern: /^1[34578]\d{9}$/,
+
+                dictReqReason:[],   //用车事由
+                dictReqRange:[],   //用车需求
+                dictModelType:[],   //期望车型
 
                 nReasonShowPicker: false,   // 用车事由弹窗
                 nRangeShowPicker: false,    // 用车需求弹窗
@@ -124,6 +128,51 @@
             }
         },
         methods: {
+            //获取车型字典
+            dictGetModelType () {
+                getListByParentId("101801").then(({data}) => {
+                    this.dictModelType = data;
+
+                    if (Object.keys(this.CarOneData).length) {
+                        let obj =  this.dictModelType.find((item) => {
+                            return item.code === this.form.hopeBrand;
+                        })
+                        this.form.hopeBrandName = obj.name;
+                    }
+                }).catch((err) => {
+                    
+                })
+            },
+            //获取用车需求字典
+            dictGetReqRange () {
+                getListByParentId("10018").then(({data}) => {
+                    this.dictReqRange = data;
+
+                    if (Object.keys(this.CarOneData).length) {
+                        let obj =  this.dictReqRange.find((item) => {
+                            return item.code === this.form.demandCode;
+                        })
+                        this.form.demand = obj.name;
+                    }
+                }).catch((err) => {
+                    
+                })
+            },
+            //获取用车事由字典
+            dictGetReqReason () {
+                getListByParentId("1016").then(({data}) => {
+                    this.dictReqReason = data;
+
+                    if (Object.keys(this.CarOneData).length) {
+                        let obj =  this.dictReqReason.find((item) => {
+                            return item.code === this.form.reasonCode;
+                        })
+                        this.form.reason = obj.name;
+                    }
+                }).catch((err) => {
+                    
+                })
+            },
             onFailed() {},
             nReasonConfirm(values) {
                 this.form.reason = values.name;
@@ -187,6 +236,7 @@
                     });
                 }
             },
+            //提交数据
             vehicleInfoAdd(){
                 let toast = this.$toast.loading({
                     duration: 0,
@@ -207,7 +257,12 @@
             this.$store.dispatch('dict/dictGetReqReason');
             this.$store.dispatch('dict/dictGetModelType');
 
-            if (!Object.keys(this.CarOneData).length) {
+            this.dictGetReqReason();
+            this.dictGetReqRange();
+            this.dictGetModelType();
+
+            let CarCopData = this.CarCopData;
+            if (!Object.keys(CarCopData).length) {
                 this.$notify({
                     type: 'warning',
                     message: '请先填写用车申请基本信息!',
@@ -226,11 +281,9 @@
             this.form.usageDate= this.CarOneHist.dDepartureTime;
             this.form.usageTime= this.CarOneHist.dDepartureTimeDetail;
 
-            let CarCopData = this.CarCopData;
+            
             if (Object.keys(CarCopData).length) {
-                this.form.reason = CarCopData.reason;
                 this.form.reasonCode = CarCopData.reasonCode;
-                this.form.demand = CarCopData.demand;
                 this.form.demandCode = CarCopData.demandCode;
                 this.form.timeLength = CarCopData.timeLength;
                 this.form.longDistanceTag = CarCopData.longDistanceTag + "";
