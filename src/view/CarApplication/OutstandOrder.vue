@@ -218,7 +218,9 @@ export default {
       requestKeys: 0,
       requestQuery: {
         pageSize: 10,
-        pageNum: 0
+        pageNum: 0,        
+        orderByColumn: 'usageDate',
+        isAsc: 'asc'
       },
 
       historyRefresh: false,
@@ -227,7 +229,9 @@ export default {
       historyList: [],
       historyQuery: {
         pageSize: 10,
-        pageNum: 0
+        pageNum: 0,        
+        orderByColumn: 'usageDate',
+        isAsc: 'asc'
       },
 
       // 字典编号

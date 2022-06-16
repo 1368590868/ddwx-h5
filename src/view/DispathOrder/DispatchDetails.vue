@@ -7,7 +7,7 @@
       :dict-data="dictData"
     />
     <!-- <div class="form-button" v-if="userInfo.loginName != orderDetail.sOperator && (orderDetail.state === '已派车' || orderDetail.state === '已领单' || orderDetail.state === '已出车')">
-            <van-button block type="default" @click="CancelOrderChanges">取消订单</van-button>
+            <van-button block type="default" @click="cancelOrderButton">取消订单</van-button>
         </div>
          -->
     <!-- 新增或者复制订单过来的数据 -->
@@ -41,19 +41,24 @@
         @click="dispatchReassignment"
       >确认改派</van-button>
     </div>
+    <!-- 调度详情过来的 -->
+     <!-- 以前的 0：待审批。1：审批中。2：已审批。3：已派车。4：已领单即已确认。5：已出车。6：待评价即已还车。7：办结。
+             8：取消中。9：已取消、a：已封存b审批未通过、c：司机拒单, 增加了、b：审批未通过和c司机拒单状态。增加：d已确认 -->
+
+    <!-- 现在的 "1": "待审核","2": "审核中","3": "已驳回","4": "待派单","5": "已派单","6": "已取消","7": "部分接单",
+            "8": "已接单","9": "已出车","10": "已还车","11": "已确认" -->
     <div
       class="button-box"
-      v-if="orderDetail.stateCode == '2'"
+      v-if="orderDetail.status == '4'"
     >
       <div
         class="button-box-image"
-        v-if="redispatchOrReject.indexOf('CANCEL') != -1"
       >
         <van-image
           width="100%"
           height="20px"
           :src="quxiao"
-          @click="CancelOrderChanges"
+          @click="cancelOrderButton"
         />
         <div class="text">取消订单</div>
       </div>
@@ -89,17 +94,17 @@
 
     <div
       class="button-box"
-      v-if="orderDetail.stateCode == '3' || orderDetail.stateCode == '4'"
+      v-if="orderDetail.status == '3' || orderDetail.status == '4'"
     >
       <div
         class="button-box-image"
-        v-if="redispatchOrReject.indexOf('CANCEL') != -1"
+        v-if="redispatchOrReject.indexOf('CANCEL') != -1 || true"
       >
         <van-image
           width="100%"
           height="20px"
           :src="quxiao"
-          @click="CancelOrderChanges"
+          @click="cancelOrderButton"
         />
         <div class="text">取消订单</div>
       </div>
@@ -122,7 +127,7 @@
     </div>
     <div
       class="button-box"
-      v-if="orderDetail.stateCode == '5'"
+      v-if="orderDetail.status == '9'"
     >
       <van-button
         block
@@ -132,13 +137,13 @@
       <van-button
         block
         type="info"
-        @click="CancelOrderChanges"
-        redispatchOrReject.indexOf('CANCEL')!=-1
+        @click="cancelOrderButton"
+        v-if="[1,2,3,4].includes(orderDetail.status)"
       >取消订单</van-button>
     </div>
     <div
       class="button-box"
-      v-if="orderDetail.stateCode == '6'"
+      v-if="orderDetail.status == '10'"
     >
       <van-button
         block
@@ -153,7 +158,7 @@
     </div>
     <div
       class="form-button"
-      v-if="orderDetail.stateCode == '7' || orderDetail.stateCode == 'd' || orderDetail.stateCode == '9'"
+      v-if="[6,11].includes(orderDetail.status)"
     >
       <van-button
         block
@@ -161,38 +166,6 @@
         @click="CopyOrderChange"
       >复制订单</van-button>
     </div>
-    <!-- 
-        <template v-if="userInfo.loginName === orderDetail.sOperator">
-            <div class="button-box" v-if="type === '0'">
-                <div class="button-box-image">
-                    <van-image width="100%" height="20px" :src="quxiao" @click="CancelOrderChanges"/>
-                    <div class="text">取消订单</div>
-                </div>
-                <div class="button-box-image" @click="CopyOrderChange">
-                    <van-image width="100%" height="20px" :src="fuzhi" />
-                    <div class="text">复制订单</div>
-                </div>
-                <van-button block type="info" @click="distribute">{{orderDetail.state === '已派车'?'改派':'派单'}}</van-button>
-            </div>
-            <div class="button-box" v-if="type === '1'">
-                <van-button block type="default" @click="returnDetails">重新选择</van-button>
-                <van-button block type="info" @click="saveOrderDispatch">确认派单</van-button>
-            </div>
-            <div class="button-box" v-if="type === '2' || type === '4'">
-                <van-button block type="default" @click="returnDetails">上一步</van-button>
-                <van-button block type="info" @click="saveOrderDispatch">确认派单</van-button>
-            </div>
-            <div class="form-button" v-if="type === '5'">
-                <van-button block type="default" @click="CopyOrderChange">复制订单</van-button>
-            </div>
-            
-        </template>
-        <template v-if="type === '10'">
-            <div class="button-box">
-                <van-button block type="default" @click="returnDetails">上一步</van-button>
-                <van-button block type="info" @click="saveOrderDispatch">确认派单</van-button>
-            </div>
-        </template> -->
     <van-popup
       v-model="showCancel"
       position="bottom"
@@ -201,7 +174,7 @@
         <p>取消原因：</p>
       </div>
       <van-field
-        v-model="cancelReason"
+        v-model="closeReason"
         rows="2"
         :autosize="{minHeight: 100}"
         type="textarea"
@@ -213,7 +186,7 @@
       <van-button
         block
         type="info"
-        @click="CancelOrderChange"
+        @click="popupCancelOrderBtn"
       >取消订单</van-button>
     </van-popup>
   </div>
@@ -242,6 +215,7 @@ import { mapGetters } from 'vuex'
 import platform from '@/view/mixins/platform'
 import getDict from "@/view/mixins/getDict"
 export default {
+  name: 'DispatchDetails',
   mixins: [platform, getDict],
   data() {
     return {
@@ -251,7 +225,7 @@ export default {
       orderDetail: {},
       approveLogList: [],
       showCancel: false,
-      cancelReason: '',
+      closeReason: '',
       type: '',
       redispatchOrReject: '',
       // 字典编号
@@ -306,7 +280,7 @@ export default {
       } catch (error) {
         alert("获取车辆图片失败!");
       }
-    },    
+    },
     // 获取车辆审批日志
     orderApprovalLog() {
       let reqId = this.$route.params.id;
@@ -340,11 +314,12 @@ export default {
     returnDetails() {
       this.$router.go(-1);
     },
-    CancelOrderChanges() {
+    // 点击取消订单按钮
+    cancelOrderButton() {
       this.showCancel = true;
     },
-    CancelOrderChange() {
-      if (this.cancelReason) {
+    popupCancelOrderBtn() {
+      if (this.closeReason) {
         this.$dialog.confirm({
           title: '提示',
           message: '是否要取消订单?',
@@ -357,23 +332,41 @@ export default {
         });
       }
     },
+    // 二次弹出框确认 关闭之前
     orderCancelOrder(action, done) {
-      let cancelReason = this.cancelReason;
-      let id = this.$route.params.id;
       if (action === 'confirm') {
-        orderCancelOrder({ id, cancelReason }).then((data) => {
+        this.cancelOrder(done)
+        return false;
+      }
+      done();
+    },    
+    // 取消订单请求
+    cancelOrder(done) {
+      let id = this.$route.params.id;
+      let closeReason = this.closeReason;
+      const params = {
+        id,
+        closeReason,
+      }
+      orderCancelOrder([params]).then((data) => {
+        if (data?.code === 0) {
           this.$notify({
             type: 'success',
             message: '取消成功!'
           });
-          done();
-          this.showCancel = false;
+          this.isCancelVis = "";
           this.getOrderDetail();
           this.orderApprovalLog();
-        });
-        return false;
-      }
-      done();
+        } else {
+          this.$notify({
+            type: 'warning',
+            message: (data?.message ?? '取消失败，请重试!') || '取消失败，请重试!',
+          });
+        }
+        done();
+      }).catch(() => {
+        done(false);
+      });
     },
     distribute() { // 保存当前数据
       this.$store.dispatch('DispathOrder/setPerfectAction', this.orderDetail).then(() => {
