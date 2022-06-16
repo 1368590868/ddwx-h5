@@ -148,7 +148,7 @@ export default {
                     type = 2;
                 }
                 this.$router.push({
-                    name: 'DispathDetails',
+                    name: 'DispatchDetails',
                     params: {autoId, type}
                 });
             });

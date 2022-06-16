@@ -125,7 +125,7 @@
         </ul>
 
       </template> -->
-    <div class="operlog-box">
+    <div class="operlog-box" v-if="approveLogList.length">
       <div class="log-title">审批日志</div>
       <ul class="log-container">
         <li

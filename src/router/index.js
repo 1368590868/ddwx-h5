@@ -161,9 +161,9 @@ export const routes = [
 		children: [
 			{
 				path: 'index',
-				name: 'DispathOrderList',
+				name: 'DispatchOrderList',
 				meta: {title: '调配管理',keepAlive: true},
-				component: () => import('@/view/DispathOrder/DispathOrderList')
+				component: () => import('@/view/DispathOrder/DispatchOrderList')
 			},
 			{
 				path: 'DispathApply/:autoId',
@@ -190,10 +190,10 @@ export const routes = [
 				component: () => import('@/view/DispathOrder/DispathDriver')
 			},
 			{
-				path: 'DispathDetails/:type/:autoId',	// type {0: 人工调派, 1: 正常已审批派单。 2： 改派}
-				name: 'DispathDetails',
+				path: 'DispatchDetails/:type/:autoId',	// type {0: 人工调派, 1: 正常已审批派单。 2： 改派}
+				name: 'DispatchDetails',
 				meta: {title: '调度详情'},
-				component: () => import('@/view/DispathOrder/DispathDetails')
+				component: () => import('@/view/DispathOrder/DispatchDetails')
 			},
 			{
 				path: 'DispathSuccess/:autoId',

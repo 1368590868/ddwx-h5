@@ -14,8 +14,10 @@ import "./permission"; // permission control
 
 import NotEmpty from "@/components/NotEmpty";
 import AllOrderDetail from "@/components/AllOrderDetail";
+import OrderListCardItem from "@/components/OrderListCardItem";
 Vue.component("NotEmpty", NotEmpty);
 Vue.component("AllOrderDetail", AllOrderDetail);
+Vue.component("OrderListCardItem", OrderListCardItem);
 import {
   Row,
   Col,

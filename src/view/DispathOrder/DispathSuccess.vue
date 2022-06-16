@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="button-box">
-        <van-button type="default" :to="'/DispathOrder/DispathDetails/1/' + $route.params.autoId">查看详情</van-button>
+        <van-button type="default" :to="'/DispathOrder/DispatchDetails/1/' + $route.params.autoId">查看详情</van-button>
         <van-button type="info" @click="goOrderdetailPage">返回列表</van-button>
     </div>
     
@@ -27,7 +27,7 @@ export default {
         goOrderdetailPage () {
             this.$store.dispatch('DispathOrder/triggerFefresh', true);
             this.$router.push({
-                name: 'DispathOrderList',
+                name: 'DispatchOrderList',
             });
         }
     }
