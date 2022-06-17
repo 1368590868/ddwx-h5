@@ -133,7 +133,7 @@
                 getListByParentId("101801").then(({data}) => {
                     this.dictModelType = data;
 
-                    if (Object.keys(this.CarOneData).length) {
+                    if (Object.keys(this.CarCopData).length) {
                         let obj =  this.dictModelType.find((item) => {
                             return item.code === this.form.hopeBrand;
                         })
@@ -148,7 +148,7 @@
                 getListByParentId("10018").then(({data}) => {
                     this.dictReqRange = data;
 
-                    if (Object.keys(this.CarOneData).length) {
+                    if (Object.keys(this.CarCopData).length) {
                         let obj =  this.dictReqRange.find((item) => {
                             return item.code === this.form.demandCode;
                         })
@@ -163,7 +163,7 @@
                 getListByParentId("1016").then(({data}) => {
                     this.dictReqReason = data;
 
-                    if (Object.keys(this.CarOneData).length) {
+                    if (Object.keys(this.CarCopData).length) {
                         let obj =  this.dictReqReason.find((item) => {
                             return item.code === this.form.reasonCode;
                         })
@@ -253,16 +253,11 @@
             },
         },
         created () {
-            this.$store.dispatch('dict/dictGetReqRange');
-            this.$store.dispatch('dict/dictGetReqReason');
-            this.$store.dispatch('dict/dictGetModelType');
-
             this.dictGetReqReason();
             this.dictGetReqRange();
             this.dictGetModelType();
 
-            let CarCopData = this.CarCopData;
-            if (!Object.keys(CarCopData).length) {
+            if (!Object.keys(this.CarOneData).length) {
                 this.$notify({
                     type: 'warning',
                     message: '请先填写用车申请基本信息!',
@@ -282,17 +277,17 @@
             this.form.usageTime= this.CarOneHist.dDepartureTimeDetail;
 
             
-            if (Object.keys(CarCopData).length) {
-                this.form.reasonCode = CarCopData.reasonCode;
-                this.form.demandCode = CarCopData.demandCode;
-                this.form.timeLength = CarCopData.timeLength;
-                this.form.longDistanceTag = CarCopData.longDistanceTag + "";
-                this.form.userName = CarCopData.userName;
-                this.form.phone = CarCopData.phone;
-                this.form.hopeBrand = CarCopData.hopeBrand;
-                this.form.hopeBrandName = CarCopData.hopeBrandName;
-                this.form.usagePersons = CarCopData.usagePersons;
-                this.form.remark = CarCopData.remark;
+            if (Object.keys(this.CarCopData).length) {
+                this.form.reasonCode = this.CarCopData.reasonCode;
+                this.form.demandCode = this.CarCopData.demandCode;
+                this.form.timeLength = this.CarCopData.timeLength;
+                this.form.longDistanceTag = this.CarCopData.longDistanceTag + "";
+                this.form.userName = this.CarCopData.userName;
+                this.form.phone = this.CarCopData.phone;
+                this.form.hopeBrand = this.CarCopData.hopeBrand;
+                this.form.hopeBrandName = this.CarCopData.hopeBrandName;
+                this.form.usagePersons = this.CarCopData.usagePersons;
+                this.form.remark = this.CarCopData.remark;
             }
         }
     }
