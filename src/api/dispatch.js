@@ -103,3 +103,12 @@ export function reject(data) {
 		data
 	})
 }
+
+//获取车辆图片
+export function vehicleInfoGetVehicleFile(params) {
+	return request({
+	  url: `/vehicleInfo/getVehicleFile`,
+	  method: 'get',
+	  params
+	})
+  }

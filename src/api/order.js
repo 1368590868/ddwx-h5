@@ -153,3 +153,12 @@ export function gcywVehicleRequestDispatchList(params) {
 	})
 }
 
+//用车单日志列表
+export function gcywVehicleRequestLogList(params) {
+	return request({
+	  url: `/gcywVehicleRequestLog/list`,
+	  method: 'get',
+	  params
+	})
+}
+
