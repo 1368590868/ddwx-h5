@@ -194,8 +194,8 @@ import {gcywVehicleRequesTakeOrder,
         checkDriving,
         gcywVehicleRequesCancelOrder,
         minioUpload} from '@/api/driving'
-import {vehicleInfoGetVehicleFile} from '@/api/dispatch';
 import platform from '@/view/mixins/platform'
+import checkCarImagePath from '@/utils/carPath'
 
 let that;
 export default {
@@ -266,17 +266,10 @@ export default {
             let id = this.$route.params.autoId;
             drivingDrivingList({id}).then(({data}) => {
                 this.orderDetail = data.list[0];
-                this.getPicInfo();
+                this.imagePath = checkCarImagePath(this.orderDetail.carBrand,this.orderDetail.carSeries);
             }).catch(() => {
                 
             });
-        },
-        //获取车辆图片信息
-        getPicInfo(){
-            vehicleInfoGetVehicleFile({vinNumber:this.orderDetail.vinNumber}).then(({data}) => {
-                let fileName = data[0];
-                this.imagePath = process.env.VUE_APP_BASE_API + "/minio/getPic?fileName="+fileName;
-            })
         },
         //获取日志信息
         orderApprovalLog () {
@@ -493,6 +486,7 @@ export default {
         handleCatchClick(){
             this.isShowCatch = !this.isShowCatch
         },
+       
         checkDriving(params){
           return new Promise((resolve,reject)=>{
             checkDriving(params).then(({data})=>{
