@@ -28,7 +28,7 @@ service.interceptors.response.use(
     if (res.code !== 0) {
       Dialog.alert({
         title: "提示",
-        message: res.msg || JSON.stringify(res),
+        message: res.message || JSON.stringify(res),
         theme: "round-button",
       });
       return Promise.reject(res.message);

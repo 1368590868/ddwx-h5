@@ -60,6 +60,7 @@ import {
   Cascader,
   Grid,
   GridItem,
+  Uploader
 } from "vant";
 Vue.use(Row);
 Vue.use(Col);
@@ -97,6 +98,7 @@ Vue.use(Icon);
 Vue.use(Panel);
 Vue.use(Switch);
 Vue.use(Cascader);
+Vue.use(Uploader);
 Vue.use(VanImage);
 Vue.use(Grid);
 Vue.use(GridItem);
