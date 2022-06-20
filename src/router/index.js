@@ -176,27 +176,21 @@ export const routes = [
 				name: 'DispathPerfect',
 				meta: {title: '人工调配'},
 				component: () => import('@/view/DispathOrder/DispathPerfect')
-			},
-			{
-				path: 'DistributeCar',
-				name: 'DistributeCar',
-				meta: {title: '派车'},
-				component: () => import('@/view/DispathOrder/DistributeCar')
 			},			
 			{
 				path: 'DispatchVehicle/:type/:id',
 				name: 'DispatchVehicle',  // vehicie{0:"上一步", 1: "正常已审批派单"}
-				meta: {title: '请选择车辆', keepAlive: true},
+				meta: {title: '请选择车辆'},
 				component: () => import('@/view/DispathOrder/DispatchVehicle')
 			},
 			{	
-				path: 'DispathDriver/:type/:autoId',
+				path: 'DispathDriver/:type/:id',
 				name: 'DispathDriver',
 				meta: {title: '请选择司机', keepAlive: true},
 				component: () => import('@/view/DispathOrder/DispathDriver')
 			},
 			{
-				path: 'DispatchDetails/:type/:id/',	// type {0: 人工调派, 1: 正常已审批派单。 2： 改派}
+				path: 'DispatchDetails/:type/:id',	// type {0: 人工调派, 1: 正常已审批派单。 2： 改派}
 				name: 'DispatchDetails',
 				meta: {title: '调度详情'},
 				component: () => import('@/view/DispathOrder/DispatchDetails')

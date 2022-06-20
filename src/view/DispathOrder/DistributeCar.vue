@@ -128,7 +128,7 @@ export default {
     // 获取可用司机
     async getAvailableDriver() {
       this.requestLoading = true;
-      const { usageDate, reassignUnitCode, unitCode } = this.orderDetail;
+      const { usageDate, unitCode } = this.orderDetail;
       const params = {
         classDateEnd: usageDate,
         classDateStart: usageDate,
@@ -136,7 +136,7 @@ export default {
         flag: 0,
         unitCode,
       }
-      await getDispatchAvailableDriver(params, reassignUnitCode).then(({ data = [] }) => {
+      await getDispatchAvailableDriver(params).then(({ data = [] }) => {
         this.driverData = data || [];
       }).catch(() => {
         console.log('err')

@@ -20,7 +20,7 @@
           <van-radio-group v-model="radio">
             <div
               class="van-radio-groups"
-              v-for="(item, index) in list"
+              v-for="(item, index) in carData"
               :key="index"
               @click="radioClick(item)"
             >
@@ -28,12 +28,12 @@
               </van-radio>
               <p class="pImg-left">
                 <img
-                  :src="carPic+'?carNumber='+item.carNumber"
+                  :src="checkCarImagePath(item.carBrand, item.carSeries)"
                   alt=""
                 >
                 <span>{{item.carNumber}}</span>
-                <span>{{item.brand}}</span>
-                <span class="sright">{{item.carModel}}</span>
+                <span>{{item.carBrand}} {{item.carSeries}}</span>
+                <!-- <span class="sright">{{item.carModel}}</span> -->
               </p>
               <!-- <p class="pImg-right">
                                 
@@ -46,32 +46,30 @@
     </div>
     <div class="button-box">
       <!-- <van-button block type="default" @click="returnDetails" v-if="typeVehicie != 'Vehicie'">返回详情</van-button> -->
-      <van-button
+      <!-- <van-button
         block
         type="default"
         @click="returnDetails"
-      >上一步</van-button>
+      >上一步</van-button> -->
       <van-button
         block
         type="info"
         @click="determine"
-      >确定车辆</van-button>
+      >
+        确定车辆
+      </van-button>
     </div>
   </div>
 </template>
 <script>
 import { vehicleInfoGetAvailableCar, carPic } from '@/api/dispatch'
 import { mapGetters } from 'vuex'
+import checkCarImagePath from '@/utils/carPath'
 export default {
-  computed: mapGetters('DispathOrder', ['CarPerfect']),
+  computed: {
+    ...mapGetters(['DispathOrder'])
+  },
   watch: {
-    CarPerfect: {
-      handler: function(val) {
-        if (val.reqUnitCode) {
-          this.getAvailableCar();
-        }
-      }
-    }
   },
   beforeRouteEnter(to, from, next) {
     if (from.name === 'SubSuccess') {
@@ -101,14 +99,15 @@ export default {
       requestFinished: false,
       requestRefreshLoading: false,
       radio: '',
-      radioData: '',
-      list: [],
+      radioData: {},
+      carData: [],
       requestQuery: {
         pageSize: 10,
         pageNum: 0
       },
       typeVehicie: '',
       type: '',
+      checkCarImagePath,
     }
   },
   methods: {
@@ -123,24 +122,24 @@ export default {
     },
     radioClick(val) {
       this.radioData = val;
+      console.log("🚀 ~ file: DispatchVehicle.vue ~ line 123 ~ radioClick ~ radioData", this.radioData)
       this.radio = val.carNumber;
     },
     getAvailableCar() {
       this.requestLoading = true;
-      const { unitCode, deptId, reassignUnitCode } = this.$route.query || {};
+      const { unitCode, deptId, reassignUnitCode: reassignUnitCode } = this.$route.query || {};
       const params = {
         unitCode,
         deptId,
         tunUnitCode: reassignUnitCode || '',
       }
       vehicleInfoGetAvailableCar(params, reassignUnitCode).then(({ data = [] }) => {
-        if (this.requestRefreshLoading && this.requestQuery.pageNum === 1) {
-          this.list = [];
-        }
+        console.log("🚀 ~ file: DispatchVehicle.vue ~ line 140 ~ vehicleInfoGetAvailableCar ~ data", data)
+
         this.requestRefreshLoading = false;
         this.requestFinished = true;
         this.requestLoading = false;
-        this.list = data || [];
+        this.carData = data || [];
       }).catch(() => {
         console.log('err')
       });
@@ -154,13 +153,19 @@ export default {
         this.$toast("请选择车型！");
         return false;
       }
-      this.$store.dispatch("DispathOrder/setChoiceVehicie", this.radioData).then(() => {
-        let id = this.$route.params.id;
-        this.$router.push({
-          name: 'DispathDriver',
-          params: { id }
-        });
+      const id = this.$route.params.id;
+      const { reqAssignmentsIndex, usageDate, unitCode } = this.$route.query;
 
+      // this.$store.dispatch("DispathOrder/setChoiceVehicie", this.radioData);
+      this.$store.dispatch('DispathOrder/setCarAndDriverData', { ...this.radioData, reqAssignmentsIndex, setDataType: 'carInfo' })
+      this.$router.push({
+        name: 'DispathDriver',
+        params: { id },
+        query: {
+          reqAssignmentsIndex,
+          usageDate,
+          unitCode,
+        }
       });
       // let typeDriver = '0';
       // if(this.typeVehicie === 'Vehicie'){
@@ -181,6 +186,7 @@ export default {
     this.typeVehicie = typeVehicie
     let type = this.$route.params.type
     this.type = type
+    console.log('this.$route', this.$route);
     this.getAvailableCar();
   }
 }

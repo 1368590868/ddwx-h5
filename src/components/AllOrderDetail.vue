@@ -52,19 +52,43 @@
       </div> -->
     <div v-if="orderDetail.reqAssignments && orderDetail.reqAssignments.length > 0">
       <div
-        class="ChoiceVehicie"
+        class="carInfo"
         v-for="(car, index) in orderDetail.reqAssignments"
         :key="car.carNumber + index"
       >
         <ul>
-
           <li><img :src="car.carImage || defaultCarImage"></li>
           <li>
             <h3>{{car.carNumber}}</h3>
-            <p>{{car.carBrand}}</p>
-            <p>司机：{{car.driver}}<span><a :href="`tel:${car.driverPhone}`">{{car.driverPhone}}</a></span></p>
+            <p>{{car.carBrand}} {{car.carSeries}}</p>
+            <p>司机：{{car.driver}}<span><a
+                  :href="`tel:${car.driverPhone || car.phone}`">{{car.driverPhone || car.phone}}</a></span></p>
           </li>
         </ul>
+        <div
+          class="button-area"
+          v-if="isShowOperateCar"
+        >
+          <van-button
+            round
+            type="default"
+            size="small"
+            class="car-item-button"
+            @click="reselect(index)"
+          >
+            重新选择
+          </van-button>
+          <van-button
+            round
+            v-show="orderDetail.reqAssignments.length > 1"
+            type="danger"
+            size="small"
+            class="car-item-button"
+            @click="deleteCar(index)"
+          >
+            删除车辆
+          </van-button>
+        </div>
       </div>
     </div>
     <ul class="info-box">
@@ -126,7 +150,10 @@
         </ul>
 
       </template> -->
-    <div class="operlog-box" v-if="approveLogList.length">
+    <div
+      class="operlog-box"
+      v-if="approveLogList.length"
+    >
       <div class="log-title">审批日志</div>
       <ul class="log-container">
         <li
@@ -154,10 +181,10 @@ export default {
   filters: {
     formatReassignStr(reassignStr = '') {
       let str = reassignStr;
-      if (reassignStr == 0) {
-        str = '转入' 
+      if (reassignStr === 0 || reassignStr === '0') {
+        str = '转入'
       }
-      if (reassignStr == 1) {
+      if (reassignStr === 1 || reassignStr == '1') {
         str = '转存'
       }
       return str
@@ -181,7 +208,13 @@ export default {
       default() {
         return {}
       },
-    }
+    },
+    isShowOperateCar: {
+      type: Boolean,
+      default() {
+        return false
+      },
+    },
   },
   data() {
     return {
@@ -202,10 +235,61 @@ export default {
 
   },
   methods: {
-
+    // 重新选择
+    reselect(index) {
+      this.$emit('reselect', index)
+    },
+    // 删除车辆
+    deleteCar(index) {
+      this.$emit('deleteCar', index)
+    },
   },
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
+.carInfo {
+  width: 100%;
+  // height: 98px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  box-sizing: border-box;
+  border-bottom: 1px solid #f0f0f0;
+  ul {
+    width: 100%;
+    // height: 98px;
+    li {
+      float: left;
+      margin-left: 14px;
+      margin-bottom: 5px;
+      img {
+        width: 98px;
+        height: 93px;
+      }
+      h3 {
+        margin-top: 10px;
+      }
+      p:nth-child(2) {
+        line-height: 30px;
+        font-size: 14px;
+      }
+      p:nth-child(3) {
+        line-height: 30px;
+        font-size: 14px;
+        span {
+          margin-left: 10px;
+          color: #2893ff;
+        }
+      }
+    }
+  }
+  .button-area {
+    padding: 2px 10px 2px 118px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+}
 </style>

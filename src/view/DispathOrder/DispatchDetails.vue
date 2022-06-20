@@ -5,6 +5,9 @@
       :order-detail="orderDetail"
       :approve-log-list="approveLogList"
       :dict-data="dictData"
+      :is-show-operate-car="true"
+      @reselect="reselect"
+      @deleteCar="deleteCar"
     />
     <!-- <div class="form-button" v-if="userInfo.loginName != orderDetail.sOperator && (orderDetail.state === '已派车' || orderDetail.state === '已领单' || orderDetail.state === '已出车')">
             <van-button block type="default" @click="cancelOrderButton">取消订单</van-button>
@@ -15,11 +18,16 @@
       class="button-box"
       v-if="$route.params.type == 0 || $route.params.type == 2"
     >
-      <van-button
+      <!-- <van-button
         block
         type="default"
         @click="returnDetails"
-      >重新选择</van-button>
+      >重新选择</van-button> -->
+      <van-button
+        block
+        type="default"
+        @click="addCar"
+      >添加车辆</van-button>
       <van-button
         block
         type="info"
@@ -297,7 +305,7 @@ export default {
   },
   computed: {
     ...mapGetters('DispathOrder', ['ChoiceVehicie', 'ChoiceDriver', 'CarPerfect']),
-    ...mapGetters(['userInfo']),
+    ...mapGetters(['userInfo', 'reqAssignments']),
   },
   methods: {
     // 获取当前页面的通用字典下拉数据
@@ -308,20 +316,24 @@ export default {
       }
     },
     // 获取订单详情
-    getOrderDetail() {
+    async getOrderDetail() {
       let id = this.$route.params.id;
       orderRequestList({ id }).then(({ data: { list = [] } }) => {
         // this.orderDetail = data;
         // this.orderDetail.unitval = data.companyName
         // this.orderDetail.deptval = data.deptName
-        const orderDetail = (list[0] ?? {}) || {};
+        let orderDetail = (list[0] ?? {}) || {};
         if (orderDetail.reqAssignments?.length > 0) {
           orderDetail.reqAssignments.forEach(async (item) => {
             item['carImage'] = await this.getCarImage(item.vinNumber)
           })
         }
-        this.orderDetail = orderDetail;
-        this.$store.dispatch('details/setDetails', orderDetail)
+        let type = this.$route.params.type;
+        if (type == 0 || type == 2 || type == 3) {
+          this.orderDetail = this.dealReqAssignments(orderDetail) || {};
+        } else {
+          this.orderDetail = orderDetail;
+        }
       });
     },
     // 根据车架号获取图片
@@ -344,6 +356,22 @@ export default {
     },
     returnDetails() {
       this.$router.go(-1);
+    },
+    addCar() {
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      const reqAssignmentsIndex = this.reqAssignments.length;
+      this.$router.push({
+        name: 'DispatchVehicle',
+        params: { type: 1, id, },
+        query: {
+          reqAssignmentsIndex,
+          id,
+          unitCode,
+          deptId,
+          reassignUnitCode,
+          usageDate,
+        }
+      });
     },
     // 点击取消订单按钮
     cancelOrderButton() {
@@ -399,16 +427,22 @@ export default {
         done(false);
       });
     },
+    // 派单
     distribute() { // 保存当前数据
-      this.$store.dispatch('DispathOrder/setPerfectAction', this.orderDetail).then(() => {
-        const { id } = this.orderDetail;
-        this.$router.push({
-          name: 'DistributeCar',
-          query: {
-            id,
-          }
-        });
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      this.$router.push({
+        name: 'DispatchVehicle',
+        params: { type: 1, id, },
+        query: {
+          reqAssignmentsIndex: 0,
+          id,
+          unitCode,
+          deptId,
+          reassignUnitCode,
+          usageDate,
+        }
       });
+      this.$store.dispatch('DispathOrder/removeReqAssignments')
     },
     reassignmentClick() {
       this.$store.dispatch('DispathOrder/setPerfectAction', this.orderDetail).then(() => {
@@ -570,21 +604,59 @@ export default {
         this.$toast.success("驳回成功！")
         this.$router.push({ path: '/DispathOrder', query: { refresh: true } });
       })
-    }
+    },
+    // 处理选中的数据与详情结合起来 
+    dealReqAssignments(detail) {
+      const reqAssignments = this.reqAssignments.map(item => {
+        return {
+          ...item.driverInfo,
+          ...item.carInfo,
+        }
+      })
+      detail['reqAssignments'] = reqAssignments;
+      return detail;
+    },
+    // 重新选择
+    reselect(index) {
+      this.$emit('reselect', index);
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      this.$router.push({
+        name: 'DispatchVehicle',
+        params: { type: 1, id, },
+        query: {
+          reqAssignmentsIndex: index,
+          id,
+          unitCode,
+          deptId,
+          reassignUnitCode,
+          usageDate,
+        }
+      });
+    },
+    // 删除车辆
+    deleteCar(index) {
+      console.log('index', index);
+      this.$store.dispatch('DispathOrder/deleteReqAssignmentsItem', index).then(() => {
+        this.orderDetail = this.dealReqAssignments(this.orderDetail) || {};
+      })
+    },
   },
-  created() {
-    let type = this.$route.params.type;
-    console.log("🚀 ~ file: DispatchDetails.vue ~ line 581 ~ created ~ type", type, typeof type)
+  async created() {
+    // let type = this.$route.params.type;
     this.orderType = this.$route.query.orderType;
     // this.getAvailableButton()
     this.handleSystemCardDict(this.dictIds);
-    if (type == 0 || type == 2 || type == 3) {   // 正常人工指派
-      this.computedDetailData(Object.assign({}, this.CarPerfect, this.ChoiceVehicie, this.ChoiceDriver));
 
-    } else if (type == 1) {    // 展示详情页面
-      this.getOrderDetail();
-      this.orderApprovalLog();
-    }
+    // 展示详情页面
+    await this.getOrderDetail();
+    this.orderApprovalLog();
+    // if (type == 0 || type == 2 || type == 3) {   // 正常人工指派
+    //   // this.computedDetailData(Object.assign({}, this.CarPerfect, this.ChoiceVehicie, this.ChoiceDriver));
+    // } else if (type == 1) {
+    //   // 列表进入详情页
+    //   // this.getOrderDetail();
+    //   // this.orderApprovalLog();
+    // }
   }
 }
 </script>

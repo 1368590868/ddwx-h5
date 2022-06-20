@@ -1,5 +1,5 @@
 <template>
-  <div class='select-car-item-card'>
+  <div class='Select-carI-and-drive'>
     <div>选择车辆 分派车辆时注意所在地限行法规</div>
     <div class="car-card card">
       <div
@@ -7,6 +7,7 @@
         v-for="(car, index) in carDataList"
         :key="`${car.carNumber ? car.carNumber + index : index}`"
         :style="`visibility: ${car.carNumber ? '' : 'hidden'}`"
+        @click="selectCar(car)"
       >
         <div class="car-number">
           {{ car.carNumber }}
@@ -22,6 +23,7 @@
         v-for="(item, index) in driverDataList"
         :key="`${item.driver ? item.driver + index : index}`"
         :style="`visibility: ${item.driver ? '' : 'hidden'}`"
+        @click="selectDriver(item)"
       >
         <div class="drive-name">
           {{item.driver}}
@@ -33,7 +35,7 @@
 
 <script>
 export default {
-  name: 'SelectCarItemCard',
+  name: 'SelectCarIAndDrive',
   components: {
 
   },
@@ -58,6 +60,10 @@ export default {
     return {
       carDataList: [],
       driverDataList: [],
+      // 选中的车辆集合
+      selectedCar: [],
+      // 选中的司机集合
+      selectedDriver: [],
     };
   },
   computed: {
@@ -85,7 +91,6 @@ export default {
           arr.length = 4 - val.length % 4;
           arr.fill({})
           this.driverDataList = [...val, ...arr];
-          console.log("🚀 ~ file: SelectCarItemCard.vue ~ line 93 ~ handler ~ this.driverDataList", this.driverDataList.length)
         }
       },
       immediate: true
@@ -98,7 +103,16 @@ export default {
 
   },
   methods: {
-
+    // 选中车辆
+    selectCar(car) {
+      // this.selectedCar.push(car)
+      this.$emit('selectCar', car)
+    },
+    // 选中司机
+    selectDriver(driver) {
+      // this.selectedDriver.push(driver)
+      this.$emit('selectDriver', driver)
+    },
   },
 };
 </script>
@@ -107,7 +121,7 @@ export default {
 div {
   box-sizing: border-box;
 }
-.select-car-item-card {
+.Select-carI-and-drive {
   width: 100%;
   background-color: #fff;
   background-color: pink;

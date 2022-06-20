@@ -15,11 +15,11 @@ import "./permission"; // permission control
 import NotEmpty from "@/components/NotEmpty";
 import AllOrderDetail from "@/components/AllOrderDetail";
 import OrderListCardItem from "@/components/OrderListCardItem";
-import SelectCarItemCard from "@/components/SelectCarItemCard";
+import SelectCarIAndDrive from "@/components/SelectCarIAndDrive";
 Vue.component("NotEmpty", NotEmpty);
 Vue.component("AllOrderDetail", AllOrderDetail);
 Vue.component("OrderListCardItem", OrderListCardItem);
-Vue.component("SelectCarItemCard", SelectCarItemCard);
+Vue.component("SelectCarIAndDrive", SelectCarIAndDrive);
 import {
   Row,
   Col,
