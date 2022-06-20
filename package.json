@@ -7,6 +7,7 @@
 	"scripts": {
 		"dev": "vue-cli-service serve ",
 		"zjs": "vue-cli-service serve --open --mode zjs.local",
+		"build:xiandev": "vue-cli-service build --mode xiandev",
 		"build": "vue-cli-service build",
 		"lint": "vue-cli-service lint"
 	},
