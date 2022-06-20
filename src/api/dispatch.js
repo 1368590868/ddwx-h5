@@ -35,6 +35,7 @@ export function getAvailableCar(params) {  // 获取车辆
 		params
 	})
 }
+
 export function getCarCount(params) {  // 获取车辆总数
 	return request({
 		url: '/vehicleInfo/getAssignCount',
@@ -101,5 +102,24 @@ export function reject(data) {
 		url: '/dispatch/reject',
 		method: 'POST',
 		data
+	})
+}
+
+
+//选择车辆 H5 派车时获取可用车辆
+export function vehicleInfoGetAvailableCar(params, reassignUnitCode) {
+  return request({
+    url: `/vehicleInfo/${ reassignUnitCode?'getResAvailableCar':'getAvailableCar'}`,
+    method: 'get',
+    params
+  })
+}
+
+// 选择派车司机
+export function getDispatchAvailableDriver(params) {
+	return request({
+		url: `/gcjcDriverClass/getAvailableDriver`,
+		method: 'get',
+		params
 	})
 }

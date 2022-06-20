@@ -42,71 +42,97 @@
       >确认改派</van-button>
     </div>
     <!-- 调度详情过来的 -->
-     <!-- 以前的 0：待审批。1：审批中。2：已审批。3：已派车。4：已领单即已确认。5：已出车。6：待评价即已还车。7：办结。
+    <!-- 以前的 0：待审批。1：审批中。2：已审批。3：已派车。4：已领单即已确认。5：已出车。6：待评价即已还车。7：办结。
              8：取消中。9：已取消、a：已封存b审批未通过、c：司机拒单, 增加了、b：审批未通过和c司机拒单状态。增加：d已确认 -->
 
     <!-- 现在的 "1": "待审核","2": "审核中","3": "已驳回","4": "待派单","5": "已派单","6": "已取消","7": "部分接单",
             "8": "已接单","9": "已出车","10": "已还车","11": "已确认" -->
     <div
       class="button-box"
-      v-if="orderDetail.status == '4'"
+      v-if="$route.params.type == 1 && orderType == 'dispatch' && (orderDetail.reassignStatus === '否' || [3].includes(orderDetail.status) )"
     >
-      <div
-        class="button-box-image"
-      >
+      <!-- 待派单  非转派/驳回    显示派单、转派、取消 -->
+      <div class="button-box-image">
         <van-image
           width="100%"
           height="20px"
           :src="quxiao"
           @click="cancelOrderButton"
         />
-        <div class="text">取消订单</div>
+        <div class="text">
+          取消订单
+        </div>
       </div>
-      <div
-        class="button-box-image"
-        @click="CopyOrderChange"
-      >
-        <van-image
-          width="100%"
-          height="20px"
-          :src="fuzhi"
-        />
-        <div class="text">复制订单</div>
-      </div>
-      <van-button
-        block
-        type="info"
-        @click="redispatch"
-        v-if="redispatchOrReject.indexOf('REDISPATCH') != -1"
-      >转派</van-button>
-      <van-button
-        block
-        type="info"
-        @click="reject"
-        v-if="redispatchOrReject.indexOf('REJECT') != -1"
-      >驳回</van-button>
       <van-button
         block
         type="info"
         @click="distribute"
-      >派单</van-button>
+      >
+        派单
+      </van-button>
+      <van-button
+        block
+        type="info"
+        @click="redispatch"
+      >
+        转派
+      </van-button>
     </div>
-
     <div
       class="button-box"
-      v-if="orderDetail.status == '3' || orderDetail.status == '4'"
+      v-if="$route.params.type == 1 && orderType == 'dispatch' && orderDetail.reassignStatus === '是'"
     >
-      <div
-        class="button-box-image"
-        v-if="redispatchOrReject.indexOf('CANCEL') != -1 || true"
+      <van-button
+        block
+        type="info"
+        @click="distribute"
+        v-if="orderDetail.reassignStr == '0'"
       >
+        派单
+      </van-button>
+      <!-- 
+        0 转入
+        1 转出
+      -->
+      <van-button
+        block
+        type="info"
+        v-if="orderDetail.reassignStr == '0'"
+      >
+        转派拒绝
+      </van-button>
+      <van-button
+        block
+        type="info"
+        v-if="orderDetail.reassignStr == '1'"
+      >
+        转派取消
+      </van-button>
+      <van-button
+        block
+        type="info"
+        @click="reject"
+        v-if="orderDetail.reassignStr == '0'"
+      >
+        驳回
+      </van-button>
+    </div>
+    <!-- 已派单      显示 改派、复制、取消 ---start--- -->
+    <div
+      class="button-box"
+      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '否'"
+    >
+      <!-- 已派单      显示 改派、复制、取消 -->
+      <div class="button-box-image">
         <van-image
           width="100%"
           height="20px"
           :src="quxiao"
           @click="cancelOrderButton"
         />
-        <div class="text">取消订单</div>
+        <div class="text">
+          取消订单
+        </div>
       </div>
       <div
         class="button-box-image"
@@ -117,48 +143,74 @@
           height="20px"
           :src="fuzhi"
         />
-        <div class="text">复制订单</div>
+        <div class="text">
+          复制订单
+        </div>
       </div>
       <van-button
         block
         type="info"
         @click="reassignmentClick"
-      >改派</van-button>
+      >
+        改派
+      </van-button>
     </div>
     <div
       class="button-box"
-      v-if="orderDetail.status == '9'"
+      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '是'"
     >
-      <van-button
-        block
-        type="default"
+      <div class="button-box-image">
+        <van-image
+          width="100%"
+          height="20px"
+          :src="quxiao"
+          @click="cancelOrderButton"
+        />
+        <div class="text">
+          取消订单
+        </div>
+      </div>
+      <div
+        class="button-box-image"
         @click="CopyOrderChange"
-      >复制订单</van-button>
+      >
+        <van-image
+          width="100%"
+          height="20px"
+          :src="fuzhi"
+        />
+        <div class="text">
+          复制订单
+        </div>
+      </div>
       <van-button
         block
         type="info"
-        @click="cancelOrderButton"
-        v-if="[1,2,3,4].includes(orderDetail.status)"
-      >取消订单</van-button>
-    </div>
-    <div
-      class="button-box"
-      v-if="orderDetail.status == '10'"
-    >
-      <van-button
-        block
-        type="default"
-        @click="CopyOrderChange"
-      >复制订单</van-button>
+        @click="reassignmentClick"
+        v-if="orderDetail.reassignStr == '0'"
+      >
+        改派
+      </van-button>
       <van-button
         block
         type="info"
-        @click="orderConfirmUserCar"
-      >确认用车</van-button>
+        v-if="orderDetail.reassignStr == '1'"
+      >
+        转派取消
+      </van-button>
+      <van-button
+        block
+        type="info"
+        v-if="orderDetail.reassignStr == '0'"
+      >
+        转派拒绝
+      </van-button>
     </div>
+    <!-- 已派单      显示 改派、复制、取消 ---end--- -->
+    <!-- 历史订单  显示复制---start--- -->
     <div
       class="form-button"
-      v-if="[6,11].includes(orderDetail.status)"
+      v-if="$route.params.type == 1  && orderType === 'history'"
     >
       <van-button
         block
@@ -166,6 +218,7 @@
         @click="CopyOrderChange"
       >复制订单</van-button>
     </div>
+    <!-- 历史订单  显示复制---end--- -->
     <van-popup
       v-model="showCancel"
       position="bottom"
@@ -196,7 +249,6 @@ import {
   orderRequestList,
   orderApprovalLog,
   orderCancelOrder,
-  orderConfirmUserCar,
   vehicleInfoGetVehicleFile,
 } from '@/api/order';
 import {
@@ -239,6 +291,8 @@ export default {
         statusDict: '',
         hopeBrandDict: '',
       },
+      // 订单类型，订单来源
+      orderType: '',
     };
   },
   computed: {
@@ -288,29 +342,6 @@ export default {
         this.approveLogList = data;
       });
     },
-    orderConfirmUserCar() {
-      let id = this.$route.params.id;
-      this.dialogConfirm({ message: '是否要确认用车?' }, (action, doneCallback) => {
-        if (action === 'confirm') {
-          orderConfirmUserCar({ id }).then(({ data }) => {
-            this.$notify({
-              type: 'success',
-              message: '确认用车成功!'
-            });
-            doneCallback();
-            this.$store.dispatch('DispathOrder/triggerFefresh', true);
-            this.$router.push({
-              name: 'DispatchOrderList',
-            });
-          }).catch(() => {
-            doneCallback();
-          });
-        } else {
-          doneCallback();
-        }
-      });
-
-    },
     returnDetails() {
       this.$router.go(-1);
     },
@@ -339,7 +370,7 @@ export default {
         return false;
       }
       done();
-    },    
+    },
     // 取消订单请求
     cancelOrder(done) {
       let id = this.$route.params.id;
@@ -370,10 +401,12 @@ export default {
     },
     distribute() { // 保存当前数据
       this.$store.dispatch('DispathOrder/setPerfectAction', this.orderDetail).then(() => {
-        let id = this.$route.params.id;
+        const { id } = this.orderDetail;
         this.$router.push({
-          name: 'DispathVehicle',
-          params: { type: 1, id }
+          name: 'DistributeCar',
+          query: {
+            id,
+          }
         });
       });
     },
@@ -381,7 +414,7 @@ export default {
       this.$store.dispatch('DispathOrder/setPerfectAction', this.orderDetail).then(() => {
         let id = this.$route.params.id;
         this.$router.push({ // 改派为3
-          name: 'DispathVehicle',
+          name: 'DispatchVehicle',
           params: { type: 3, id }
         });
       });
@@ -540,13 +573,15 @@ export default {
     }
   },
   created() {
-    let type = this.$route.params.type * 1;
+    let type = this.$route.params.type;
+    console.log("🚀 ~ file: DispatchDetails.vue ~ line 581 ~ created ~ type", type, typeof type)
+    this.orderType = this.$route.query.orderType;
     // this.getAvailableButton()
     this.handleSystemCardDict(this.dictIds);
-    if (type === 0 || type === 2 || type === 3) {   // 正常人工指派
+    if (type == 0 || type == 2 || type == 3) {   // 正常人工指派
       this.computedDetailData(Object.assign({}, this.CarPerfect, this.ChoiceVehicie, this.ChoiceDriver));
 
-    } else if (type === 1) {    // 展示详情页面
+    } else if (type == 1) {    // 展示详情页面
       this.getOrderDetail();
       this.orderApprovalLog();
     }

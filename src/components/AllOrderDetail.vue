@@ -112,6 +112,7 @@
         </template> -->
 
       <li class="info-label"><span>乘车人数：</span><span>{{orderDetail.usagePersons}}人</span></li>
+      <li class="info-label"><span>转派信息：</span><span>{{orderDetail.reassignStr | formatReassignStr }}</span></li>
       <li class="info-label"><span>备注：</span><span class="info-address">{{orderDetail.remark || '暂无备注'}}</span></li>
     </ul>
     <!-- <template v-if="orderDetail.stateCode == 'd' || orderDetail.stateCode == 6 || orderDetail.stateCode == 7 ">
@@ -151,7 +152,16 @@ export default {
 
   },
   filters: {
-
+    formatReassignStr(reassignStr = '') {
+      let str = reassignStr;
+      if (reassignStr == 0) {
+        str = '转入' 
+      }
+      if (reassignStr == 1) {
+        str = '转存'
+      }
+      return str
+    }
   },
   props: {
     orderDetail: {

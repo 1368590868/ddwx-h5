@@ -146,7 +146,7 @@
                     let autoId = this.$route.params.autoId;
                     let type = autoId == '0' ? 0 : 2;   // 2为复制订单
                     this.$router.push({
-                        name: 'DispathVehicle',
+                        name: 'DispatchVehicle',
                         params: {type, autoId: 0}
                     })
                 });

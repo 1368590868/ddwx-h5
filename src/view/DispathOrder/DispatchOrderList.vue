@@ -35,7 +35,7 @@
               <div
                 :key="childItem.reqNo + index"
                 v-for="(childItem, index) in item"
-                @click="goOrderDetailClick(childItem.id, detailType)"
+                @click="goOrderDetailClick(childItem.id, detailType, 'dispatch')"
               >
                 <OrderListCardItem
                   :child-item="childItem"
@@ -71,7 +71,7 @@
               <div
                 :key="childItem.reqNo + index"
                 v-for="(childItem, index) in item"
-                @click="goOrderDetailClick(childItem.id, detailType)"
+                @click="goOrderDetailClick(childItem.id, detailType, 'dispatched')"
               >
                 <OrderListCardItem
                   :child-item="childItem"
@@ -107,7 +107,7 @@
               <div
                 :key="childItem.reqNo + index"
                 v-for="(childItem, index) in item"
-                @click="goOrderDetailClick(childItem.id, detailType)"
+                @click="goOrderDetailClick(childItem.id, detailType, 'history')"
               >
                 <OrderListCardItem
                   :child-item="childItem"
@@ -347,10 +347,11 @@ export default {
         params: { id: '0' }
       });
     },
-    goOrderDetailClick(id, type) {
+    goOrderDetailClick(id, type, orderType) {
       this.$router.push({
         name: 'DispatchDetails',
-        params: { id, type }
+        params: { id, type },
+        query: { orderType }
       });
     }
   },

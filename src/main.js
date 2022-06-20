@@ -15,9 +15,11 @@ import "./permission"; // permission control
 import NotEmpty from "@/components/NotEmpty";
 import AllOrderDetail from "@/components/AllOrderDetail";
 import OrderListCardItem from "@/components/OrderListCardItem";
+import SelectCarItemCard from "@/components/SelectCarItemCard";
 Vue.component("NotEmpty", NotEmpty);
 Vue.component("AllOrderDetail", AllOrderDetail);
 Vue.component("OrderListCardItem", OrderListCardItem);
+Vue.component("SelectCarItemCard", SelectCarItemCard);
 import {
   Row,
   Col,
@@ -56,6 +58,8 @@ import {
   Panel,
   Switch,
   Cascader,
+  Grid,
+  GridItem,
 } from "vant";
 Vue.use(Row);
 Vue.use(Col);
@@ -93,8 +97,9 @@ Vue.use(Icon);
 Vue.use(Panel);
 Vue.use(Switch);
 Vue.use(Cascader);
-
 Vue.use(VanImage);
+Vue.use(Grid);
+Vue.use(GridItem);
 
 Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key]);
