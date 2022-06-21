@@ -5,7 +5,7 @@
       :order-detail="orderDetail"
       :approve-log-list="approveLogList"
       :dict-data="dictData"
-      :is-show-operate-car="true"
+      :is-show-operate-car="$route.params.type === 0 || $route.params.type === 2 || $route.params.type === 3"
       @reselect="reselect"
       @deleteCar="deleteCar"
     />
@@ -31,7 +31,7 @@
       <van-button
         block
         type="info"
-        @click="saveOrderDispatch"
+        @click="confirmOrderDispatch"
       >确认派单</van-button>
     </div>
     <div
@@ -41,8 +41,8 @@
       <van-button
         block
         type="default"
-        @click="returnDetails"
-      >重新选择</van-button>
+        @click="addCar"
+      >添加车辆</van-button>
       <van-button
         block
         type="info"
@@ -60,7 +60,7 @@
       v-if="$route.params.type == 1 && orderType == 'dispatch' && (orderDetail.reassignStatus === '否' || [3].includes(orderDetail.status) )"
     >
       <!-- 待派单  非转派/驳回    显示派单、转派、取消 -->
-      <div class="button-box-image">
+      <div class="button-box-image" v-if="orderDetail.status != 6">
         <van-image
           width="100%"
           height="20px"
@@ -81,7 +81,7 @@
       <van-button
         block
         type="info"
-        @click="redispatch"
+        @click="reDispatch"
       >
         转派
       </van-button>
@@ -106,6 +106,7 @@
         block
         type="info"
         v-if="orderDetail.reassignStr == '0'"
+        @click="cancelOrRefuseReDispatch"
       >
         转派拒绝
       </van-button>
@@ -113,22 +114,23 @@
         block
         type="info"
         v-if="orderDetail.reassignStr == '1'"
+        @click="cancelOrRefuseReDispatch"
       >
         转派取消
       </van-button>
-      <van-button
+      <!-- <van-button
         block
         type="info"
         @click="reject"
         v-if="orderDetail.reassignStr == '0'"
       >
         驳回
-      </van-button>
+      </van-button> -->
     </div>
     <!-- 已派单      显示 改派、复制、取消 ---start--- -->
     <div
       class="button-box"
-      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '否'"
+      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '否' && orderDetail.status != 6"
     >
       <!-- 已派单      显示 改派、复制、取消 -->
       <div class="button-box-image">
@@ -136,6 +138,7 @@
           width="100%"
           height="20px"
           :src="quxiao"
+          v-show="orderDetail.status != 6"
           @click="cancelOrderButton"
         />
         <div class="text">
@@ -144,7 +147,7 @@
       </div>
       <div
         class="button-box-image"
-        @click="CopyOrderChange"
+        @click="copyOrderChange"
       >
         <van-image
           width="100%"
@@ -165,7 +168,7 @@
     </div>
     <div
       class="button-box"
-      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '是'"
+      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '是' && orderDetail.status != 6"
     >
       <div class="button-box-image">
         <van-image
@@ -180,7 +183,7 @@
       </div>
       <div
         class="button-box-image"
-        @click="CopyOrderChange"
+        @click="copyOrderChange"
       >
         <van-image
           width="100%"
@@ -203,6 +206,7 @@
         block
         type="info"
         v-if="orderDetail.reassignStr == '1'"
+        @click="cancelOrRefuseReDispatch"
       >
         转派取消
       </van-button>
@@ -210,6 +214,7 @@
         block
         type="info"
         v-if="orderDetail.reassignStr == '0'"
+        @click="cancelOrRefuseReDispatch"
       >
         转派拒绝
       </van-button>
@@ -223,7 +228,7 @@
       <van-button
         block
         type="default"
-        @click="CopyOrderChange"
+        @click="copyOrderChange"
       >复制订单</van-button>
     </div>
     <!-- 历史订单  显示复制---end--- -->
@@ -257,17 +262,14 @@ import {
   orderRequestList,
   orderApprovalLog,
   orderCancelOrder,
-  vehicleInfoGetVehicleFile,
 } from '@/api/order';
 import {
   carPic,
-  saveOrderDispatch,
-  dispatchReassignment,
-  dispatchCheckDriver,
-  dispatchCheckCar,
+  dispatchOrder,
+  reassignment,
   getAvailableButton,
-  redispatch,
   reject,
+  updateChangeOrder,
 } from '@/api/dispatch';
 import fuzhi from '@/assets/icon/fuzhi.svg';
 import quxiao from '@/assets/icon/quxiao.svg';
@@ -323,11 +325,7 @@ export default {
         // this.orderDetail.unitval = data.companyName
         // this.orderDetail.deptval = data.deptName
         let orderDetail = (list[0] ?? {}) || {};
-        if (orderDetail.reqAssignments?.length > 0) {
-          orderDetail.reqAssignments.forEach(async (item) => {
-            item['carImage'] = await this.getCarImage(item.vinNumber)
-          })
-        }
+        
         let type = this.$route.params.type;
         if (type == 0 || type == 2 || type == 3) {
           this.orderDetail = this.dealReqAssignments(orderDetail) || {};
@@ -335,17 +333,6 @@ export default {
           this.orderDetail = orderDetail;
         }
       });
-    },
-    // 根据车架号获取图片
-    async getCarImage(vinNumber = '') {
-      let imgUrl = '';
-      try {
-        const { data: [img1 = ''] } = await vehicleInfoGetVehicleFile({ vinNumber });
-        img1 ? imgUrl = process.env.VUE_APP_BASE_API + process.env.VUE_APP_AUTH_SERVER + "/minio/getPic?fileName=" + img1 : imgUrl
-        return imgUrl
-      } catch (error) {
-        alert("获取车辆图片失败!");
-      }
     },
     // 获取车辆审批日志
     orderApprovalLog() {
@@ -414,6 +401,7 @@ export default {
             message: '取消成功!'
           });
           this.isCancelVis = "";
+          this.showCancel = false;
           this.getOrderDetail();
           this.orderApprovalLog();
         } else {
@@ -444,89 +432,118 @@ export default {
       });
       this.$store.dispatch('DispathOrder/removeReqAssignments')
     },
+    // 改派
     reassignmentClick() {
-      this.$store.dispatch('DispathOrder/setPerfectAction', this.orderDetail).then(() => {
-        let id = this.$route.params.id;
-        this.$router.push({ // 改派为3
-          name: 'DispatchVehicle',
-          params: { type: 3, id }
-        });
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      this.$router.push({ // 改派为3
+        name: 'DispatchVehicle',
+        params: { type: 3, id },
+        query: {
+          reqAssignmentsIndex: 0,
+          id,
+          unitCode,
+          deptId,
+          reassignUnitCode,
+          usageDate,
+        }
       });
-
     },
-    dispatchReassignment() {   // 已审批 派单
+    async dispatchReassignment() {   // 已审批 派单
       let toast = this.$toast.loading({
         duration: 0,
         message: "派单中..",
         forbidClick: true
       });
-      let nid = this.$route.params.id;
-      dispatchReassignment(Object.assign({ nid }, this.orderDetail)).then(({ data }) => {
-        toast.clear();
-        this.$store.dispatch('DispathOrder/clearOneDataAction');
-        this.$router.push({ name: 'DispathSuccess', params: { id: data } });
-      }).catch((err) => {
-        this.$toast.fail("派单失败!");
+      const params = {
+        status: this.orderDetail.status,
+        id: this.orderDetail.id,
+        phone: this.orderDetail.phone,
+        createType: this.orderDetail.createType,
+        usageDate: this.orderDetail.usageDate,
+        usageTime: this.orderDetail.usageTime,
+        handleUserId: this.orderDetail.handleUserId,
+        handleUserName: this.orderDetail.handleUserName,
+        handleUnit: this.orderDetail.handleUnit,
+        handleUnitCode: this.orderDetail.handleUnitCode,
+        reqAssignments: []
+      };
+      params.reqAssignments = this.orderDetail.reqAssignments.map(req => {
+        return {
+          id: req.id,
+          status: req.status,
+          driver: req.driver,
+          driverId: req.driverCode,
+          driverPhone: req.phone,
+          beginMiles: req.startMiles,
+          carNumber: req.carNumber,
+          vinNumber: req.vinNumber,
+        }
       });
-    },
 
-    async saveOrderDispatch() {
+      try {
+        const res = await reassignment(params)
+        if (res?.code === 0) {
+          this.$store.dispatch('DispathOrder/removeReqAssignments').then(() => {
+            this.$router.push({ name: 'DispathSuccess', params: { id: this.orderDetail.id } });
+          })
+        } else {
+          this.$toast.fail(res?.message || "派单失败!，请重试");
+        }
+      } catch (error) {
+        this.$toast.fail("派单失败!，请重试");
+      } finally {
+        toast.clear();
+      }
+    },
+    // 派单
+    async confirmOrderDispatch() {
       let toast = this.$toast.loading({
         duration: 0,
         message: "提交中..",
         forbidClick: true
       });
-      let nid = this.$route.params.id != 0 ? this.$route.params.id : "";
-      let driverUnitCode = this.orderDetail.driverUnitCode
-      let driver = this.orderDetail.driver
-      let startTime = this.orderDetail.dDepartureTime
-      let aboutHours = this.orderDetail.nAboutHours
-      let carNumber = this.orderDetail.sArrangedCar
-      let id = '';
-      if (this.$route.params.id && this.$route.params.id.length > 2) {
-        id = this.$route.params.id
-      }
-      // let checkDriver = await this.dispatchCheckDriver({id,driverUnitCode,driver,startTime,aboutHours})
-      let checkCarResult = await this.dispatchCheckCar({ id, carNumber, startTime, aboutHours, driverUnitCode, driver })
-
-      if (checkCarResult != "") {
+      const params = {
+        status: this.orderDetail.status,
+        id: this.orderDetail.id,
+        phone: this.orderDetail.phone,
+        createType: this.orderDetail.createType,
+        usageDate: this.orderDetail.usageDate,
+        usageTime: this.orderDetail.usageTime,
+        handleUserId: this.orderDetail.handleUserId,
+        handleUserName: this.orderDetail.handleUserName,
+        handleUnit: this.orderDetail.handleUnit,
+        handleUnitCode: this.orderDetail.handleUnitCode,
+        reqAssignments: []
+      };
+      params.reqAssignments = this.orderDetail.reqAssignments.map(req => {
+        return {
+          id: req.id,
+          status: req.status,
+          driver: req.driver,
+          driverId: req.driverCode,
+          driverPhone: req.phone,
+          beginMiles: req.startMiles,
+          carNumber: req.carNumber,
+          vinNumber: req.vinNumber,
+        }
+      })
+      try {
+        const res = await dispatchOrder(params)
+        console.log("🚀 ~ file: DispatchDetails.vue ~ line 480 ~ confirmOrderDispatch ~ res", res);
+        if (res?.code === 0) {
+          this.$store.dispatch('DispathOrder/removeReqAssignments').then(() => {
+            this.$router.push({ name: 'DispathSuccess', params: { id: this.orderDetail.id } });
+          })
+        } else {
+          this.$toast.fail(res?.message || "派单失败!，请重试");
+        }
+      } catch (error) {
+        this.$toast.fail("派单失败!，请重试");
+      } finally {
         toast.clear();
-        this.$dialog.confirm({ message: checkCarResult }).then(() => {
-          saveOrderDispatch(Object.assign({ nid }, this.orderDetail)).then(({ data }) => {
-            toast.clear();
-            this.$store.dispatch('DispathOrder/clearOneDataAction');
-            this.$router.push({ name: 'DispathSuccess', params: { id: data } });
-          }).catch((err) => {
-            this.$toast.fail("派单失败!");
-          });
-        }).catch(() => {
-          return false;
-        })
-      } else {
-        saveOrderDispatch(Object.assign({ nid }, this.orderDetail)).then(({ data }) => {
-          toast.clear();
-          this.$store.dispatch('DispathOrder/clearOneDataAction');
-          this.$router.push({ name: 'DispathSuccess', params: { id: data } });
-        }).catch((err) => {
-          this.$toast.fail("派单失败!");
-        });
       }
     },
-    dispatchCheckDriver(params) {
-      return new Promise((resolve, reject) => {
-        dispatchCheckDriver(params).then(({ data }) => {
-          resolve(data)
-        })
-      })
-    },
-    dispatchCheckCar(params) {
-      return new Promise((resolve, reject) => {
-        dispatchCheckCar(params).then(({ data }) => {
-          resolve(data)
-        })
-      })
-    },
-    CopyOrderChange() {
+    copyOrderChange() {
       let id = this.$route.params.id;
       this.$router.push({
         name: 'DispathApply',
@@ -590,12 +607,15 @@ export default {
         this.redispatchOrReject = data
       })
     },
-    redispatch() {
+    // 转派转单 按钮 前往转单 选择单位的页面
+    reDispatch() {
       let id = this.$route.params.id;
-      redispatch({ id }).then(({ data }) => {
-        this.$toast.success("转派成功！")
-        // this.$router.push({path:'/DispathOrder'});
-        this.$router.push({ path: '/DispathOrder', query: { refresh: true } });
+      this.$router.push({
+        name: 'ChangeOder',
+        params: {
+          type: '1',
+          id,
+        }
       })
     },
     reject() {
@@ -639,6 +659,41 @@ export default {
       this.$store.dispatch('DispathOrder/deleteReqAssignmentsItem', index).then(() => {
         this.orderDetail = this.dealReqAssignments(this.orderDetail) || {};
       })
+    },
+    // 转派取消 或者 转派拒绝
+    async cancelOrRefuseReDispatch() {
+      console.log('cancelOrRefuseReDispatch');
+      let toast = this.$toast.loading({
+        duration: 0,
+        message: "提交中..",
+        forbidClick: true
+      });
+      try {
+        const {
+          id,
+          // type,
+        } = this.$route.params;
+        const params = [
+          {
+            id,
+          }
+        ]
+        const res = await updateChangeOrder(params);
+        if (res?.code === 0) {
+          this.$toast.success("操作成功")
+          this.$store.dispatch('DispathOrder/triggerFefresh', true).then(() => {
+            this.$router.push({
+              name: 'DispatchOrderList',
+            });
+          })
+        } else {
+          this.$toast.fail(res?.message || "操作失败!，请重试");
+        }
+      } catch (error) {
+        this.$toast.fail("操作失败!，请重试");
+      } finally {
+        toast.clear();
+      }
     },
   },
   async created() {

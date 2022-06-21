@@ -146,18 +146,18 @@
                 this.showsTimeDetail = false;
             },
             onSubmit (values) {
-                let autoId = this.$route.params.autoId;
+                let id = this.$route.params.id;
                 this.$store.dispatch('DispathOrder/setOneDataAction', this.formData).then(() => {   // 存储开始订单的数据，以防止回退
-                    if(autoId != '0'){
-                        this.$router.push({name: 'DispathPerfect', params: {autoId}});  // 待派车复制订单
+                    if(id != '0'){
+                        this.$router.push({name: 'DispathPerfect', params: {id}});  // 待派车复制订单
                     }else{
-                        this.$router.push({name: 'DispathPerfect', params: {autoId: '0'}});  // 新增
+                        this.$router.push({name: 'DispathPerfect', params: {id: '0'}});  // 新增
                     }
                 });
             },
             // 复制订单操作！
-            orderGetOrderDetail (autoId) {
-                orderGetOrderDetail({autoId}).then(({data}) => {
+            orderGetOrderDetail (id) {
+                orderGetOrderDetail({id}).then(({data}) => {
                     this.formData.sFromAddrActive = this.getAddrActive(data.sFromAddr.split(',')[2]);  // 默认海淀区
                     this.formData.sTargetAddrActive = this.getAddrActive(data.sTargetAddr.split(',')[2]);// 默认海淀区
 
@@ -180,9 +180,9 @@
             if (Object.keys(this.CarOneHist).length) {
                 this.formData = Object.assign({}, this.CarOneHist);
             };
-            let autoId = this.$route.params.autoId;
-            if(autoId != '0'){
-                this.orderGetOrderDetail(autoId);
+            let id = this.$route.params.id;
+            if(id != '0'){
+                this.orderGetOrderDetail(id);
             }
             this.getAvailableUnit()
         }

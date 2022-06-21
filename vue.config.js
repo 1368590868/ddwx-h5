@@ -43,7 +43,7 @@ module.exports = {
                 }
 			},**/
       "/api": {
-        target: `http://dev-gwyc.rails.cn/api/gwyc`,
+        target: `http://192.168.61.141:8009/gwyc/`,
         changeOrigin: true,
         pathRewrite: {
           "^/api": "",

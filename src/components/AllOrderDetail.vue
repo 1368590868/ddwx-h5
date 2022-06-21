@@ -57,7 +57,7 @@
         :key="car.carNumber + index"
       >
         <ul>
-          <li><img :src="car.carImage || defaultCarImage"></li>
+          <li><img :src="checkCarImagePath(car.carBrand, car.carSeries)"></li>
           <li>
             <h3>{{car.carNumber}}</h3>
             <p>{{car.carBrand}} {{car.carSeries}}</p>
@@ -172,7 +172,7 @@
 </template>
 
 <script>
-import defaultCarImage from '@/assets/img/car.jpg'
+import checkCarImagePath from '@/utils/carPath'
 export default {
   name: 'AllOrderDetail',
   components: {
@@ -218,8 +218,7 @@ export default {
   },
   data() {
     return {
-      // 默认车图片
-      defaultCarImage,
+      checkCarImagePath,
     };
   },
   computed: {

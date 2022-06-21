@@ -140,3 +140,47 @@ export function vehicleInfoGetVehicleFile(params) {
     params,
   });
 }
+
+// 确认派单 调度管理页面 H5
+export function dispatchOrder(data) {
+  return request({
+    url: "/gcywVehicleRequest/saveOrderDispatch",
+    method: "POST",
+    data,
+  });
+}
+
+//改派
+export function reassignment(data) {
+  return request({
+    url: `/gcywVehicleRequest/reassignment`,
+    method: 'POST',
+    data
+  })
+}
+
+//   获取 转单  转派 单位
+export function getTurnUnit() {
+  return request({
+    url: `/gcjcTurnUnit/listAll`,
+    method: 'GET',
+  })
+}
+
+// 转单  转派
+export function changeOrder(data) {
+  return request({
+    url: `/gcywVehicleRequest/redispatch`,
+    method: 'POST',
+    data,
+  })
+}
+
+// 转派拒绝 转派取消
+export function updateChangeOrder(data) {
+  return request({
+    url: `/gcywVehicleRequest/updateRessUnit`,
+    method: 'post',
+    data
+  })
+}
