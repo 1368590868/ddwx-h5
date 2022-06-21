@@ -4,7 +4,7 @@
             <div class="form-warpper">
                 <div class="form-block">
                     <div class="block-label"><i class="font_family icon-icon-location-20"></i><span>出发地：</span></div>
-                    <van-field required v-model="formData.sFromAddr" readonly right-icon="arrow-down" clickable name="sFromAddr" label="省/市/区：" placeholder="点击选择省市区" @click="showsFormArea=true" />
+                    <van-field required v-model="formData.sFromAddr" readonly right-icon="arrow-down" clickable name="sFromAddr" label="省/市/区：" placeholder="点击选择省市区" :rules="[{ required: true }]" @click="showsFormArea=true" />
                     <van-popup v-model="showsFormArea" round position="bottom">
                         <van-cascader
                             v-model="formData.sFromAddrActive"
@@ -23,7 +23,7 @@
                 </div>
                 <div class="form-block">
                     <div class="block-label"><i class="icon font_family icon-icon-destination-20"></i><span>目的地：</span></div>
-                    <van-field required v-model="formData.sTargetAddr" readonly right-icon="arrow-down" clickable name="sTargetAddr" label="省/市/区：" placeholder="点击选择省市区" @click="showsTargetArea=true" />
+                    <van-field required v-model="formData.sTargetAddr" readonly right-icon="arrow-down" clickable name="sTargetAddr" label="省/市/区：" placeholder="点击选择省市区" :rules="[{ required: true}]" @click="showsTargetArea=true" />
                     <van-popup v-model="showsTargetArea" round position="bottom">
                         <van-cascader
                             v-model="formData.sTargetAddrActive"
@@ -125,9 +125,6 @@
             this.autoId = this.$route.params.autoId;
 
             if(this.autoId==='0'){
-                if (Object.keys(this.CarOneHist).length) {
-                    this.formData = Object.assign({}, this.CarOneHist);
-                };
                 this.$nextTick(() => {
                     this.formData.dDepartureTime = parseTime(Date.now(), '{y}-{m}-{d}');
                     this.formData.dDepartureTimeDetail = parseTime(Date.now() + 1000*60*60, '{h}:{i}');

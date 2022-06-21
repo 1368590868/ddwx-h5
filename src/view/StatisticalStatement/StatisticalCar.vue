@@ -12,7 +12,7 @@
             </van-col>
             <van-col span="18">
               <template v-for="(item,index) in carStatisticList">
-                <van-col span="10" :offset="(index+1)%2==0?2:0">
+                <van-col span="10" :offset="(index+1)%2==0?2:0" :key="index">
                   <div class="stas-item">
                     <van-image :src="carImage[item.name]"></van-image>
                     <div class="stas-count"> {{item.name+item.count}}辆</div>
@@ -85,7 +85,7 @@
     </van-picker>
 </van-popup>
 <van-popup v-model="showUnitPicker" position="bottom">
-    <van-picker show-toolbar :columns="unitdata" @cancel="showUnitPicker=false" value-key="name" @confirm="onUnitConfirm">
+    <van-picker show-toolbar :columns="unitdata" @cancel="showUnitPicker=false" value-key="unitName" @confirm="onUnitConfirm">
     </van-picker>
 </van-popup>
  
@@ -117,7 +117,7 @@ export default {
         yeardata:['2022','2021','2020','2019','2018','2017','2016'],
         unitdata:[],
         unitval:'',
-        selectedUnitCode:'',
+        selectedUnitId:'',
         dateval:'2022',
         carImage:{
           '轿车': car,
@@ -141,24 +141,25 @@ export default {
       this.showPicker = false
     },
     onUnitConfirm(value){
-      this.unitval = value.name;
-      this.selectedUnitCode = value.id
+      this.unitval = value.unitName;
+      this.selectedUnitId = value.id;
       this.getUseStatisticByYear();
       this.showUnitPicker = false
     },
     getParentUnit(){
       getParentUnit().then(({data})=>{
-        let udata = [{name:'全部',id:''}]
+        let udata = [{unitName:'全部',id:''}]
         data.forEach(item => {
-          udata.push({name:item.name,id:item.id})
+          udata.push(item)
         })
         this.unitdata = udata
-       this.unitval = this.unitdata[0].name
-       this.selectedUnitCode = ''
+        this.unitval = this.unitdata[0].unitName
+        this.selectedUnitId = ''
       })
     },
     getCarStatisticByModel(){
       carStatisticByModel().then(({data}) => {
+        console.log(data)
         this.totalCount = (data && data.totalCount) || 0;
         this.carStatisticList = (data && data.list) || []
       })
@@ -189,7 +190,7 @@ export default {
     },
     getUseStatisticByYear(){
       let year = this.dateval === ''?'2021':this.dateval
-        useStatisticByYear({year:year,selectedUnitCode:this.selectedUnitCode}).then(({data})=>{
+        useStatisticByYear({year:year,selectedUnitId:this.selectedUnitId}).then(({data})=>{
             if(data){
               let yData = []
               let xData = []
