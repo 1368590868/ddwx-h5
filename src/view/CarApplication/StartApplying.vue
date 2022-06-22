@@ -122,7 +122,7 @@
             }
         },
         created(){
-            this.autoId = this.$route.params.autoId;
+            this.autoId = this.$route.params.id;
 
             if(this.autoId==='0'){
                 this.$nextTick(() => {
@@ -249,7 +249,7 @@
                         this.$router.push({name: 'PerfectInfo', query: {autoId:this.autoId}});
                     } else {   // 正常提交
                         this.$router.push({name: 'PerfectInfo'});
-                    };
+                    }
                 });
             },
 

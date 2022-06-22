@@ -3,6 +3,7 @@
     <div class="order-top">
       <span>订单号：{{orderDetail.reqNo}}</span>
       <van-tag
+      v-if="orderDetail.status"
         size="large"
         round
         type="primary"

@@ -44,14 +44,23 @@ const mutations = {
   },
 
   SET_CARONEDATA: (state, data) => {
-    let sFromAddr = data.sFromAddr.split("/").join(",");
-    let sTargetAddr = data.sTargetAddr.split("/").join(",");
-    let dDepartureTimeDetail = data.dDepartureTimeDetail + ":00";
+    console.log("🚀 ~ file: DispathOrder.js ~ line 47 ~ data", data);
+    let fromAddr = data.fromAddr;
+    let toAddr = data.toAddr;
     state.CarOneHist = data;
     state.CarOneData = {
-      sFromAddr: sFromAddr + "," + data.sFromAddrDetail, // (string, optional): 出发地 ,
-      sTargetAddr: sTargetAddr + "," + data.sTargetAddrDetail, // (string, optional): 目的地
-      dDepartureTime: data.dDepartureTime + " " + dDepartureTimeDetail, // (string, optional): 出发时刻 ,
+      fromAreaId:
+        data.fromProvinceId + "," + data.fromCityId + "," + data.fromAreaId,
+      fromAddr: fromAddr + " " + data.fromAddrDetail, // (string, optional): 出发地 ,
+      toAreaIdd:
+        data.targetProvinceId +
+        "," +
+        data.targetCityId +
+        "," +
+        data.targetAreaId,
+      toAddr: toAddr + " " + data.toAddrDetail, // (string, optional): 目的地
+      usageDate: data.usageDate, // (string, optional): 出发日期 ,
+      usageTime: data.usageTime, // (string, optional): 出发时刻 ,
     };
   },
   CLEAR_CARONEDATA: (state) => {
@@ -149,7 +158,10 @@ const actions = {
   },
   // 删除谋一个司机和车辆信息
   deleteReqAssignmentsItem({ commit }, index) {
-    console.log("🚀 ~ file: DispathOrder.js ~ line 152 ~ deleteReqAssignmentsItem ~ index", index)
+    console.log(
+      "🚀 ~ file: DispathOrder.js ~ line 152 ~ deleteReqAssignmentsItem ~ index",
+      index
+    );
     commit("DELETE_REQ_ASSIGNMENTS_ITEM", index);
   },
 };

@@ -84,7 +84,7 @@
     >
       <van-cascader
         v-model="cascaderValue"
-        title="请选择所在地区"
+        title="请选审批人"
         :field-names="fieldNames"
         :options="assigneeList"
         @close="assigneeShow = false"

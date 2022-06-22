@@ -154,13 +154,14 @@ export default {
         return false;
       }
       const id = this.$route.params.id;
+      const type = this.$route.params.type;
       const { reqAssignmentsIndex, usageDate, unitCode } = this.$route.query;
 
       // this.$store.dispatch("DispathOrder/setChoiceVehicie", this.radioData);
       this.$store.dispatch('DispathOrder/setCarAndDriverData', { ...this.radioData, reqAssignmentsIndex, setDataType: 'carInfo' })
       this.$router.push({
         name: 'DispathDriver',
-        params: { id },
+        params: { id, type },
         query: {
           reqAssignmentsIndex,
           usageDate,

@@ -184,3 +184,21 @@ export function updateChangeOrder(data) {
     data
   })
 }
+
+// 派车可用单为列表
+export function getAvailableUnit(params) {  // 单位列表
+	return request({
+		url: '/system/unit/getAvailableUnit',
+		method: 'GET',
+		params
+	})
+}
+
+// 派车可用部门列表 根据单位选择变化而变化
+export function getDispatchDept(params) {  
+	return request({
+		url: '/dept/tree',
+		method: 'GET',
+		params
+	})
+}

@@ -21,8 +21,8 @@
           <van-radio-group v-model="radio">
             <div
               class="van-radio-groups"
-              v-for="item in driverData"
-              :key="item.driverCode"
+              v-for="(item, index) in driverData"
+              :key="item.driverCode + index + ''"
               @click="radioClick(item)"
             >
               <van-radio :name="item.driverCode">
@@ -162,7 +162,7 @@ export default {
   created() {
     let typeDriver = this.$route.params.typeDriver;
     this.typeDriver = typeDriver
-    this.getAvailableDriver();
+    // this.getAvailableDriver();
   },
   mounted() {
   }

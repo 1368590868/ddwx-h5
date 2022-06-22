@@ -60,7 +60,10 @@
       v-if="$route.params.type == 1 && orderType == 'dispatch' && (orderDetail.reassignStatus === '否' || [3].includes(orderDetail.status) )"
     >
       <!-- 待派单  非转派/驳回    显示派单、转派、取消 -->
-      <div class="button-box-image" v-if="orderDetail.status != 6">
+      <div
+        class="button-box-image"
+        v-if="orderDetail.status != 6"
+      >
         <van-image
           width="100%"
           height="20px"
@@ -259,7 +262,7 @@
 </template>
 <script>
 import {
-  orderRequestList,
+  gcywVehicleRequestDispatchList,
   orderApprovalLog,
   orderCancelOrder,
 } from '@/api/order';
@@ -320,12 +323,12 @@ export default {
     // 获取订单详情
     async getOrderDetail() {
       let id = this.$route.params.id;
-      orderRequestList({ id }).then(({ data: { list = [] } }) => {
+      gcywVehicleRequestDispatchList({ id }).then(({ data: { list = [] } }) => {
         // this.orderDetail = data;
         // this.orderDetail.unitval = data.companyName
         // this.orderDetail.deptval = data.deptName
         let orderDetail = (list[0] ?? {}) || {};
-        
+
         let type = this.$route.params.type;
         if (type == 0 || type == 2 || type == 3) {
           this.orderDetail = this.dealReqAssignments(orderDetail) || {};
@@ -345,11 +348,12 @@ export default {
       this.$router.go(-1);
     },
     addCar() {
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      const { id, type } = this.$route.params
       const reqAssignmentsIndex = this.reqAssignments.length;
       this.$router.push({
         name: 'DispatchVehicle',
-        params: { type: 1, id, },
+        params: { id, type },
         query: {
           reqAssignmentsIndex,
           id,
@@ -502,19 +506,26 @@ export default {
         message: "提交中..",
         forbidClick: true
       });
-      const params = {
-        status: this.orderDetail.status,
-        id: this.orderDetail.id,
-        phone: this.orderDetail.phone,
-        createType: this.orderDetail.createType,
-        usageDate: this.orderDetail.usageDate,
-        usageTime: this.orderDetail.usageTime,
-        handleUserId: this.orderDetail.handleUserId,
-        handleUserName: this.orderDetail.handleUserName,
-        handleUnit: this.orderDetail.handleUnit,
-        handleUnitCode: this.orderDetail.handleUnitCode,
-        reqAssignments: []
-      };
+      let id = this.$route.params.id
+      let params = {}
+      if (id == '0') {
+        // 如果是新建调度单 人工指派
+        params = this.orderDetail
+      } else {
+        params = {
+          status: this.orderDetail.status,
+          id: this.orderDetail.id,
+          phone: this.orderDetail.phone,
+          createType: this.orderDetail.createType,
+          usageDate: this.orderDetail.usageDate,
+          usageTime: this.orderDetail.usageTime,
+          handleUserId: this.orderDetail.handleUserId,
+          handleUserName: this.orderDetail.handleUserName,
+          handleUnit: this.orderDetail.handleUnit,
+          handleUnitCode: this.orderDetail.handleUnitCode,
+          reqAssignments: []
+        };
+      }
       params.reqAssignments = this.orderDetail.reqAssignments.map(req => {
         return {
           id: req.id,
@@ -551,51 +562,58 @@ export default {
       });
     },
     computedDetailData(detailData) {
-      let userInfo = this.userInfo;
-      this.orderDetail.sFromAddr = detailData.sFromAddr;  //  (string, optional): 出发地 ,
-      this.orderDetail.sTargetAddr = detailData.sTargetAddr; //  (string, optional): 目的地
-      this.orderDetail.dDepartureTime = detailData.dDepartureTime; //  (string, optional): 出发时刻 ,
-
-      this.orderDetail.sPassenger = detailData.sPassenger; // (string, optional): 乘车人 ,
-      this.orderDetail.sPhone = detailData.sPhone;    //  (string, optional): 联系电话 ,
-
-      // this.orderDetail.companyName = userInfo.companyName;
-
-      this.orderDetail.deptName = userInfo.officeName;    // 
-
-      this.orderDetail.nReasonCode = detailData.nReasonCode;  //  (number, optional): 用车事由编号 ,
-      this.orderDetail.nRangeCode = detailData.nRangeCode; // (number, optional): 用车需求编号 ,
-      this.orderDetail.sHopeCartype = detailData.sHopeCartype;   //  (string): 期望车型编号 ,
-      this.orderDetail.carModel = detailData.carModel;
-      this.orderDetail.cLongDistance = this.$options.filters.longIs(detailData.cLongDistance); // (string, optional): 是否长途 Y是；N否 ,
-      this.orderDetail.nPassenger = detailData.nPassenger;    // (integer, optional): 乘坐人数 ,
-      this.orderDetail.nAboutHours = detailData.nAboutHours;  // (number, optional): 预计时长 ,
-      this.orderDetail.sRemark = detailData.sRemark;  //  (string, optional): 备注 ,
-
-      this.orderDetail.confirmDate = '';  //  (string, optional): 确认时间 ,
-      this.orderDetail.confirmPeople = '';    //  (string, optional): 回车确认人 ,
-      this.orderDetail.dWeek = '';    //  (string, optional): 星期 ,
-
-      this.orderDetail.dreverPhone = detailData.phone;    // dreverPhone (string, optional): 司机电话 ,
-      this.orderDetail.sArrangedDriver = detailData.id;   // sArrangedDriver (string, optional): 司机ID ,
-      this.orderDetail.sHopeDrever = '';      // sHopeDrever (string, optional): 期望司机编号 ,
-      this.orderDetail.sArrangedCar = detailData.carNumber;   //  (string, optional): 车牌号 ,
-      this.orderDetail.sOperator = '';    //  (string, optional): 申请人ID ,
-
-      this.orderDetail.brand = detailData.carType;        // 人工添加
-      this.orderDetail.hopeCarType = detailData.hopeCarType;
-      this.orderDetail.unitval = detailData.unitval
-      this.orderDetail.deptval = detailData.deptval
-      this.orderDetail.driverUnitCode = detailData.unitCode;//司机单位编号
-      this.orderDetail.driver = detailData.id;//司机编号
-      this.orderDetail.sUnitCode = detailData.reqUnitCode;//用车单位编号
-      this.orderDetail.sDeptCode = detailData.sDeptCode;//用车部门编号
-      this.orderDetail.sDriverUnitCode = detailData.unitCode ? detailData.unitCode : sUnitCode;//司机单位编号（验证车接口用）
-      // nid (string, optional): 主键 ,
-      // nInitMiles (number, optional): 出库公里数(用于填写行车记录默认出车里程) ,
-      // sCancelReason (string, optional): 取消原因 ,
-      // sRefuseReason (string, optional): 驳回理由 ,
-      // sReqNo (string, optional): 用车单号 ,
+      const {
+        createType = "1",
+        demandName: demand = "",
+        demandCode,
+        deptId,
+        deptName,
+        fromAddr,
+        fromAreaId,
+        hopeBrand,
+        longDistanceTag,
+        phone,
+        reasonName: reason,
+        reasonCode = "1",
+        remark,
+        reqAssignments = [],
+        source = '1',
+        timeLength,
+        toAddr,
+        toAreaIdd,
+        unitCode,
+        unitName,
+        usageDate,
+        usagePersons,
+        usageTime,
+        userName,
+      } = detailData
+      this.orderDetail = {
+        createType,
+        demand,
+        demandCode,
+        deptId,
+        deptName,
+        fromAddr,
+        fromAreaId,
+        hopeBrand,
+        longDistanceTag,
+        phone,
+        reason,
+        reasonCode,
+        remark,
+        reqAssignments,
+        source,
+        timeLength,
+        toAddr,
+        toAreaIdd,
+        unitCode,
+        unitName,
+        usageDate,
+        usagePersons,
+        usageTime,
+        userName,
+      }
     },
     getAvailableButton() {
       let id = ''
@@ -642,6 +660,7 @@ export default {
       const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
+        // 正常派单 type: 1
         params: { type: 1, id, },
         query: {
           reqAssignmentsIndex: index,
@@ -697,21 +716,27 @@ export default {
     },
   },
   async created() {
-    // let type = this.$route.params.type;
+    let type = this.$route.params.type;
     this.orderType = this.$route.query.orderType;
     // this.getAvailableButton()
     this.handleSystemCardDict(this.dictIds);
 
-    // 展示详情页面
-    await this.getOrderDetail();
-    this.orderApprovalLog();
-    // if (type == 0 || type == 2 || type == 3) {   // 正常人工指派
-    //   // this.computedDetailData(Object.assign({}, this.CarPerfect, this.ChoiceVehicie, this.ChoiceDriver));
-    // } else if (type == 1) {
-    //   // 列表进入详情页
-    //   // this.getOrderDetail();
-    //   // this.orderApprovalLog();
-    // }
+
+    if (type == 0 || type == 2) {
+      // 正常人工指派
+      const orderDetail = {
+        ...this.CarPerfect,
+        // ...this.ChoiceVehicie,
+        ...this.ChoiceDriver,
+      }
+      this.orderDetail = this.dealReqAssignments(orderDetail)
+      this.computedDetailData(orderDetail);
+    } else if (type == 1 || type == 3) {
+      // 列表进入详情页
+      // 展示详情页面
+      await this.getOrderDetail();
+      this.orderApprovalLog();
+    }
   }
 }
 </script>

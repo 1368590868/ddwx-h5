@@ -168,11 +168,11 @@ export const routes = [
 			{
 				path: 'DispathApply/:id',
 				name: 'DispathApply',
-				meta: {title: '人工调配'},
+				meta: {title: '人工调配', keepAlive: true},
 				component: () => import('@/view/DispathOrder/DispathApply')
 			},
 			{
-				path: 'DispathPerfect/:autoId',
+				path: 'DispathPerfect/:id',
 				name: 'DispathPerfect',
 				meta: {title: '人工调配'},
 				component: () => import('@/view/DispathOrder/DispathPerfect')
@@ -200,6 +200,12 @@ export const routes = [
 				name: 'ChangeOder',
 				meta: {title: '转单'},
 				component: () => import('@/view/DispathOrder/ChangeOder')
+			},
+			{
+				path: 'DefaultAddress',
+				name: 'DefaultAddress',
+				meta: {title: '常用地址'},
+				component: () => import('@/view/DispathOrder/DefaultAddress')
 			},
 			{
 				path: 'DispathSuccess/:autoId',
