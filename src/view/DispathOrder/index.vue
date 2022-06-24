@@ -1,7 +1,7 @@
 <template>
   <div class="carApp container">
     <keep-alive :include="keepPages">
-      <router-view />
+      <router-view :key="key" />
     </keep-alive>
   </div>
 </template>

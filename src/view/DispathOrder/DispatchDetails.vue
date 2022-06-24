@@ -540,7 +540,6 @@ export default {
       })
       try {
         const res = await dispatchOrder(params)
-        console.log("🚀 ~ file: DispatchDetails.vue ~ line 480 ~ confirmOrderDispatch ~ res", res);
         if (res?.code === 0) {
           this.$store.dispatch('DispathOrder/removeReqAssignments').then(() => {
             this.$router.push({ name: 'DispathSuccess', params: { id: this.orderDetail.id } });
@@ -558,7 +557,7 @@ export default {
       let id = this.$route.params.id;
       this.$router.push({
         name: 'DispathApply',
-        params: { id }
+        params: { id, type: '2' }
       });
     },
     computedDetailData(detailData) {
@@ -674,14 +673,12 @@ export default {
     },
     // 删除车辆
     deleteCar(index) {
-      console.log('index', index);
       this.$store.dispatch('DispathOrder/deleteReqAssignmentsItem', index).then(() => {
         this.orderDetail = this.dealReqAssignments(this.orderDetail) || {};
       })
     },
     // 转派取消 或者 转派拒绝
     async cancelOrRefuseReDispatch() {
-      console.log('cancelOrRefuseReDispatch');
       let toast = this.$toast.loading({
         duration: 0,
         message: "提交中..",
@@ -729,7 +726,7 @@ export default {
         // ...this.ChoiceVehicie,
         ...this.ChoiceDriver,
       }
-      this.orderDetail = this.dealReqAssignments(orderDetail)
+      this.orderDetail = this.dealReqAssignments(orderDetail);
       this.computedDetailData(orderDetail);
     } else if (type == 1 || type == 3) {
       // 列表进入详情页

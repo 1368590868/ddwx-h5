@@ -26,7 +26,7 @@
               position="bottom"
             >
               <van-cascader
-                v-model="formData.sFromAddrActive"
+                v-model="formData.fromAddrActive"
                 title="请选择所在地区"
                 :options="provinceOptions"
                 :field-names="fieldNames"
@@ -64,14 +64,14 @@
               name="toAddr"
               label="省/市/区："
               placeholder="点击选择省市区"
-              @click="showsTargArea=true"
+              @click="showsTargetArea=true"
             />
             <van-popup
-              v-model="showsTargArea"
+              v-model="showsTargetArea"
               position="bottom"
             >
               <van-cascader
-                v-model="formData.sTargetAddrActive"
+                v-model="formData.targetAddrActive"
                 title="请选择所在地区"
                 :options="provinceOptions"
                 :field-names="fieldNames"
@@ -174,8 +174,8 @@ export default {
       minMinute: 0,   // 最小时间
       minHour: 0,
       formData: {
-        sFromAddrActive: '',  // 
-        sTargetAddrActive: '',// 
+        fromAddrActive: '',  // 
+        targetAddrActive: '',// 
 
         fromAddrDetail: '',      // 出发地详细地址 ,
         toAddrDetail: '',    // 目的地详细地址
@@ -194,7 +194,7 @@ export default {
         targetAreaId: "",  //目的地区县id
       },
       showsFormArea: false,  // 打开出发地弹窗
-      showsTargArea: false,  // 打开目的地弹窗
+      showsTargetArea: false,  // 打开目的地弹窗
       showsTimeArea: false, // 打开出发日期
       showsTimeDetail: false, // 打开出发时间
 
@@ -214,11 +214,11 @@ export default {
   },
   created() {
     let id = this.$route.params.id;
+    this.getProvinceOptions(0);
+    this.getDefaultAddress();
     if (id != '0') {
       this.orderGetOrderDetail(id);
     }
-    this.getProvinceOptions(0);
-    this.getDefaultAddress();
   },
 
   activated() {
@@ -332,27 +332,25 @@ export default {
       gcywVehicleRequestDispatchList({ id }).then(({ data }) => {
         let obj = data?.list[0] || {};
 
-        this.formData.sFromAddrActive = obj.fromAreaId.split(',')[2];
-        this.formData.sTargetAddrActive = obj.toAreaIdd.split(',')[2];
+        this.formData.fromAddrActive = obj?.fromAreaId.split(',')[2] || '';
+        this.formData.targetAddrActive = obj?.toAreaIdd.split(',')[2] || '';
 
-        this.formData.fromAddrDetail = obj.fromAddr.split(' ')[1];
-        this.formData.toAddrDetail = obj.toAddr.split(' ')[1];
+        this.formData.fromAddrDetail = obj.fromAddr.split(' ')[1] || '';
+        this.formData.toAddrDetail = obj.toAddr.split(' ')[1] || '';
         this.formData.usageDate = parseTime(Date.now(), '{y}-{m}-{d}');
 
-        this.formData.fromAddr = obj.fromAddr.split(' ')[0];
-        this.formData.toAddr = obj.toAddr.split(' ')[0];
+        this.formData.fromAddr = obj.fromAddr.split(' ')[0] || '';
+        this.formData.toAddr = obj.toAddr.split(' ')[0] || '';
         this.formData.usageTime = parseTime(Date.now() + 1000 * 60 * 60, '{h}:{i}');
 
-        this.formData.fromProvinceId = obj.fromAreaId.split(',')[0];
-        this.formData.fromCityId = obj.fromAreaId.split(',')[1];
-        this.formData.fromAreaId = obj.fromAreaId.split(',')[2];
+        this.formData.fromProvinceId = obj.fromAreaId.split(',')[0] || '';
+        this.formData.fromCityId = obj.fromAreaId.split(',')[1] || '';
+        this.formData.fromAreaId = obj.fromAreaId.split(',')[2] || '';
 
-        this.formData.targetProvinceId = obj.toAreaIdd.split(',')[0];
-        this.formData.targetCityId = obj.toAreaIdd.split(',')[1];
-        this.formData.targetAreaId = obj.toAreaIdd.split(',')[2];
-
+        this.formData.targetProvinceId = obj.toAreaIdd.split(',')[0] || '';
+        this.formData.targetCityId = obj.toAreaIdd.split(',')[1] || '';
+        this.formData.targetAreaId = obj.toAreaIdd.split(',')[2] || '';
         this.$store.dispatch('DispathOrder/setCopyDataAction', obj);
-        this.getProvinceOptions(0);
       });
     },//出发地省市区选择监听
     onFromChange({ value, selectedOptions, tabIndex }) {
@@ -398,14 +396,14 @@ export default {
       if (item.addressType === "1") {
         this.formData.fromAddr = item.areaLongName;
         this.formData.fromAddrDetail = item.address;
-        this.formData.sFromAddrActive = item.areaId
+        this.formData.fromAddrActive = item.areaId
         this.formData.fromProvinceId = item.provinceId;
         this.formData.fromCityId = item.cityId;
         this.formData.fromAreaId = item.areaId
       } else if (item.addressType === "2") {
         this.formData.toAddr = item.areaLongName;
         this.formData.toAddrDetail = item.address;
-        this.formData.sTargetAddrActive = item.areaId
+        this.formData.targetAddrActive = item.areaId
         this.formData.targetProvinceId = item.provinceId;
         this.formData.targetCityId = item.cityId;
         this.formData.targetAreaId = item.areaId

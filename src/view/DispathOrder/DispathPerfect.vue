@@ -125,8 +125,8 @@
               v-model="formData.longDistanceTag"
               direction="horizontal"
             >
-              <van-radio name="1">是</van-radio>
-              <van-radio name="0">否</van-radio>
+              <van-radio :name="1">是</van-radio>
+              <van-radio :name="0">否</van-radio>
             </van-radio-group>
           </template>
         </van-field>
@@ -285,7 +285,7 @@ export default {
         demandCode: '',     // (number, optional): 用车需求编号 ,
         hopeBrandName: '',   // no,
         hopeBrand: '',   // (string)          : 期望车型编号 ,
-        longDistanceTag: '0',  // (string, optional): 是否长途 Y是；N否 ,
+        longDistanceTag: 0,  // (string, optional): 是否长途 Y是；N否 ,
         userName: '',     // (string, optional): 乘车人 ,  // 登录
         phone: '',         // (string, optional): 联系电话 ,// 登录
         usagePersons: 1,     // (integer, optional): 乘坐人数 ,
@@ -382,7 +382,7 @@ export default {
         } else {
           this.$router.push({
             name: 'DispatchVehicle',
-          // 2为复制订单
+            // 2为复制订单
             params: { type: 2, id: 0 },
             query: {
               unitCode,
@@ -397,22 +397,23 @@ export default {
     },
 
     computedFormData(formData) {
-      this.reasonActiveIndex = this.$options.filters.nReasonGoIndex(formData.reasonCode);
-      this.demandNameActiveIndex = this.$options.filters.nReasonGoIndex(formData.demandCode);
-      this.sHopeCartyActiveIndex = this.$options.filters.cartypeGoIndex(formData.hopeBrand);   // 期望车型默认
+      console.log("🚀 ~ file: DispathPerfect.vue ~ line 400 ~ computedFormData ~ formData", formData)
+      // this.reasonActiveIndex = this.$options.filters.nReasonGoIndex(formData.reasonCode);
+      // this.demandNameActiveIndex = this.$options.filters.nReasonGoIndex(formData.demandCode);
+      // this.sHopeCartyActiveIndex = this.$options.filters.cartypeGoIndex(formData.hopeBrand);   // 期望车型默认
 
       this.formData.reasonName = formData.reason;    // no
       this.formData.reasonCode = formData.reasonCode; // this.$options.filters.nReasonGo() 1,    // (number, optional): 用车事由编号 ,
       this.formData.unitName = formData.companyName
       this.formData.deptName = formData.deptName
       this.formData.unitCode = formData.sUnitCode
-      this.formData.demandName = formData.range;    //  '全程',     
+      this.formData.demandName = formData.demand;
       this.formData.demandCode = formData.demandCode;     // (number, optional): 用车需求编号 ,
 
-      this.formData.hopeBrandName = formData.hopeCarType;// '轿车',   // no,
+      this.formData.hopeBrandName = this.dictData.hopeBrandDict[formData.hopeBrand].name || '';// '轿车',   // no,
       this.formData.hopeBrand = formData.hopeBrand; // '1',   // (string)          : 期望车型编号 ,
 
-      this.formData.longDistanceTag = this.$options.filters.longIs(formData.longDistanceTag);  // (string, optional): 是否长途 Y是；N否 ,
+      this.formData.longDistanceTag = formData.longDistanceTag;  // (string, optional): 是否长途 Y是；N否 ,
       this.formData.userName = formData.userName;     // (string, optional): 乘车人 ,  // 登录
       this.formData.phone = formData.phone;         // (string, optional): 联系电话 ,// 登录
       this.formData.usagePersons = formData.usagePersons;     // (integer, optional): 乘坐人数 ,
@@ -464,14 +465,14 @@ export default {
 
   },
 
-  created() {
+  async created() {
     this.getAvailableUnitList();
     const userInfo = this.userInfo;
     this.formData.userName = userInfo.name;
     this.formData.phone = userInfo.phone;
 
 
-    this.handleSystemCardDict(this.dictIds);
+    await this.handleSystemCardDict(this.dictIds);
 
     let id = this.$route.params.id;
     if (!Object.keys(this.CarOneData).length) {
@@ -483,18 +484,14 @@ export default {
         }
       });
     }
-
-    let CarPerfect = this.CarPerfect;
-    if (Object.keys(CarPerfect).length) {   // 上一步回退之后的选择数据
-      this.formData = CarPerfect;
-      this.getDeptByUnitList({ unitCode: this.formData.unitCode })
-      return false;
-    }
-
-    let CarCopData = this.CarCopData;
-    if (Object.keys(CarCopData).length) {   // 如果CarCopData有数据则是再来一单的操作
+    if (id != '0') {
+      let CarCopData = this.CarCopData;
       this.computedFormData(CarCopData);
       this.getDeptByUnitList({ unitCode: CarCopData.sUnitCode })
+    } else {
+      let CarPerfect = this.CarPerfect;
+      this.formData = CarPerfect;
+      this.getDeptByUnitList({ unitCode: this.formData.unitCode })
     }
   }
 }
