@@ -23,19 +23,19 @@ export function timeAgo(time, cFormat, isDay) {
 	}
 	if ((typeof time) === 'string') {
 		time = time.replace(/-/g, "/");
-	};
+	}
 	
 	let filterTime = parseTime(time, cFormat);
 	if (isDay && (parseTime(new Date(), cFormat) === filterTime)) {
 		return "今天"
-	};
+	}
 	return filterTime;
 }
 
 export function timeFormat (time, option) {
 	if ((typeof time) === 'string') {
 		time = time.replace(/-/g, "/");
-	};
+	}
 	return formatTime(time, option);
 }
 
@@ -109,7 +109,7 @@ export function isLong  (code) {
 	let reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
 	if (reg.test(code)) {
 		return code;
-	};
+	}
 	const isLongData = {
 		'Y': "是",
 		'N': "否",
@@ -121,7 +121,7 @@ export function longIs (name) {
 	let reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
 	if (!reg.test(name)) {
 		return name;
-	};
+	}
 	const isLongData = {
 		"是": 'Y',
 		"否": 'N'
@@ -136,7 +136,7 @@ export function sliceName (name, len) {
 
 
 export function readState (state) {
-	return state === '0'? '未读': '已读';
+	return state == '0'? '未读': '已读';
 } 
 
 

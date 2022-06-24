@@ -3,7 +3,7 @@ import request from '@/utils/request'
 export function messageGetMessage(params) {     // 获取用户消息
 	return request({
 		// url: '/message/getMessage',
-		url: '/notice/user',
+		url: '/gcywMessage/getMessage',
 		method: 'GET',
 		params
 	})
@@ -11,7 +11,7 @@ export function messageGetMessage(params) {     // 获取用户消息
 
 export function messageGetMessageDetail(params) {     // 获取用户消息详情
 	return request({
-		url: '/message/getMessageDetail',
+		url: '/gcywMessage/getMessageDetail',
 		method: 'GET',
 		params
 	})
@@ -20,7 +20,7 @@ export function messageGetMessageDetail(params) {     // 获取用户消息详�
 
 export function messageMarkRead(data) {     // 标记已读
 	return request({
-		url: '/message/markRead',
+		url: '/gcywMessage/markRead',
 		method: 'POST',
 		data
 	})
@@ -28,14 +28,14 @@ export function messageMarkRead(data) {     // 标记已读
 
 export function messageGetNoReadCount() {     // 获取未读消息数量
 	return request({
-		url: '/notice/unreadCount',
+		url: '/gcywMessage/getNoReadCount',
 		method: 'GET',
 	})
 }
 
 export function messageGetMessageBySender(params) {     // 获取发信人所有信息
 	return request({
-		url: '/message/getMessageBySender',
+		url: '/gcywMessage/getMessageBySender',
 		method: 'GET',
 		params
 	})
@@ -44,7 +44,7 @@ export function messageGetMessageBySender(params) {     // 获取发信人所有
 
 export function messageMarkReadBySender(data) {     // 根据发信人标记已读
 	return request({
-		url: '/message/markReadBySender',
+		url: '/gcywMessage/markReadBySender',
 		method: 'POST',
 		data
 	})

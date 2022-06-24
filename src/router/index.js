@@ -106,7 +106,7 @@ export const routes = [
 				component: () => import('@/view/Information/MessageList')
 			},
 			{
-				path: 'MessageDetail/:sSendUser',
+				path: 'MessageDetail/:sendUser',
 				name: 'MessageDetail',
 				meta: {title: '详细消息', base_path: '/Information'},
 				component: () => import('@/view/Information/MessageDetail')

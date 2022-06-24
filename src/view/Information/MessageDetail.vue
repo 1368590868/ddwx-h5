@@ -2,16 +2,16 @@
     <div class="container message-wapper">
         <div class="wrapper message-wapper">
             <van-list v-model="msgDetaiLoading" offset="30" :finished="msgDetaiFinished" finished-text="没有更多了..." @load="messageGetMessageBySender">
-                <div class="message-container" v-for="(msgDetail, mesIndex) in msgDetailList" :key="mesIndex">
-                    <!-- <div class="message-time">{{mesIndex | timeFormat('{m}月{d}日 {h}:{i}')}}</div> -->
-                    <div class="message-box" v-for="(childItem, childIndex) in msgDetail" :key="childIndex">
-                        <div class="message-time">{{childItem.dCreateDate | timeFormat}}</div>                    
+                <div class="message-container" v-for="(msgDetail, msgDate) in msgDetailList" :key="msgDate">
+                    <!-- <div class="message-time">{{msgDate | timeFormat('{m}月{d}日 {h}:{i}')}}</div> -->
+                    <div class="message-box" v-for="childItem in msgDetail" :key="childItem.id">
+                        <div class="message-time">{{childItem.createDate | timeFormat}}</div>                    
                         <dl class="message-dl">
-                            <dt class="message-dt">{{childItem.sSendUserName | sliceName}}</dt>
+                            <dt class="message-dt">{{childItem.sendUserName | sliceName}}</dt>
                             <dd class="message-dd">
-                                <div class="message-name">[{{childItem.sSendUserName}}]</div>
-                                <div class="message-content">{{childItem.sMessage}}</div>
-                                <span class="message-read">{{childItem.cState|readState}}</span>
+                                <div class="message-name">[{{childItem.sendUserName}}]</div>
+                                <div class="message-content">{{childItem.message}}</div>
+                                <span class="message-read">{{childItem.state|readState}}</span>
                             </dd>
                         </dl>
                     </div>
@@ -28,7 +28,7 @@
 export default {
     computed: mapGetters(['userInfo']),
     data () {
-        let sendUser = this.$route.params.sSendUser;
+        let sendUser = this.$route.params.sendUser;
         return {
             msgDetailList: {},
             msgDetaiLoading: false,
@@ -42,7 +42,7 @@ export default {
         }
     },
     beforeRouteEnter(to, from, next){
-        messageMarkReadBySender({sendUser: to.params.sSendUser}).then(() => {
+        messageMarkReadBySender({sendUser: to.params.sendUser}).then(() => {
             next();
         });
     },

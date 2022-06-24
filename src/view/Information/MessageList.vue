@@ -10,32 +10,28 @@
       >
         <div
           class="info-container"
-          v-for="msgItem in messageList"
-          :key="msgItem.id"
+          v-for="(msgItem, messageDate) in messageList"
+          :key="messageDate"
         >
-          <!-- <div class="log-title">{{msgIndex | timeAgo('{m}-{d}', true)}}</div> -->
-          <!-- <div
+          <div class="log-title">{{messageDate | timeAgo('{m}-{d}', true)}}</div>
+          <div
             class="info-div"
             v-for="(childItem, childIndex) in msgItem"
             :key="childIndex"
-          > -->
-          <div class="info-div">
-            <!-- <dl
+          >
+            <dl
               class="into-dl"
-              @click="goMessageDetail(msgItem.id)"
-            > -->
-            <dl class="into-dl">
-              <!-- <dt>{{ childItem.sSendUserName | sliceName }}</dt> -->
-              <dt>无名</dt>
+              @click="goMessageDetail(childItem.sendUser)"
+            >
+              <dt>{{childItem.sendUserName | sliceName}}</dt>
               <dd>
-                <div class="dl-title"><b>{{msgItem.noticeTitle}}
-                    <!-- <van-badge
+                <div class="dl-title"><b>{{childItem.sendUserName}}
+                    <van-badge
                       v-if="childItem.count!=='0'"
                       :content="childItem.count"
-                    /> -->
-                    <van-badge :content="`没返回`" />
-                  </b><time>{{msgItem.createTime | timeAgo('{m}-{d} {h}:{i}')}}</time></div>
-                <p class="into-text">[{{userInfo.name || '没返回'}}]{{msgItem.noticeMessage}}</p>
+                    />
+                  </b><time>{{childItem.createDate | timeAgo('{h}:{i}')}}</time></div>
+                <p class="into-text">[{{userInfo.nickName}}]{{childItem.message}}</p>
               </dd>
             </dl>
           </div>
@@ -63,48 +59,37 @@ export default {
   },
   methods: {
     messageGetMessage() {
-      // let pageNum = this.messageQuery.pageNum;
+      let pageNum = this.messageQuery.pageNum;
       this.messageLoading = true;
-      // this.messageQuery.pageNum = pageNum + 1;
-      // messageGetMessage(this.messageQuery).then(({data}) => {
-      //     if (Object.keys(data).length===0) {
-      //         this.messageFinished = true;
-      //     };
-      //     this.messageLoading = false;
-      //     this.messageList = this.computedGroupDate(data, 'messageList')
-      // }).catch(()=>{
-      //     console.log('err')
-      // });
-      // 
-      messageGetMessage().then(({ data }) => {
-        // this.messageList = this.computedGroupDate(data, 'messageList')
-        this.messageList = data?.list || [];
-        console.log("🚀 ~ file: MessageList.vue ~ line 83 ~ messageGetMessage ~ data", data)
+      this.messageQuery.pageNum = pageNum + 1;
+      messageGetMessage(this.messageQuery).then(({ data }) => {
+        if (Object.keys(data).length === 0) {
+          this.messageFinished = true;
+        }
+        this.messageLoading = false;
+        this.messageList = this.computedGroupDate(data, 'messageList')
       }).catch(() => {
         console.log('err')
-      }).finally(() => {
-        this.messageLoading = false;
-        this.messageFinished = true;
-      })
+      });
 
     },
-    goMessageDetail(sSendUser) {
+    goMessageDetail(sendUser) {
       this.$router.push({
         name: 'MessageDetail',
-        params: { sSendUser }
+        params: { sendUser }
       });
     },
-    // computedGroupDate(data, dataKey) {
-    //   let list = this[dataKey];
-    //   for (let key in data) {
-    //     if (Object.keys(list).includes(key)) {
-    //       list[key] = list[key].concat(data[key]);
-    //     } else {
-    //       list[key] = data[key];
-    //     };
-    //   };
-    //   return list;
-    // },
+    computedGroupDate(data, dataKey) {
+      let list = this[dataKey];
+      for (let date in data) {
+        if (Object.keys(list).includes(date)) {
+          list[date] = list[date].concat(data[date]);
+        } else {
+          list[date] = data[date];
+        }
+      }
+      return list;
+    },
   },
   created() {
     this.$store.dispatch('auth/readCount');
