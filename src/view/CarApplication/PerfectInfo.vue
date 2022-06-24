@@ -134,9 +134,12 @@
                     this.dictModelType = data;
 
                     if (Object.keys(this.CarCopData).length) {
+                        this.sHopeCartyActiveIndex = this.dictModelType.findIndex((item) => {
+                            return item.code === this.form.hopeBrand;
+                        });
                         let obj =  this.dictModelType.find((item) => {
                             return item.code === this.form.hopeBrand;
-                        })
+                        });
                         this.form.hopeBrandName = obj.name;
                     }
                 }).catch((err) => {
@@ -149,6 +152,9 @@
                     this.dictReqRange = data;
 
                     if (Object.keys(this.CarCopData).length) {
+                        this.nRangeActiveIndex = this.dictReqRange.findIndex((item) => {
+                            return item.code === this.form.demandCode;
+                        });
                         let obj =  this.dictReqRange.find((item) => {
                             return item.code === this.form.demandCode;
                         })
@@ -164,6 +170,9 @@
                     this.dictReqReason = data;
 
                     if (Object.keys(this.CarCopData).length) {
+                        this.nReasonActiveIndex = this.dictReqReason.findIndex((item) => {
+                            return item.code === this.form.reasonCode;
+                        });
                         let obj =  this.dictReqReason.find((item) => {
                             return item.code === this.form.reasonCode;
                         })
@@ -285,7 +294,6 @@
                 this.form.userName = this.CarCopData.userName;
                 this.form.phone = this.CarCopData.phone;
                 this.form.hopeBrand = this.CarCopData.hopeBrand;
-                this.form.hopeBrandName = this.CarCopData.hopeBrandName;
                 this.form.usagePersons = this.CarCopData.usagePersons;
                 this.form.remark = this.CarCopData.remark;
             }

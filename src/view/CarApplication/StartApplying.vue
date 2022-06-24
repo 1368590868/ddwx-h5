@@ -60,7 +60,6 @@
 </template>
 <script>
     import {parseTime} from '@/utils/index'
-    import {mapGetters} from 'vuex'
     import {gcywVehicleRequestDispatchList} from '@/api/order'
     import {getCarCount} from '@/api/dispatch'
     import {commonAddressListAll,gcjcDivisionList} from "@/api/mine/commonAddress"
@@ -69,7 +68,6 @@
 
     export default {
         name:"StartApplying",
-        computed: mapGetters('CarApplication', ['CarOneHist']),
         mixins: [keepPages],
        
         data() {
