@@ -361,7 +361,12 @@ export default {
         ...this.CarOneData
       }
       this.$store.dispatch('DispathOrder/setPerfectAction', setPerfectActionData).then(() => {
-        const { unitCode, deptId, reassignUnitCode, usageDate, } = this.formData;
+        const {
+          unitCode,
+          deptId,
+          // reassignUnitCode,
+          usageDate,
+        } = this.formData;
         let id = this.$route.params.id;
         // let type = id == '0' ? 0 : 2;
 
@@ -378,34 +383,48 @@ export default {
               usageDate,
             }
           })
-        } else {
-          this.$router.push({
-            name: 'DispatchVehicle',
-            // 2为复制订单
-            params: { type: 2, id: 0 },
-            query: {
-              unitCode,
-              deptId,
-              tunUnitCode: reassignUnitCode || '',
-            }
-          })
+          return
         }
+        this.$router.push({
+          name: 'DispatchVehicle',
+          params: { type: 0, id, },
+          query: {
+            reqAssignmentsIndex: 0,
+            id,
+            unitCode,
+            deptId,
+            reassignUnitCode: '',
+            usageDate,
+          }
+        })
+        return
+        //  else {
+        //   this.$router.push({
+        //     name: 'DispatchVehicle',
+        //     // 2为复制订单
+        //     params: { type: 2, id: 0 },
+        //     query: {
+        //       unitCode,
+        //       deptId,
+        //       tunUnitCode: reassignUnitCode || '',
+        //     }
+        //   })
+        // }
 
 
       });
     },
 
     computedFormData(formData) {
-      console.log("🚀 ~ file: DispathPerfect.vue ~ line 400 ~ computedFormData ~ formData", formData)
       // this.reasonActiveIndex = this.$options.filters.nReasonGoIndex(formData.reasonCode);
       // this.demandNameActiveIndex = this.$options.filters.nReasonGoIndex(formData.demandCode);
       // this.sHopeCartyActiveIndex = this.$options.filters.cartypeGoIndex(formData.hopeBrand);   // 期望车型默认
 
       this.formData.reasonName = formData.reason;    // no
       this.formData.reasonCode = formData.reasonCode; // this.$options.filters.nReasonGo() 1,    // (number, optional): 用车事由编号 ,
-      this.formData.unitName = formData.companyName
+      this.formData.unitName = formData.unitName
       this.formData.deptName = formData.deptName
-      this.formData.unitCode = formData.sUnitCode
+      this.formData.unitCode = formData.unitCode
       this.formData.demandName = formData.demand;
       this.formData.demandCode = formData.demandCode;     // (number, optional): 用车需求编号 ,
 
@@ -433,7 +452,6 @@ export default {
     },
     // 选中单位之后 根据单位的code获取 部门
     onUnitConfirm(value) {
-      console.log("🚀 ~ file: DispathPerfect.vue ~ line 367 ~ onUnitConfirm ~ value", value)
       this.formData.unitName = value.unitName
       this.formData.unitCode = value.unitCode
       this.getDeptByUnitList({ unitCode: value.unitCode })
@@ -486,7 +504,7 @@ export default {
     if (id != '0') {
       let CarCopData = this.CarCopData;
       this.computedFormData(CarCopData);
-      this.getDeptByUnitList({ unitCode: CarCopData.sUnitCode })
+      this.getDeptByUnitList({ unitCode: CarCopData.unitCode })
     } else {
       let CarPerfect = this.CarPerfect;
       this.formData = CarPerfect;
