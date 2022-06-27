@@ -43,6 +43,7 @@ module.exports = {
                 }
 			},**/
       "/api": {
+        // 开发
         target: `http://192.168.61.141:8009/gwyc/`,
         changeOrigin: true,
         pathRewrite: {

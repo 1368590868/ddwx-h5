@@ -1,19 +1,22 @@
 <template>
-    <keep-alive :include="keepPages">
-        <router-view></router-view>
-    </keep-alive>
+  <keep-alive :include="keepPages">
+    <router-view :key="key" />
+  </keep-alive>
 </template>
 
 
 <script>
 export default {
-    data() {
-        return {};
+  data() {
+    return {};
+  },
+  computed: {
+    key() {
+      return this.$route.path
     },
-    computed: {
-        keepPages() {
-            return this.$store.getters.getKeepPages;
-        },
+    keepPages() {
+      return this.$store.getters.getKeepPages;
     },
+  },
 };
 </script>

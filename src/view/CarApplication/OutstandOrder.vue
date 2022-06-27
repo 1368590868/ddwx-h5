@@ -30,65 +30,20 @@
           >
             <div
               class="list-container"
-              v-for="item in requestList"
-              :key="item.id"
+              v-for="(item, usageDate) in requestList"
+              :key="usageDate"
             >
-              <div class="log-title">
-                {{item.createTime | timeAgo('{y}-{m}-{d}')}}
-              </div>
-              <ul
-                :class="['list-ul', item.longDistanceTag == 1 ? 'longway':''] "
-                @click="goOrderDetailClick(item.id)"
+              <div class="log-title">{{usageDate}}</div>
+              <div
+                :key="childItem.reqNo + index"
+                v-for="(childItem, index) in item"
+                @click="goOrderDetailClick(childItem.id)"
               >
-                <li class="list-li">
-                  <div class="li-address">
-                    <b class="b1">
-                      {{item.fromAddr.split('/')[2].split(' ')[0]}}
-                    </b>
-                    <b class="b2">
-                      {{item.toAddr.split('/')[2].split(' ')[0]}}
-                    </b>
-                  </div>
-                  <div class="li-timestu">
-                    <time>{{item.usageTime}}</time>
-                    <span>出发</span>
-                    <b class="b-status">{{dictData.statusDict[item.status]}}</b>
-                  </div>
-                </li>
-                <li class="info-label">
-                  <span>详细地址：</span>
-                  <span class="infor-overflow">
-                    {{item.fromAddr.split('/')[2].split(' ')[1]}}
-                    &nbsp;到&nbsp;
-                    {{item.toAddr.split('/')[2].split(' ')[1]}}
-                  </span>
-                </li>
-                <div
-                  v-for="(car, index) in item.reqAssignments"
-                  :key="car.id"
-                >
-                  <li class="info-label">
-                    <span>
-                      分派车辆{{index + 1}}：
-                    </span>
-                    <span class="infor-overflow">
-                      {{car.carNumber}}
-                    </span>
-                  </li>
-                  <li class="info-label">
-                    <span>分派司机{{index + 1}}：</span>
-                    <span>
-                      {{car.driver}}
-                    </span>
-                  </li>
-                </div>
-                <li class="info-label">
-                  <span>订 单 号 ：</span>
-                  <span>
-                    {{item.reqNo}}
-                  </span>
-                </li>
-              </ul>
+                <OrderListCardItem
+                  :child-item="childItem"
+                  :dict-data="dictData"
+                />
+              </div>
             </div>
           </van-list>
         </van-pull-refresh>
@@ -113,65 +68,20 @@
           >
             <div
               class="list-container"
-              v-for="item in requestList"
-              :key="item.id"
+              v-for="(item, usageDate) in historyList"
+              :key="usageDate"
             >
-              <div class="log-title">
-                {{item.createTime | timeAgo('{y}-{m}-{d}')}}
-              </div>
-              <ul
-                :class="['list-ul', item.longDistanceTag == 1 ? 'longway':''] "
-                @click="goOrderDetailClick(item.id)"
+              <div class="log-title">{{usageDate}}</div>
+              <div
+                :key="childItem.reqNo + index"
+                v-for="(childItem, index) in item"
+                @click="goOrderDetailClick(childItem.id)"
               >
-                <li class="list-li">
-                  <div class="li-address">
-                    <b class="b1">
-                      {{item.fromAddr.split('/')[2].split(' ')[0]}}
-                    </b>
-                    <b class="b2">
-                      {{item.toAddr.split('/')[2].split(' ')[0]}}
-                    </b>
-                  </div>
-                  <div class="li-timestu">
-                    <time>{{item.usageTime}}</time>
-                    <span>出发</span>
-                    <b class="b-status">{{dictData.statusDict[item.status]}}</b>
-                  </div>
-                </li>
-                <li class="info-label">
-                  <span>详细地址：</span>
-                  <span class="infor-overflow">
-                    {{item.fromAddr.split('/')[2].split(' ')[1]}}
-                    &nbsp;到&nbsp;
-                    {{item.toAddr.split('/')[2].split(' ')[1]}}
-                  </span>
-                </li>
-                <div
-                  v-for="(car, index) in item.reqAssignments"
-                  :key="car.id"
-                >
-                  <li class="info-label">
-                    <span>
-                      分派车辆{{index + 1}}：
-                    </span>
-                    <span class="infor-overflow">
-                      {{car.carNumber}}
-                    </span>
-                  </li>
-                  <li class="info-label">
-                    <span>分派司机{{index + 1}}：</span>
-                    <span>
-                      {{car.driver}}
-                    </span>
-                  </li>
-                </div>
-                <li class="info-label">
-                  <span>订 单 号 ：</span>
-                  <span>
-                    {{item.reqNo}}
-                  </span>
-                </li>
-              </ul>
+                <OrderListCardItem
+                  :child-item="childItem"
+                  :dict-data="dictData"
+                />
+              </div>
             </div>
           </van-list>
         </van-pull-refresh>
@@ -188,6 +98,7 @@ import { orderRequestList } from '@/api/order'
 import getDict from "@/view/mixins/getDict"
 import { mapGetters } from 'vuex'
 export default {
+  name: 'OutstandOrder',
   mixins: [getDict],
   computed: mapGetters('CarApplication', ['isFefresh']),
   beforeRouteEnter(to, from, next) {
@@ -214,11 +125,11 @@ export default {
       requestLoading: false,
       requestFinished: false,
 
-      requestList: [],
+      requestList: {},
       requestKeys: 0,
       requestQuery: {
         pageSize: 10,
-        pageNum: 0,        
+        pageNum: 0,
         orderByColumn: 'usageDate',
         isAsc: 'asc'
       },
@@ -226,10 +137,10 @@ export default {
       historyRefresh: false,
       historyLoading: false,
       historyFinished: false,
-      historyList: [],
+      historyList: {},
       historyQuery: {
         pageSize: 10,
-        pageNum: 0,        
+        pageNum: 0,
         orderByColumn: 'usageDate',
         isAsc: 'asc'
       },
@@ -260,6 +171,10 @@ export default {
       this.historyLoading = true;
       this.getOrderHistoryOrderList();
     },
+    dealArrToObject(arr = [], key = '') {
+      //   return Object.fromEntries(arr.map((item) => [item[key], [item]]));
+      return arr.map((item) => [item[key], [item]]);
+    },
     // 用车申请列表 1为历史订单，2为未完成订单
     getOrderList() {
       let pageNum = this.requestQuery.pageNum;
@@ -271,16 +186,34 @@ export default {
         isFinsh: '2',
       }
       orderRequestList(params).then(({ data }) => {
+        if (this.requestRefresh && this.requestQuery.pageNum === 1) {
+          this.requestList = {};
+        }
         this.requestRefresh = false;
         if (data?.list?.length === 0) {
           this.requestFinished = true;
+          return;
         }
-        this.requestList = [...this.requestList, ...data.list];
+        let list = data?.list || [];
+        list = this.dealArrToObject(list, 'usageDate') || [];
+        this.requestList = this.computedGroupDate(list, 'requestList')
       }).catch((error) => {
         console.log('getOrderList', error)
       }).finally(() => {
         this.requestLoading = false;
       });
+    },
+    // 处理返回的数据 将相同日期的数据合并    
+    computedGroupDate(data, dataKey) {
+      let list = this[dataKey];
+      for (let item of data) {
+        if (Object.keys(list).includes(item[0])) {
+          list[item[0]] = list[item[0]].concat(item[1]);
+        } else {
+          list[item[0]] = item[1];
+        }
+      }
+      return list;
     },
     getOrderHistoryOrderList() {  // 用车申请历史订单列表
       let pageNum = this.historyQuery.pageNum;
@@ -293,10 +226,17 @@ export default {
       }
       this.historyFinished = false;
       orderRequestList(params).then(({ data }) => {
+        if (this.historyRefresh && this.historyQuery.pageNum === 1) {
+          this.historyList = {};
+        }
+        this.historyRefresh = false;
         if (data?.list?.length === 0) {
           this.historyFinished = true;
+          return;
         }
-        this.historyList = [...this.historyList, ...data.list];
+        let list = data?.list || [];
+        list = this.dealArrToObject(list, 'usageDate') || [];
+        this.historyList = this.computedGroupDate(list, 'historyList')
       }).catch(() => {
         alert('err')
       }).finally(() => {
