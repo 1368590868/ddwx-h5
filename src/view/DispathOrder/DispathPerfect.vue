@@ -361,7 +361,6 @@ export default {
         ...this.CarOneData
       }
       this.$store.dispatch('DispathOrder/setPerfectAction', setPerfectActionData).then(() => {
-        console.log("🚀 ~ file: DispathPerfect.vue ~ line 364 ~ this.$store.dispatch ~ setPerfectActionData", setPerfectActionData)
         const { unitCode, deptId, reassignUnitCode, usageDate, } = this.formData;
         let id = this.$route.params.id;
         // let type = id == '0' ? 0 : 2;
@@ -369,7 +368,7 @@ export default {
         if (id == '0') {
           this.$router.push({
             name: 'DispatchVehicle',
-            params: { type: 0, id: 0 },
+            params: { type: 0, id: '0' },
             query: {
               reqAssignmentsIndex: 0,
               id,

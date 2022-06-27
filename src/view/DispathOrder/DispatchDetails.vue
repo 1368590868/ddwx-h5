@@ -13,7 +13,7 @@
             <van-button block type="default" @click="cancelOrderButton">取消订单</van-button>
         </div>
          -->
-    <!-- 新增或者复制订单过来的数据 -->
+    <!-- 新增、派单、复制、订单过来的数据 -->
     <div
       class="button-box"
       v-if="$route.params.type == 0 || $route.params.type == 2"
@@ -265,6 +265,7 @@ import {
   gcywVehicleRequestDispatchList,
   orderApprovalLog,
   orderCancelOrder,
+  activitiAssigneeListByType,
 } from '@/api/order';
 import {
   carPic,
@@ -419,12 +420,12 @@ export default {
         done(false);
       });
     },
-    // 派单
+    // 派单 type: 5
     distribute() { // 保存当前数据
       const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
-        params: { type: 1, id, },
+        params: { type: 5, id, },
         query: {
           reqAssignmentsIndex: 0,
           id,
@@ -539,6 +540,20 @@ export default {
         }
       })
       try {
+        activitiAssigneeListByType({type: '用车审批'}).then( ({data}) => {
+                    if(!data.procDefId){
+                        this.vehicleInfoAdd();
+                    }else if(data.procDefId){
+                        this.form.procDefId = data.procDefId;
+                        if(data.assignee){
+                            this.form.assignee = data.assignee;
+                            this.vehicleInfoAdd();
+                        }else{
+                            this.assigneeList =this.getAssigneeData(data.assigneeList);
+                            this.assigneeShow = true;
+                        }
+                    }
+                })
         const res = await dispatchOrder(params)
         if (res?.code === 0) {
           this.$store.dispatch('DispathOrder/removeReqAssignments').then(() => {
@@ -713,7 +728,7 @@ export default {
     },
   },
   async created() {
-    let type = this.$route.params.type;
+    const { type, id } = this.$route.params;
     this.orderType = this.$route.query.orderType;
     // this.getAvailableButton()
     this.handleSystemCardDict(this.dictIds);
@@ -721,20 +736,25 @@ export default {
 
     if (type == 0 || type == 2) {
       // 正常人工指派
-      const orderDetail = {
-        ...this.CarPerfect,
-        // ...this.ChoiceVehicie,
-        ...this.ChoiceDriver,
+      if (id != '0') {
+        const orderDetail = {
+          ...this.CarPerfect,
+          // ...this.ChoiceVehicie,
+          ...this.ChoiceDriver,
+        }
+        this.orderDetail = this.dealReqAssignments(orderDetail);
+        this.computedDetailData(orderDetail);
       }
-      this.orderDetail = this.dealReqAssignments(orderDetail);
-      this.computedDetailData(orderDetail);
+      if (id) {
+        await this.getOrderDetail();
+      }
     } else if (type == 1 || type == 3) {
       // 列表进入详情页
       // 展示详情页面
       await this.getOrderDetail();
       this.orderApprovalLog();
     }
-  }
+  },
 }
 </script>
 <style scoped lang="less">

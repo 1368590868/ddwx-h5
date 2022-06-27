@@ -144,18 +144,33 @@ export default {
       const { reqAssignmentsIndex } = this.$route.query;
       this.$store.dispatch('DispathOrder/setCarAndDriverData', { ...this.radioData, reqAssignmentsIndex, setDataType: 'driverInfo' })
       console.log('this.$store.getters', this.$store.getters);
-      let type = this.$route.params.type;
-      const id = this.$route.params.id;
-
-      if (type == '1') {  // type ==1  是从详情过来的正常派单
-        type = 2;
+      const type = this.$route.params.type;
+      // const id = this.$route.params.id;
+      // if (type == '1') {  // type ==1  是从详情过来的正常派单
+      //   type = 2;
+      // }
+      if (type == 0) {
+        // type = 0 新建调度单  人工派车
+        this.$router.push({
+          name: 'CreateOder',
+          params: { ...this.$route.params },
+          query: this.$route.query,
+        });
+        return
+      }
+      if (type == 5) {
+        // type = 5 派单
+        this.$router.push({
+          name: 'ConfirmDistribute',
+          params: { ...this.$route.params },
+          query: this.$route.query,
+        });
+        return
       }
       this.$router.push({
         name: 'DispatchDetails',
-        params: { type, id },
-        query: {
-          reqAssignmentsIndex,
-        }
+        params: { ...this.$route.params },
+        query: this.$route.query,
       });
     }
   },

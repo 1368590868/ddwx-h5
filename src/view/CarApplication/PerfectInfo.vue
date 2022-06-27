@@ -202,9 +202,9 @@
                 activitiAssigneeListByType({type: '用车审批'}).then( ({data}) => {
                     if(!data.procDefId){
                         this.vehicleInfoAdd();
-                    }else if(!!data.procDefId){
+                    }else if(data.procDefId){
                         this.form.procDefId = data.procDefId;
-                        if(!!data.assignee){
+                        if(data.assignee){
                             this.form.assignee = data.assignee;
                             this.vehicleInfoAdd();
                         }else{
@@ -255,7 +255,7 @@
                 addVehicleRequest(Object.assign({}, this.form)).then(({data}) => {
                     toast.clear();
                     this.$store.dispatch('CarApplication/clearOneDataAction');
-                    this.$router.push({name: 'SubSuccess', params: {autoId: data}});
+                    this.$router.push({name: 'SubSuccess', params: {id: data}});
                 }).catch((err) => {
                     this.$toast.fail("提交失败!");
                 })
@@ -274,7 +274,7 @@
                         this.$router.back();
                     }
                 });
-            };
+            }
             this.form.userName = this.userInfo.username;
             this.form.phone = this.userInfo.phone;
 

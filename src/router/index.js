@@ -39,7 +39,7 @@ export const routes = [
 				meta: {title: '完善信息'},
 				component: () => import('@/view/CarApplication/PerfectInfo')
 			}, {	// :sAddProofFlag/:scheckType/:typeCode
-				path: 'SubSuccess/:autoId',
+				path: 'SubSuccess/:id',
 				name: 'SubSuccess',
 				meta: {title: '提交成功'},
 				component: () => import('@/view/CarApplication/SubSuccess')
@@ -190,10 +190,22 @@ export const routes = [
 				component: () => import('@/view/DispathOrder/DispathDriver')
 			},
 			{
-				path: 'DispatchDetails/:type/:id',	// type {0: 人工调派, 1: 正常已审批派单。 2： 改派}
+				path: 'DispatchDetails/:type/:id',	// type {0: 人工调派, 。 2： 改派}
 				name: 'DispatchDetails',
 				meta: {title: '调度详情'},
 				component: () => import('@/view/DispathOrder/DispatchDetails')
+			},
+			{
+				path: 'ConfirmDistribute/:type/:id',	// type {5: 正常已审批派单。}
+				name: 'ConfirmDistribute',
+				meta: {title: '派单详情'},
+				component: () => import('@/view/DispathOrder/ConfirmDistribute')
+			},
+			{
+				path: 'CreateOder', // 创建调度单 人工派车
+				name: 'CreateOder',
+				meta: {title: '派单详情'},
+				component: () => import('@/view/DispathOrder/CreateOder')
 			},
 			{
 				path: 'ChangeOder/:type/:id',	// type {0: 人工调派, 1: 正常已审批派单。 2： 改派}
@@ -208,7 +220,7 @@ export const routes = [
 				component: () => import('@/view/DispathOrder/DefaultAddress')
 			},
 			{
-				path: 'DispathSuccess/:autoId',
+				path: 'DispathSuccess/:id',
 				name: 'DispathSuccess',
 				meta: {title: '提交成功'},
 				component: () => import('@/view/DispathOrder/DispathSuccess')
