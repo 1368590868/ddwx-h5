@@ -72,7 +72,7 @@
        
         data() {
             return {
-                autoId:"",
+                id:"",
                 minMinute: 0,   // 最小时间
                 minHour: 0,
                 carTotalCount:0,
@@ -120,9 +120,9 @@
             }
         },
         created(){
-            this.autoId = this.$route.params.id;
+            this.id = this.$route.params.id;
 
-            if(this.autoId==='0'){
+            if(this.id==='0'){
                 this.$nextTick(() => {
                     this.formData.dDepartureTime = parseTime(Date.now(), '{y}-{m}-{d}');
                     this.formData.dDepartureTimeDetail = parseTime(Date.now() + 1000*60*60, '{h}:{i}');
@@ -131,7 +131,7 @@
                 this.getDefaultAddress();
                 this.getCarCount(this.formData.dDepartureTime)
             }else{  
-                this.orderGetOrderDetail(); // 如果有autoId则是再来一单的操作
+                this.orderGetOrderDetail(); // 如果有id则是再来一单的操作
             }
         },
         activated(){
@@ -243,8 +243,8 @@
             },
             onSubmit (values) {
                 this.$store.dispatch('CarApplication/setOneDataAction', this.formData).then(() => {
-                    if (this.autoId !=='0') {   // 复制订单
-                        this.$router.push({name: 'PerfectInfo', query: {autoId:this.autoId}});
+                    if (this.id !=='0') {   // 复制订单
+                        this.$router.push({name: 'PerfectInfo', query: {autoId:this.id}});
                     } else {   // 正常提交
                         this.$router.push({name: 'PerfectInfo'});
                     }
@@ -253,7 +253,10 @@
 
             // 复制订单操作！
             orderGetOrderDetail () {
-                gcywVehicleRequestDispatchList({id:this.autoId}).then(({data}) => {
+                gcywVehicleRequestDispatchList({id:this.id}).then(({data}) => {
+                    if (!data?.list?.length <= 0) {
+                        return
+                    }
                     let obj = data.list[0];
 
                     this.formData.sFromAddrActive = obj.fromAreaId.split(',')[2];  

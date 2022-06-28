@@ -380,7 +380,7 @@ export default {
       console.log(id)
       this.$router.push({
         name: 'StartApplying',
-        params: { autoId: id }
+        params: { id: id }
       });
     }
   },

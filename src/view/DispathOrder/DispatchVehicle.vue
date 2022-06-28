@@ -46,11 +46,11 @@
     </div>
     <div class="button-box">
       <!-- <van-button block type="default" @click="returnDetails" v-if="typeVehicie != 'Vehicie'">返回详情</van-button> -->
-      <!-- <van-button
+      <van-button
         block
         type="default"
         @click="returnDetails"
-      >上一步</van-button> -->
+      >上一步</van-button>
       <van-button
         block
         type="info"

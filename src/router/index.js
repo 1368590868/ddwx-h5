@@ -29,7 +29,7 @@ export const routes = [
 		hidden: true,
 		children: [
 			{
-				path: 'index',
+				path: 'StartApplying/:id',
 				name: 'StartApplying',
 				meta: {title: '开始申请'},
 				component: () => import('@/view/CarApplication/StartApplying')

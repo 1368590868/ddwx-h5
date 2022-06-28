@@ -253,7 +253,7 @@ export default {
     goStartApplyClick() {
       this.$router.push({
         name: 'StartApplying',
-        params: { autoId: '0' }
+        params: { id: '0' }
       });
     },
     goOrderDetailClick(id) {
