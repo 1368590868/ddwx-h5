@@ -186,7 +186,7 @@ export default {
         str = '转入'
       }
       if (reassignStr === 1 || reassignStr == '1') {
-        str = '转存'
+        str = '转出'
       }
       return str
     }

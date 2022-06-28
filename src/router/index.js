@@ -86,7 +86,7 @@ export const routes = [
 			// 	component: () => import('@/view/CarApproval/reject')
 			// },
 			{	// :sAddProofFlag/:scheckType/:typeCode
-				path: 'approvalSuccess/:autoId',
+				path: 'approvalSuccess/:id',
 				name: 'approvalSuccess',
 				meta: {title: '提交成功'},
 				component: () => import('@/view/CarApproval/SubSuccess')

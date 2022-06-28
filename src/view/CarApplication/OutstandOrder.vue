@@ -130,8 +130,8 @@ export default {
       requestQuery: {
         pageSize: 10,
         pageNum: 0,
-        orderByColumn: 'usageDate',
-        isAsc: 'asc'
+        // orderByColumn: 'usageDate',
+        // isAsc: 'asc'
       },
 
       historyRefresh: false,
@@ -141,8 +141,8 @@ export default {
       historyQuery: {
         pageSize: 10,
         pageNum: 0,
-        orderByColumn: 'usageDate',
-        isAsc: 'asc'
+        // orderByColumn: 'usageDate',
+        // isAsc: 'asc'
       },
 
       // 字典编号

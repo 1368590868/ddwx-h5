@@ -252,7 +252,7 @@ export default {
       this.dispatchQuery.pageNum = pageNum + 1;
       const params = {
         ...this.dispatchQuery,
-        ...this.commonQuery
+        // ...this.commonQuery
       }
       gcywVehicleRequestDispatchList(params).then(({ data }) => {
         if (this.dispatchRefresh && this.dispatchQuery.pageNum === 1) {
@@ -279,7 +279,7 @@ export default {
       this.dispatchedQuery.pageNum = pageNum + 1;
       const params = {
         ...this.dispatchedQuery,
-        ...this.commonQuery
+        // ...this.commonQuery
       }
       gcywVehicleRequestDispatchList(params).then(({ data }) => {
         if (this.dispatchedRefreshLoading && this.dispatchedQuery.pageNum === 1) {
@@ -308,7 +308,7 @@ export default {
 
       const params = {
         ...this.historyQuery,
-        ...this.commonQuery
+        // ...this.commonQuery
       }
       gcywVehicleRequestDispatchList(params).then(({ data }) => {
         if (this.historyRefreshLoading && this.historyQuery.pageNum === 1) {

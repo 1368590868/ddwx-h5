@@ -9,7 +9,7 @@
 
     <div
       class="button-box"
-      v-if="orderDetail.isApproval == '1'"
+      v-if="orderDetail.status == '2'"
     >
       <van-button
         block
@@ -98,7 +98,7 @@ import {
   agreeApprovalOrder,
   rejectApprovalOrder,
   activityAssigneeList,
-  orderRequestList,
+  approvalOrderList,
   orderApprovalLog,
   vehicleInfoGetVehicleFile,
 } from '@/api/order'
@@ -156,7 +156,7 @@ export default {
     getOrderDetail() {
       let id = this.$route.params.id;
       console.log("🚀 ~ file: ApprovalDetail.vue ~ line 105 ~ getOrderDetail ~ id", id)
-      orderRequestList({ id }).then(({ data: { list = [] } }) => {
+      approvalOrderList({ id }).then(({ data: { list = [] } }) => {
         const orderDetail = (list[0] ?? {}) || {};
         if (orderDetail.reqAssignments?.length > 0) {
           orderDetail.reqAssignments.forEach(async (item) => {
@@ -214,50 +214,60 @@ export default {
         this.$toast.fail("驳回失败!");
       });
     },
+    // 开始
     // 通过按钮
     async approvalOrderChange() {
-      this.selectAssigneeShow = true;
       const res = await activityAssigneeList({
         businessId: this.$route.params.id || this.orderDetail.id,
+        procDefId: '',
         procInstId: this.orderDetail.procInstId,
         actId: this.orderDetail.actId,
       })
-      console.log('activityAssigneeList', res);
-      if (res.code === 0 || 1 > 0) {
-        const data = res.data || [];
-        this.assigneeListInfo = data;
-        this.assigneeList = this.dealTreeListEmptyChildren(data?.assigneeList) || [];
+      if (res.code === 0) {
+        if (res?.data?.assignee) {
+          // 如果直接返回了审批人信息 则直接通过
+          const param = {
+            assignee: res.data.assignee,
+            businessId: this.$route.params.id || this.orderDetail.id,
+            procInstId: this.orderDetail.procInstId || '',
+            comment: '同意',
+            taskId: this.orderDetail.taskId || '',
+          }
+          this.$dialog.confirm({
+            title: '提示',
+            message: '是否要审批通过?',
+          }).then(() => {
+            this.approvalOrderApi(param)
+          }).catch(() => {
+            // on cancel
+          });
+          return;
+        }
+        // 如果有审批人列表存在, 则直接展示审批人列表供其选择 选择值后在调用 审批通过接口
+        if (res?.data?.assigneeList?.length > 0) {
+          this.selectAssigneeShow = true;
+          const data = res.data || [];
+          this.assigneeListInfo = data;
+          this.assigneeList = this.dealTreeListEmptyChildren(data?.assigneeList) || [];
+          return
+        }
+        // 如果两者都没有 则是最后一级，直接通过
+        this.$dialog.confirm({
+          title: '提示',
+          message: '是否要审批通过?',
+        }).then(() => {
+          const param = {
+            assignee: '',
+            businessId: this.$route.params.id || this.orderDetail.id,
+            procInstId: this.orderDetail.procInstId || '',
+            comment: '同意',
+            taskId: this.orderDetail.taskId || '',
+          }
+          this.approvalOrderApi(param)
+        }).catch(() => {
+          // on cancel
+        });
       }
-
-      // TODO 删除下面多余的
-      // this.assigneeList = this.dealTreeListEmptyChildren([
-      //   {
-      //     "id": null,
-      //     "code": "11",
-      //     "name": "测试单位1",
-      //     "type": "1",
-      //     "children": [
-      //       {
-      //         "id": null,
-      //         "code": "1535099123127439360",
-      //         "name": "经管事业群",
-      //         "type": "2",
-      //         "children": [
-      //           {
-      //             "id": null,
-      //             "code": "1535101376877973504",
-      //             "name": "经管主任",
-      //             "type": "5",
-      //             "children": [],
-      //             "userList": null
-      //           }
-      //         ],
-      //         "userList": null
-      //       }
-      //     ],
-      //     "userList": null
-      //   }
-      // ]);
     },
     // 去除空数组
     dealTreeListEmptyChildren(arr = []) {
@@ -270,7 +280,7 @@ export default {
       });
       return arr;
     },
-    // 确定通过
+    // 确定通过按钮
     async approvalOrder(action, done) {
       const id = this.$route.params.id;
       if (action === 'confirm') {
@@ -278,23 +288,26 @@ export default {
           assignee: this.cascaderValue,
           businessId: id || this.orderDetail.id,
           procInstId: this.orderDetail.procInstId,
-          comment: '',
+          comment: '同意',
           taskId: this.orderDetail.taskId,
         }
-        // eslint-disable-next-line no-unused-vars
-        agreeApprovalOrder(param).then((_data) => {
-          this.$router.push({ name: 'approvalSuccess', params: { id } });
-          // this.$notify({
-          //     type: 'success',
-          //     message: '成功!'
-          // });
-          done();
-        }).catch(() => {
-          done(false);
-        });
+        this.approvalOrderApi(param);
+        done();
         return false;
       }
       done();
+    },
+    // 审批通过请求
+    async approvalOrderApi(param) {
+      // eslint-disable-next-line no-unused-vars
+      agreeApprovalOrder(param).then((_data) => {
+        const id = this.$route.params.id;
+        this.$router.push({ name: 'approvalSuccess', params: { id } });
+        // this.$notify({
+        //     type: 'success',
+        //     message: '成功!'
+        // });
+      })
     },
     // 全部选项选择完毕后，会触发 finish 事件 选择完人员之后
     onFinish({ selectedOptions }) {
