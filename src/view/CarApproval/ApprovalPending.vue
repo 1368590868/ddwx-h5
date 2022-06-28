@@ -175,7 +175,6 @@ export default {
       let top = notClass.scrollTop;
       from.meta.scrollTop = top;
     }
-    console.log("🚀 ~ file: ApprovalPending.vue ~ line 173 ~ beforeRouteLeave ~ to", to)
     next();
   },
   data() {
@@ -281,7 +280,7 @@ export default {
           this.approvedOrderList = {};
         }
         this.historyRefresh = false;
-        if (data?.list?.length.length === 0) {
+        if (data?.list?.length === 0) {
           this.historyFinished = true;
         }
         let list = data?.list || [];
