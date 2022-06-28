@@ -369,11 +369,10 @@ export default {
         } = this.formData;
         let id = this.$route.params.id;
         // let type = id == '0' ? 0 : 2;
-
-        if (id == '0') {
-          this.$router.push({
+        const routeParams = this.$route.params || {};
+         this.$router.push({
             name: 'DispatchVehicle',
-            params: { type: 0, id: '0' },
+            params: routeParams,
             query: {
               reqAssignmentsIndex: 0,
               id,
@@ -383,20 +382,36 @@ export default {
               usageDate,
             }
           })
-          return
-        }
-        this.$router.push({
-          name: 'DispatchVehicle',
-          params: { type: 0, id, },
-          query: {
-            reqAssignmentsIndex: 0,
-            id,
-            unitCode,
-            deptId,
-            reassignUnitCode: '',
-            usageDate,
-          }
-        })
+        // if (id == '0') {
+        //   this.$router.push({
+        //     name: 'DispatchVehicle',
+        //     params: {
+        //       type: '0',
+        //       id: '0'
+        //     },
+        //     query: {
+        //       reqAssignmentsIndex: 0,
+        //       id,
+        //       unitCode,
+        //       deptId,
+        //       reassignUnitCode: '',
+        //       usageDate,
+        //     }
+        //   })
+        //   return
+        // }
+        // this.$router.push({
+        //   name: 'DispatchVehicle',
+        //   params: { type: 0, id, },
+        //   query: {
+        //     reqAssignmentsIndex: 0,
+        //     id,
+        //     unitCode,
+        //     deptId,
+        //     reassignUnitCode: '',
+        //     usageDate,
+        //   }
+        // })
         return
         //  else {
         //   this.$router.push({

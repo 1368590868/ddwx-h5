@@ -14,15 +14,10 @@
         </div>
          -->
     <!-- 新增、派单、复制、订单过来的数据 -->
-    <div
+    <!-- <div
       class="button-box"
       v-if="$route.params.type == 0 || $route.params.type == 2"
     >
-      <!-- <van-button
-        block
-        type="default"
-        @click="returnDetails"
-      >重新选择</van-button> -->
       <van-button
         block
         type="default"
@@ -33,8 +28,8 @@
         type="info"
         @click="confirmOrderDispatch"
       >确认派单</van-button>
-    </div>
-    <div
+    </div> -->
+    <!-- <div
       class="button-box"
       v-if="$route.params.type == 3"
     >
@@ -48,7 +43,7 @@
         type="info"
         @click="dispatchReassignment"
       >确认改派</van-button>
-    </div>
+    </div> -->
     <!-- 调度详情过来的 -->
     <!-- 以前的 0：待审批。1：审批中。2：已审批。3：已派车。4：已领单即已确认。5：已出车。6：待评价即已还车。7：办结。
              8：取消中。9：已取消、a：已封存b审批未通过、c：司机拒单, 增加了、b：审批未通过和c司机拒单状态。增加：d已确认 -->
@@ -453,191 +448,12 @@ export default {
         }
       });
     },
-    async dispatchReassignment() {   // 已审批 派单
-      let toast = this.$toast.loading({
-        duration: 0,
-        message: "派单中..",
-        forbidClick: true
-      });
-      const params = {
-        status: this.orderDetail.status,
-        id: this.orderDetail.id,
-        phone: this.orderDetail.phone,
-        createType: this.orderDetail.createType,
-        usageDate: this.orderDetail.usageDate,
-        usageTime: this.orderDetail.usageTime,
-        handleUserId: this.orderDetail.handleUserId,
-        handleUserName: this.orderDetail.handleUserName,
-        handleUnit: this.orderDetail.handleUnit,
-        handleUnitCode: this.orderDetail.handleUnitCode,
-        reqAssignments: []
-      };
-      params.reqAssignments = this.orderDetail.reqAssignments.map(req => {
-        return {
-          id: req.id,
-          status: req.status,
-          driver: req.driver,
-          driverId: req.driverCode,
-          driverPhone: req.phone,
-          beginMiles: req.startMiles,
-          carNumber: req.carNumber,
-          vinNumber: req.vinNumber,
-        }
-      });
-
-      try {
-        const res = await reassignment(params)
-        if (res?.code === 0) {
-          this.$store.dispatch('DispathOrder/removeReqAssignments').then(() => {
-            this.$router.push({ name: 'DispathSuccess', params: { id: this.orderDetail.id } });
-          })
-        } else {
-          this.$toast.fail(res?.message || "派单失败!，请重试");
-        }
-      } catch (error) {
-        this.$toast.fail("派单失败!，请重试");
-      } finally {
-        toast.clear();
-      }
-    },
-    // 派单
-    async confirmOrderDispatch() {
-      let toast = this.$toast.loading({
-        duration: 0,
-        message: "提交中..",
-        forbidClick: true
-      });
-      let id = this.$route.params.id
-      let params = {}
-      if (id == '0') {
-        // 如果是新建调度单 人工指派
-        params = this.orderDetail
-      } else {
-        params = {
-          status: this.orderDetail.status,
-          id: this.orderDetail.id,
-          phone: this.orderDetail.phone,
-          createType: this.orderDetail.createType,
-          usageDate: this.orderDetail.usageDate,
-          usageTime: this.orderDetail.usageTime,
-          handleUserId: this.orderDetail.handleUserId,
-          handleUserName: this.orderDetail.handleUserName,
-          handleUnit: this.orderDetail.handleUnit,
-          handleUnitCode: this.orderDetail.handleUnitCode,
-          reqAssignments: []
-        };
-      }
-      params.reqAssignments = this.orderDetail.reqAssignments.map(req => {
-        return {
-          id: req.id,
-          status: req.status,
-          driver: req.driver,
-          driverId: req.driverCode,
-          driverPhone: req.phone,
-          beginMiles: req.startMiles,
-          carNumber: req.carNumber,
-          vinNumber: req.vinNumber,
-        }
-      })
-      try {
-        activitiAssigneeListByType({type: '用车审批'}).then( ({data}) => {
-                    if(!data.procDefId){
-                        this.vehicleInfoAdd();
-                    }else if(data.procDefId){
-                        this.form.procDefId = data.procDefId;
-                        if(data.assignee){
-                            this.form.assignee = data.assignee;
-                            this.vehicleInfoAdd();
-                        }else{
-                            this.assigneeList =this.getAssigneeData(data.assigneeList);
-                            this.assigneeShow = true;
-                        }
-                    }
-                })
-        const res = await dispatchOrder(params)
-        if (res?.code === 0) {
-          this.$store.dispatch('DispathOrder/removeReqAssignments').then(() => {
-            this.$router.push({ name: 'DispathSuccess', params: { id: this.orderDetail.id } });
-          })
-        } else {
-          this.$toast.fail(res?.message || "派单失败!，请重试");
-        }
-      } catch (error) {
-        this.$toast.fail("派单失败!，请重试");
-      } finally {
-        toast.clear();
-      }
-    },
     copyOrderChange() {
       let id = this.$route.params.id;
       this.$router.push({
         name: 'DispathApply',
         params: { id, type: '2' }
       });
-    },
-    computedDetailData(detailData) {
-      const {
-        createType = "1",
-        demandName: demand = "",
-        demandCode,
-        deptId,
-        deptName,
-        fromAddr,
-        fromAreaId,
-        hopeBrand,
-        longDistanceTag,
-        phone,
-        reasonName: reason,
-        reasonCode = "1",
-        remark,
-        reqAssignments = [],
-        source = '1',
-        timeLength,
-        toAddr,
-        toAreaIdd,
-        unitCode,
-        unitName,
-        usageDate,
-        usagePersons,
-        usageTime,
-        userName,
-      } = detailData
-      this.orderDetail = {
-        createType,
-        demand,
-        demandCode,
-        deptId,
-        deptName,
-        fromAddr,
-        fromAreaId,
-        hopeBrand,
-        longDistanceTag,
-        phone,
-        reason,
-        reasonCode,
-        remark,
-        reqAssignments,
-        source,
-        timeLength,
-        toAddr,
-        toAreaIdd,
-        unitCode,
-        unitName,
-        usageDate,
-        usagePersons,
-        usageTime,
-        userName,
-      }
-    },
-    getAvailableButton() {
-      let id = ''
-      if (this.$route.params.id != 0) {
-        id = this.$route.params.id ? this.$route.params.id : ''
-      }
-      // let id = this.$route.params.id;
-      getAvailableButton({ id }).then(({ data }) => {
-        this.redispatchOrReject = data
-      })
     },
     // 转派转单 按钮 前往转单 选择单位的页面
     reDispatch() {
@@ -728,32 +544,13 @@ export default {
     },
   },
   async created() {
-    const { type, id } = this.$route.params;
+    // const { type, id } = this.$route.params;
     this.orderType = this.$route.query.orderType;
-    // this.getAvailableButton()
     this.handleSystemCardDict(this.dictIds);
 
 
-    if (type == 0 || type == 2) {
-      // 正常人工指派
-      if (id != '0') {
-        const orderDetail = {
-          ...this.CarPerfect,
-          // ...this.ChoiceVehicie,
-          ...this.ChoiceDriver,
-        }
-        this.orderDetail = this.dealReqAssignments(orderDetail);
-        this.computedDetailData(orderDetail);
-      }
-      if (id) {
-        await this.getOrderDetail();
-      }
-    } else if (type == 1 || type == 3) {
-      // 列表进入详情页
-      // 展示详情页面
-      await this.getOrderDetail();
-      this.orderApprovalLog();
-    }
+    await this.getOrderDetail();
+    this.orderApprovalLog();
   },
 }
 </script>

@@ -18,57 +18,30 @@
       <van-button
         block
         type="info"
-        @click="confirmOrderDispatch"
-      >确认派单</van-button>
+        @click="dispatchReassignment"
+      >确认</van-button>
     </div>
-
-    <!-- <van-popup
-      v-model="assigneeShow"
-      position="bottom"
-    >
-      <van-cascader
-        v-model="assignee"
-        title="请选择审批人"
-        :options="assigneeList"
-        :field-names="fieldNames"
-        @close="assigneeShow = false"
-        @finish="onFinish"
-      />
-    </van-popup> -->
   </div>
 </template>
 <script>
 import {
   gcywVehicleRequestDispatchList,
-  orderApprovalLog,
-  activitiAssigneeListByType,
 } from '@/api/order';
 import {
   carPic,
-  dispatchOrder,
+  reassignment,
 } from '@/api/dispatch';
 import { mapGetters } from 'vuex'
 import platform from '@/view/mixins/platform'
 import getDict from "@/view/mixins/getDict"
 export default {
-  name: 'ConfirmDistribute',
+  name: 'ReassignmentOrder',
   mixins: [platform, getDict],
   data() {
     return {
       carPic,
       orderDetail: {},
       approveLogList: [],
-      // 是否显示选择审批人
-      assigneeShow: false,
-      assignee: '',
-      //工作流数据
-      assigneeList: [],
-      //定义工作流取值字段名称
-      fieldNames: {
-        text: 'name',
-        value: 'code',
-        children: 'children',
-      },
       type: '',
       // 字典编号
       dictIds: {
@@ -77,13 +50,13 @@ export default {
         // 期望车型I
         hopeBrandDict: '101801'
       },
-      procDefId: '',
       dictData: {
         statusDict: '',
         hopeBrandDict: '',
       },
       // 订单类型，订单来源
       orderType: '',
+      oldReqAssignments: [],
     };
   },
   computed: {
@@ -98,19 +71,13 @@ export default {
         this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
       }
     },
-    // 获取订单详情 
+    // 获取订单详情
     async getOrderDetail() {
       let id = this.$route.params.id;
       gcywVehicleRequestDispatchList({ id }).then(({ data: { list = [] } }) => {
-        let orderDetail = (list[0] ?? {}) || {};
+        const orderDetail = (list[0] ?? {}) || {};
+        this.oldReqAssignments = [...orderDetail.reqAssignments]
         this.orderDetail = this.dealReqAssignments(orderDetail) || {};
-      });
-    },
-    // 获取车辆审批日志
-    orderApprovalLog() {
-      let reqId = this.$route.params.id;
-      orderApprovalLog({ reqId }).then(({ data }) => {
-        this.approveLogList = data;
       });
     },
     // 添加车辆按钮
@@ -131,48 +98,18 @@ export default {
         }
       });
     },
-    //全部选项选择完毕后
-    // onFinish({ selectedOptions }) {
-    //   let obj = selectedOptions[selectedOptions.length - 1];
-    //   if (obj.type === "5") {
-    //     this.assigneeShow = false;
-    //     this.assignee = obj.code;
-    //     this.confirmDistribute();
-    //   } else {
-    //     this.$notify({
-    //       type: 'warning',
-    //       message: '请选择审批人!',
-    //     });
-    //   }
-    // },
-    // 确认派单按钮
-    async confirmOrderDispatch() {
-      // const { data = {} } = activitiAssigneeListByType({ type: '用车审批' })
-      // if (!data.procDefId) {
-      //   this.confirmDistribute();
-      //   return;
-      // }
-      // this.procDefId = data.procDefId;
-      // if (data?.assignee) {
-      //   this.assignee = data.assignee;
-      //   this.confirmDistribute();
-      //   return
-      // }
-      // this.assigneeList = this.dealTreeListEmptyChildren(data.assigneeList);
-      // this.assigneeShow = true;
-      this.confirmDistribute()
-    },
-    // 派单请求
-    async confirmDistribute() {
+    // 改派
+    async dispatchReassignment() {   // 已审批 派单
       let toast = this.$toast.loading({
         duration: 0,
-        message: "提交中..",
+        message: "派单中..",
         forbidClick: true
       });
-      let id = this.$route.params.id || this.orderDetail.id
-      let params = {
+      const params = {
         status: this.orderDetail.status,
-        id,
+        fromAddr: this.orderDetail.fromAddr,
+        toAddr: this.orderDetail.toAddr,
+        id: this.orderDetail.id,
         phone: this.orderDetail.phone,
         createType: this.orderDetail.createType,
         usageDate: this.orderDetail.usageDate,
@@ -182,13 +119,26 @@ export default {
         handleUnit: this.orderDetail.handleUnit,
         handleUnitCode: this.orderDetail.handleUnitCode,
         reqAssignments: [],
-        procDefId: '',
-        assignee: this.assignee,
       };
+      let reqAssignments = []
+      if (this.oldReqAssignments.length) {
+        reqAssignments = this.oldReqAssignments.map(item => {
+          return {
+            beginMiles: item.beginMiles || '',
+            carNumber: item.carNumber || '',
+            driver: item.driver || '',
+            driverId: item.driverId || '',
+            driverPhone: item.driverPhone || '',
+            id: item.id || '',
+            vinNumber: item.vinNumber || '',
+            restatus:  1,
+          }
+        })
+      }
       params.reqAssignments = this.orderDetail.reqAssignments.map(req => {
         return {
           id: req.id,
-          status: req.status,
+          restatus: req.restatus,
           driver: req.driver,
           driverId: req.driverCode,
           driverPhone: req.phone,
@@ -196,9 +146,13 @@ export default {
           carNumber: req.carNumber,
           vinNumber: req.vinNumber,
         }
-      })
+      });
+      params.reqAssignments = [
+        ...params.reqAssignments,
+        ...reqAssignments
+      ]
       try {
-        const res = await dispatchOrder(params)
+        const res = await reassignment(params)
         if (res?.code === 0) {
           this.$store.dispatch('DispathOrder/removeReqAssignments').then(() => {
             this.$router.push({ name: 'DispathSuccess', params: { id: this.orderDetail.id } });
@@ -229,8 +183,7 @@ export default {
       const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
-        // 正常派单 type: 1
-        params: { type: 1, id, },
+        params: { type: '0', id, },
         query: {
           reqAssignmentsIndex: index,
           id,
@@ -247,26 +200,12 @@ export default {
         this.orderDetail = this.dealReqAssignments(this.orderDetail) || {};
       })
     },
-    // 去除空数组
-    dealTreeListEmptyChildren(arr = []) {
-      arr.forEach(item => {
-        if (!item?.children?.length) {
-          delete item.children;
-        } else {
-          this.dealTreeListEmptyChildren(item.children)
-        }
-      });
-      return arr;
-    },
   },
   async created() {
     // const { type, id } = this.$route.params;
     this.orderType = this.$route.query.orderType;
     this.handleSystemCardDict(this.dictIds);
-    // 列表进入详情页
-    // 展示详情页面
-    await this.getOrderDetail();
-    this.orderApprovalLog();
+    this.getOrderDetail()
   },
 }
 </script>

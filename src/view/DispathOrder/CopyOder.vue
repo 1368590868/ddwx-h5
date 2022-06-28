@@ -89,7 +89,7 @@ export default {
     async confirmOrderDispatch() {
       this.confirmDistribute();
     },
-    // 创建人工派单请求
+    // 创建人工派单请求  复制订单
     async confirmDistribute() {
       let toast = this.$toast.loading({
         duration: 0,

@@ -208,7 +208,7 @@ export default {
         toast.clear();
         this.$router.push({
           name: 'approvalSuccess',
-          params: { id: id }
+          params: { id: this.$route.params.id }
         });
       }).catch((err) => {
         this.$toast.fail("驳回失败!");

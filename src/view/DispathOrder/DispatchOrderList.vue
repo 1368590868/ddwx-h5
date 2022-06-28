@@ -268,6 +268,8 @@ export default {
         this.dispatchList = this.computedGroupDate(list, 'dispatchList')
       }).catch((e) => {
         console.error(e);
+
+        this.dispatchFinished = true;
         alert("错误");
       }).finally(() => {
         this.dispatchLoading = false;
@@ -294,6 +296,7 @@ export default {
         list = this.dealArrToObject(list, 'usageDate') || [];
         this.dispatchedList = this.computedGroupDate(list, 'dispatchedList')
       }).catch((e) => {
+        this.dispatchedFinished = true;
         console.error(e);
         alert("错误");
       }).finally(() => {
@@ -322,6 +325,7 @@ export default {
         list = this.dealArrToObject(list, 'usageDate') || [];
         this.historyList = this.computedGroupDate(list, 'historyList')
       }).catch((e) => {
+        this.historyFinished = true;
         console.error(e);
         alert("错误");
       }).finally(() => {
@@ -344,7 +348,7 @@ export default {
     goStartDispatch() {
       this.$router.push({
         name: 'DispathApply',
-        params: { id: '0' }
+        params: { id: '0', type: '0' }
       });
     },
     goOrderDetailClick(id, type, orderType) {

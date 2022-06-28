@@ -167,6 +167,15 @@ export default {
         });
         return
       }
+      if (type == 3) {
+        // type = 2 复制调度单  人工派车
+        this.$router.push({
+          name: 'ReassignmentOrder',
+          params: { ...this.$route.params },
+          query: this.$route.query,
+        });
+        return
+      }
       if (type == 5) {
         // type = 5 派单
         this.$router.push({

@@ -166,13 +166,13 @@ export const routes = [
 				component: () => import('@/view/DispathOrder/DispatchOrderList')
 			},
 			{
-				path: 'DispathApply/:id',
+				path: 'DispathApply/:type/:id',
 				name: 'DispathApply',
 				meta: {title: '人工调配', keepAlive: true},
 				component: () => import('@/view/DispathOrder/DispathApply')
 			},
 			{
-				path: 'DispathPerfect/:id',
+				path: 'DispathPerfec/:type/:id',
 				name: 'DispathPerfect',
 				meta: {title: '人工调配'},
 				component: () => import('@/view/DispathOrder/DispathPerfect')
@@ -208,10 +208,16 @@ export const routes = [
 				component: () => import('@/view/DispathOrder/CreateOder')
 			},
 			{
-				path: 'CopyOder', // 创建调度单 人工派车
+				path: 'CopyOder/:type/:id', // 创建调度单 人工派车
 				name: 'CopyOder',
-				meta: {title: '派单详情'},
+				meta: {title: '复制订单'},
 				component: () => import('@/view/DispathOrder/CopyOder')
+			},
+			{
+				path: 'ReassignmentOrder/:type/:id', // 创建调度单 人工派车
+				name: 'ReassignmentOrder',
+				meta: {title: '改派订单'},
+				component: () => import('@/view/DispathOrder/ReassignmentOrder')
 			},
 			{
 				path: 'ChangeOder/:type/:id',	// type {0: 人工调派, 1: 正常已审批派单。 2： 改派}
