@@ -344,8 +344,10 @@ export default {
       this.$router.go(-1);
     },
     addCar() {
-      const { unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode} = this.orderDetail;
+      const { unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
       const { id, type } = this.$route.params
+      const fromAreaIdArr = fromAreaId?.split(',') || [];
+      const cityId = fromAreaIdArr[1] || '';
       const reqAssignmentsIndex = this.reqAssignments.length;
       this.$router.push({
         name: 'DispatchVehicle',
@@ -358,6 +360,7 @@ export default {
           reassignUnitCode,
           usageDate,
           assignUnitCode,
+          cityId,
         }
       });
     },
@@ -418,7 +421,9 @@ export default {
     },
     // 派单 type: 5
     distribute() { // 保存当前数据
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode } = this.orderDetail;
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId } = this.orderDetail;
+      const fromAreaIdArr = fromAreaId?.split(',') || [];
+      const cityId = fromAreaIdArr[1] || '';
       this.$router.push({
         name: 'DispatchVehicle',
         params: { type: 5, id, },
@@ -429,14 +434,17 @@ export default {
           deptId,
           reassignUnitCode,
           usageDate,
-          assignUnitCode
+          assignUnitCode,
+          cityId,
         }
       });
       this.$store.dispatch('DispathOrder/removeReqAssignments')
     },
     // 改派
     reassignmentClick() {
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, } = this.orderDetail;
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode,  fromAreaId, } = this.orderDetail;
+      const fromAreaIdArr = fromAreaId?.split(',') || [];
+      const cityId = fromAreaIdArr[1] || '';
       this.$router.push({ // 改派为3
         name: 'DispatchVehicle',
         params: { type: 3, id },
@@ -448,6 +456,7 @@ export default {
           reassignUnitCode,
           usageDate,
           assignUnitCode,
+          cityId,
         }
       });
     },
@@ -490,7 +499,9 @@ export default {
     // 重新选择
     reselect(index) {
       this.$emit('reselect', index);
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, } = this.orderDetail;
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
+      const fromAreaIdArr = fromAreaId?.split(',') || [];
+      const cityId = fromAreaIdArr[1] || '';
       this.$router.push({
         name: 'DispatchVehicle',
         // 正常派单 type: 1
@@ -503,6 +514,7 @@ export default {
           reassignUnitCode,
           usageDate,
           assignUnitCode,
+          cityId,
         }
       });
     },

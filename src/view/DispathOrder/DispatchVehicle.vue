@@ -1,6 +1,13 @@
 <template>
   <div class="ChoiceVehicies">
-    <p class="titleVeh"><span>分派车辆时注意所在地限行法规</span></p>
+    <p class="titleVeh">
+      <span>车辆:</span>
+      <span>{{isDisableDriving}}</span>
+      <span :class="`${'disabled-driving'}`">
+        {{isDisableDriving}}
+      </span>
+    </p>
+    <!-- <p class="titleVeh"><span>分派车辆时注意所在地限行法规</span></p> -->
     <div
       class="list_overflow"
       ref="notClass"
@@ -22,27 +29,28 @@
               class="van-radio-groups"
               v-for="(item, index) in carData"
               :key="index"
-              @click="radioClick(item)"
+              @click="radioClick(item, index)"
             >
-              <van-radio :name="item.carNumber">
-              </van-radio>
-              <p class="pImg-left">
-                <img
-                  :src="checkCarImagePath(item.carBrand, item.carSeries)"
-                  alt=""
-                >
-                <span>{{item.carNumber}}</span>
-                <span>{{item.carBrand}} {{item.carSeries}}</span>
-                <!-- <span class="sright">{{item.carModel}}</span> -->
-              </p>
-              <!-- <p class="pImg-right">
-                                
-                                
-                            </p> -->
+              <div>
+                <van-radio :name="item.carNumber">
+                </van-radio>
+                <p class="pImg-left">
+                  <img
+                    :src="checkCarImagePath(item.carBrand, item.carSeries)"
+                    alt=""
+                  >
+                  <span>{{item.carNumber}}</span>
+                  <span>{{item.carBrand}} {{item.carSeries}}</span>
+                  <span class="sright">{{item.carModel}}</span>
+                </p>
+              </div>
             </div>
           </van-radio-group>
         </van-list>
       </van-pull-refresh>
+    </div>
+    <div>
+
     </div>
     <div class="button-box">
       <!-- <van-button block type="default" @click="returnDetails" v-if="typeVehicie != 'Vehicie'">返回详情</van-button> -->
@@ -63,12 +71,20 @@
 </template>
 <script>
 import { vehicleInfoGetAvailableCar, carPic } from '@/api/dispatch'
+import { carIsDriving } from '@/api/driving'
 import { mapGetters } from 'vuex'
 import checkCarImagePath from '@/utils/carPath'
 export default {
   name: 'DispatchVehicle',
   computed: {
     ...mapGetters(['DispathOrder'])
+  },
+
+  filters: {
+    isDrivingFormat(mes) {
+      console.log("🚀 ~ file: DispatchVehicle.vue ~ line 83 ~ isDrivingFormat ~ mes", mes)
+
+    }
   },
   watch: {
   },
@@ -106,6 +122,7 @@ export default {
         pageSize: 10,
         pageNum: 0
       },
+      isDisableDriving: '',
       typeVehicie: '',
       type: '',
       checkCarImagePath,
@@ -121,9 +138,10 @@ export default {
       //重新加载
       this.getAvailableCar();
     },
-    radioClick(val) {
+    radioClick(val, index) {
       this.radioData = val;
       this.radio = val.carNumber;
+      this.viewCarIsDriving(val.carNumber, index)
     },
     getAvailableCar() {
       this.requestLoading = true;
@@ -179,7 +197,27 @@ export default {
       //     name: 'ChoiceDriver',
       //     params: {typeDriver: typeDriver}
       // });
-    }
+    },
+
+    // 查询车辆限行
+    viewCarIsDriving(carNumber, index) {
+      const { usageDate, cityId } = this.$route.query || {};
+      let obj = {
+        carNumber: carNumber,
+        date: usageDate,
+        cityId,
+      }
+      carIsDriving(obj).then(({ message }) => {
+        if (!message) {
+          this.isDisableDriving = ''
+        }
+        if (message !== '操作成功') {
+          this.isDisableDriving = `${message}限行`
+        } else {
+          this.isDisableDriving = '不限行'
+        }
+      })
+    },
   },
   created() {
     let typeVehicie = this.$route.params.typeVehicie;
@@ -250,18 +288,10 @@ export default {
         color: #2e2e2e;
       }
     }
-    .pImg-right {
-      width: 33%;
-      float: right;
-      span {
-        line-height: 64px;
-        font-size: 14px;
-        color: #2e2e2e;
-        &.sright {
-          float: right;
-        }
-      }
-    }
   }
+}
+// 限行信息系
+.disabled-driving {
+  color: #e77676;
 }
 </style>

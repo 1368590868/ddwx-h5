@@ -23,7 +23,7 @@
               class="van-radio-groups"
               v-for="(item, index) in driverData"
               :key="item.driverCode + index + ''"
-              @click="radioClick(item)"
+              @click="radioClick(item, index)"
             >
               <van-radio :name="item.driverCode">
               </van-radio>
@@ -108,12 +108,12 @@ export default {
       this.requestLoading = true;
       this.getAvailableDriver(); //重新加载
     },
-    radioClick(val) {
+    radioClick(val,index) {
       this.radioData = val;
       this.radio = val.driverCode;
     },
     getAvailableDriver() {
-      const { usageDate, reassignUnitCode, assignUnitCode, deptId} = this.$route.query || {};
+      const { usageDate, reassignUnitCode, assignUnitCode, deptId } = this.$route.query || {};
       const params = {
         classDateEnd: usageDate,
         classDateStart: usageDate,
@@ -134,7 +134,6 @@ export default {
       this.$router.go(-1);
     },
     async determine() {
-
       let radio = this.radio;
       if (!radio) {
         this.$toast("请选择司机！");
@@ -190,7 +189,7 @@ export default {
         params: { ...this.$route.params },
         query: this.$route.query,
       });
-    }
+    },
   },
   created() {
     let typeDriver = this.$route.params.typeDriver;
