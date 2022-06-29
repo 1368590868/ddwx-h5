@@ -103,7 +103,7 @@
       </li>
       <li class="info-label">
         <i class="icon font_family icon-icon-date-20"></i>
-        <span>时间：</span><span>{{orderDetail.usageDate + `&nbsp;` + orderDetail.usageTime}}</span>
+        <span>时间：</span><span>{{orderDetail.usageDate || ''}}&nbsp;{{orderDetail.usageTime || ''}}</span>
       </li>
     </ul>
     <ul class="info-box">

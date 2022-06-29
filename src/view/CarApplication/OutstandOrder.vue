@@ -97,6 +97,7 @@
 import { orderRequestList } from '@/api/order'
 import getDict from "@/view/mixins/getDict"
 import { mapGetters } from 'vuex'
+import dayjs from 'dayjs'
 export default {
   name: 'OutstandOrder',
   mixins: [getDict],
@@ -173,7 +174,9 @@ export default {
     },
     dealArrToObject(arr = [], key = '') {
       //   return Object.fromEntries(arr.map((item) => [item[key], [item]]));
-      return arr.map((item) => [item[key], [item]]);
+      return arr.map((item) => {
+        return [dayjs(item[key]).format('YYYY-MM-DD'), [item]]
+      });
     },
     // 用车申请列表 1为历史订单，2为未完成订单
     getOrderList() {
@@ -195,7 +198,7 @@ export default {
           return;
         }
         let list = data?.list || [];
-        list = this.dealArrToObject(list, 'usageDate') || [];
+        list = this.dealArrToObject(list, 'createTime') || [];
         this.requestList = this.computedGroupDate(list, 'requestList')
       }).catch((error) => {
         console.log('getOrderList', error)
@@ -220,7 +223,7 @@ export default {
       this.historyLoading = true;
       this.historyQuery.pageNum = pageNum + 1;
       const params = {
-        ...this.requestQuery,
+        ...this.historyQuery,
         // 1为历史订单，2为未完成订单
         isFinsh: '1',
       }
@@ -235,7 +238,7 @@ export default {
           return;
         }
         let list = data?.list || [];
-        list = this.dealArrToObject(list, 'usageDate') || [];
+        list = this.dealArrToObject(list, 'createTime') || [];
         this.historyList = this.computedGroupDate(list, 'historyList')
       }).catch(() => {
         alert('err')

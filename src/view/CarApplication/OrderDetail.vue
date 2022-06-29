@@ -299,9 +299,15 @@ export default {
       }
     },
     // 获取订单详情
-    getOrderDetail() {
-      let id = this.$route.params.id;
-      orderRequestList({ id }).then(({ data: { list = [] } }) => {
+    async getOrderDetail() {
+      const toast = this.$toast.loading({
+        duration: 0,
+        message: "加载中..",
+        forbidClick: true
+      });
+      try {
+        let id = this.$route.params.id;
+        const { data: { list = [] } } = await orderRequestList({ id })
         const orderDetail = (list[0] ?? {}) || {};
         if (orderDetail.reqAssignments?.length > 0) {
           orderDetail.reqAssignments.forEach(async (item) => {
@@ -309,10 +315,12 @@ export default {
           })
         }
         this.orderDetail = orderDetail;
+      } catch (error) {
 
-      }).catch(() => {
         alert("获取详情失败!");
-      });
+      } finally {
+        toast.clear()
+      }
     },
     // 根据车架号获取图片
     async getCarImage(vinNumber = '') {
@@ -384,11 +392,11 @@ export default {
       });
     }
   },
-  async created() {
+  created() {
     this.$store.commit('removeThisPage', 'StartApplying');
-    this.getOrderDetail();
-    await this.handleSystemCardDict(this.dictIds);
+    this.handleSystemCardDict(this.dictIds);
     this.orderApprovalLog();
+    this.getOrderDetail();
   }
 }
 </script>
