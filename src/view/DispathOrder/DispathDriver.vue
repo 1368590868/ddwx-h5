@@ -113,13 +113,13 @@ export default {
       this.radio = val.driverCode;
     },
     getAvailableDriver() {
-      const { unitCode, usageDate, } = this.$route.query || {};
+      const { usageDate, assignUnitCode} = this.$route.query || {};
       const params = {
         classDateEnd: usageDate,
         classDateStart: usageDate,
         classId: 'none',
         flag: 0,
-        unitCode,
+        unitCode: assignUnitCode,
       }
       getDispatchAvailableDriver(Object.assign({}, this.requestQuery, params)).then(({ data }) => {
         this.requestRefreshLoading = false;

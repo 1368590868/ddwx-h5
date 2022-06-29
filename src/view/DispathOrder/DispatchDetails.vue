@@ -344,7 +344,7 @@ export default {
       this.$router.go(-1);
     },
     addCar() {
-      const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      const { unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode} = this.orderDetail;
       const { id, type } = this.$route.params
       const reqAssignmentsIndex = this.reqAssignments.length;
       this.$router.push({
@@ -357,6 +357,7 @@ export default {
           deptId,
           reassignUnitCode,
           usageDate,
+          assignUnitCode,
         }
       });
     },
@@ -417,7 +418,7 @@ export default {
     },
     // 派单 type: 5
     distribute() { // 保存当前数据
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
         params: { type: 5, id, },
@@ -428,13 +429,14 @@ export default {
           deptId,
           reassignUnitCode,
           usageDate,
+          assignUnitCode
         }
       });
       this.$store.dispatch('DispathOrder/removeReqAssignments')
     },
     // 改派
     reassignmentClick() {
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, } = this.orderDetail;
       this.$router.push({ // 改派为3
         name: 'DispatchVehicle',
         params: { type: 3, id },
@@ -445,6 +447,7 @@ export default {
           deptId,
           reassignUnitCode,
           usageDate,
+          assignUnitCode,
         }
       });
     },
@@ -487,7 +490,7 @@ export default {
     // 重新选择
     reselect(index) {
       this.$emit('reselect', index);
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
         // 正常派单 type: 1
@@ -499,6 +502,7 @@ export default {
           deptId,
           reassignUnitCode,
           usageDate,
+          assignUnitCode,
         }
       });
     },
