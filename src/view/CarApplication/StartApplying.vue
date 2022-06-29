@@ -254,7 +254,7 @@
             // 复制订单操作！
             orderGetOrderDetail () {
                 gcywVehicleRequestDispatchList({id:this.id}).then(({data}) => {
-                    if (!data?.list?.length <= 0) {
+                    if (data?.list?.length <= 0) {
                         return
                     }
                     let obj = data.list[0];
