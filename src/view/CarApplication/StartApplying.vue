@@ -244,7 +244,7 @@
             onSubmit (values) {
                 this.$store.dispatch('CarApplication/setOneDataAction', this.formData).then(() => {
                     if (this.id !=='0') {   // 复制订单
-                        this.$router.push({name: 'PerfectInfo', query: {autoId:this.id}});
+                        this.$router.push({name: 'PerfectInfo', query: {id:this.id}});
                     } else {   // 正常提交
                         this.$router.push({name: 'PerfectInfo'});
                     }

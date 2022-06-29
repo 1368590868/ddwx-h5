@@ -127,7 +127,7 @@ export default {
     },
     getAvailableCar() {
       this.requestLoading = true;
-      const { assignUnitCode, deptId, reassignUnitCode: reassignUnitCode } = this.$route.query || {};
+      const { assignUnitCode, deptId, reassignUnitCode, } = this.$route.query || {};
       const params = {
         unitCode: assignUnitCode,
         deptId,

@@ -109,3 +109,12 @@ export function minioUpload(data) {
 		data
 	})
 }
+
+//判断车辆是否限行
+export function carIsDriving(params) {
+  return request({
+    url: `/vehicleInfo/isRestriction`,
+    method: 'get',
+    params
+  })
+}
