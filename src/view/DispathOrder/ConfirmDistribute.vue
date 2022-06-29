@@ -181,14 +181,15 @@ export default {
         handleUserName: this.orderDetail.handleUserName,
         handleUnit: this.orderDetail.handleUnit,
         handleUnitCode: this.orderDetail.handleUnitCode,
+        fromAddr: this.orderDetail.fromAddr,
+        toAddr: this.orderDetail.toAddr,
         reqAssignments: [],
         procDefId: '',
-        assignee: this.assignee,
       };
       params.reqAssignments = this.orderDetail.reqAssignments.map(req => {
         return {
           id: req.id,
-          status: req.status,
+          restatus: req.restatus || '',
           driver: req.driver,
           driverId: req.driverCode,
           driverPhone: req.phone,
@@ -225,19 +226,14 @@ export default {
     },
     // 重新选择
     reselect(index) {
-      this.$emit('reselect', index);
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      // const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
         // 正常派单 type: 1
-        params: { type: 1, id, },
+        params: this.$route.params,
         query: {
+          ...this.$route.query,
           reqAssignmentsIndex: index,
-          id,
-          unitCode,
-          deptId,
-          reassignUnitCode,
-          usageDate,
         }
       });
     },
@@ -259,13 +255,12 @@ export default {
       return arr;
     },
   },
-  async created() {
-    // const { type, id } = this.$route.params;
+  created() {
     this.orderType = this.$route.query.orderType;
     this.handleSystemCardDict(this.dictIds);
     // 列表进入详情页
     // 展示详情页面
-    await this.getOrderDetail();
+    this.getOrderDetail();
     this.orderApprovalLog();
   },
 }
