@@ -5,45 +5,7 @@
       :order-detail="orderDetail"
       :approve-log-list="approveLogList"
       :dict-data="dictData"
-      :is-show-operate-car="$route.params.type === 0 || $route.params.type === 2 || $route.params.type === 3"
-      @reselect="reselect"
-      @deleteCar="deleteCar"
     />
-    <!-- <div class="form-button" v-if="userInfo.loginName != orderDetail.sOperator && (orderDetail.state === '已派车' || orderDetail.state === '已领单' || orderDetail.state === '已出车')">
-            <van-button block type="default" @click="cancelOrderButton">取消订单</van-button>
-        </div>
-         -->
-    <!-- 新增、派单、复制、订单过来的数据 -->
-    <!-- <div
-      class="button-box"
-      v-if="$route.params.type == 0 || $route.params.type == 2"
-    >
-      <van-button
-        block
-        type="default"
-        @click="addCar"
-      >添加车辆</van-button>
-      <van-button
-        block
-        type="info"
-        @click="confirmOrderDispatch"
-      >确认派单</van-button>
-    </div> -->
-    <!-- <div
-      class="button-box"
-      v-if="$route.params.type == 3"
-    >
-      <van-button
-        block
-        type="default"
-        @click="addCar"
-      >添加车辆</van-button>
-      <van-button
-        block
-        type="info"
-        @click="dispatchReassignment"
-      >确认改派</van-button>
-    </div> -->
     <!-- 调度详情过来的 -->
     <!-- 以前的 0：待审批。1：审批中。2：已审批。3：已派车。4：已领单即已确认。5：已出车。6：待评价即已还车。7：办结。
              8：取消中。9：已取消、a：已封存b审批未通过、c：司机拒单, 增加了、b：审批未通过和c司机拒单状态。增加：d已确认 -->
@@ -260,13 +222,9 @@ import {
   gcywVehicleRequestDispatchList,
   orderApprovalLog,
   orderCancelOrder,
-  activitiAssigneeListByType,
 } from '@/api/order';
 import {
   carPic,
-  dispatchOrder,
-  reassignment,
-  getAvailableButton,
   reject,
   updateChangeOrder,
 } from '@/api/dispatch';
@@ -320,17 +278,8 @@ export default {
     async getOrderDetail() {
       let id = this.$route.params.id;
       gcywVehicleRequestDispatchList({ id }).then(({ data: { list = [] } }) => {
-        // this.orderDetail = data;
-        // this.orderDetail.unitval = data.companyName
-        // this.orderDetail.deptval = data.deptName
-        let orderDetail = (list[0] ?? {}) || {};
-
-        let type = this.$route.params.type;
-        if (type == 0 || type == 2 || type == 3) {
-          this.orderDetail = this.dealReqAssignments(orderDetail) || {};
-        } else {
-          this.orderDetail = orderDetail;
-        }
+        const orderDetail = (list[0] ?? {}) || {};
+        this.orderDetail = orderDetail;
       });
     },
     // 获取车辆审批日志
@@ -338,30 +287,6 @@ export default {
       let reqId = this.$route.params.id;
       orderApprovalLog({ reqId }).then(({ data }) => {
         this.approveLogList = data;
-      });
-    },
-    returnDetails() {
-      this.$router.go(-1);
-    },
-    addCar() {
-      const { unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
-      const { id, type } = this.$route.params
-      const fromAreaIdArr = fromAreaId?.split(',') || [];
-      const cityId = fromAreaIdArr[1] || '';
-      const reqAssignmentsIndex = this.reqAssignments.length;
-      this.$router.push({
-        name: 'DispatchVehicle',
-        params: { id, type },
-        query: {
-          reqAssignmentsIndex,
-          id,
-          unitCode,
-          deptId,
-          reassignUnitCode,
-          usageDate,
-          assignUnitCode,
-          cityId,
-        }
       });
     },
     // 点击取消订单按钮
@@ -440,9 +365,9 @@ export default {
       });
       this.$store.dispatch('DispathOrder/removeReqAssignments')
     },
-    // 改派
+    // 改派 type: '3'
     reassignmentClick() {
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode,  fromAreaId, } = this.orderDetail;
+      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
       const fromAreaIdArr = fromAreaId?.split(',') || [];
       const cityId = fromAreaIdArr[1] || '';
       this.$router.push({ // 改派为3
@@ -460,14 +385,27 @@ export default {
         }
       });
     },
+    // 复制订单 type: '2'
     copyOrderChange() {
+      const { unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
+      const fromAreaIdArr = fromAreaId?.split(',') || [];
+      const cityId = fromAreaIdArr[1] || '';
       let id = this.$route.params.id;
       this.$router.push({
         name: 'DispathApply',
-        params: { id, type: '2' }
+        params: { id, type: '2' },
+        query: {
+          reqAssignmentsIndex: 0,
+          unitCode,
+          deptId,
+          reassignUnitCode,
+          usageDate,
+          assignUnitCode,
+          cityId,
+        }
       });
     },
-    // 转派转单 按钮 前往转单 选择单位的页面
+    // 转派转单 type: '1' 按钮 前往转单 选择单位的页面
     reDispatch() {
       let id = this.$route.params.id;
       this.$router.push({
@@ -478,50 +416,12 @@ export default {
         }
       })
     },
+    // 驳回
     reject() {
       let id = this.$route.params.id;
       reject({ id }).then(({ data }) => {
         this.$toast.success("驳回成功！")
         this.$router.push({ path: '/DispathOrder', query: { refresh: true } });
-      })
-    },
-    // 处理选中的数据与详情结合起来 
-    dealReqAssignments(detail) {
-      const reqAssignments = this.reqAssignments.map(item => {
-        return {
-          ...item.driverInfo,
-          ...item.carInfo,
-        }
-      })
-      detail['reqAssignments'] = reqAssignments;
-      return detail;
-    },
-    // 重新选择
-    reselect(index) {
-      this.$emit('reselect', index);
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
-      const fromAreaIdArr = fromAreaId?.split(',') || [];
-      const cityId = fromAreaIdArr[1] || '';
-      this.$router.push({
-        name: 'DispatchVehicle',
-        // 正常派单 type: 1
-        params: { type: 1, id, },
-        query: {
-          reqAssignmentsIndex: index,
-          id,
-          unitCode,
-          deptId,
-          reassignUnitCode,
-          usageDate,
-          assignUnitCode,
-          cityId,
-        }
-      });
-    },
-    // 删除车辆
-    deleteCar(index) {
-      this.$store.dispatch('DispathOrder/deleteReqAssignmentsItem', index).then(() => {
-        this.orderDetail = this.dealReqAssignments(this.orderDetail) || {};
       })
     },
     // 转派取消 或者 转派拒绝
@@ -560,11 +460,8 @@ export default {
     },
   },
   async created() {
-    // const { type, id } = this.$route.params;
     this.orderType = this.$route.query.orderType;
     this.handleSystemCardDict(this.dictIds);
-
-
     await this.getOrderDetail();
     this.orderApprovalLog();
   },

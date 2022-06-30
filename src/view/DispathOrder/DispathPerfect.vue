@@ -360,6 +360,8 @@ export default {
         ...this.formData,
         ...this.CarOneData
       }
+      const fromAreaIdArr = setPerfectActionData?.fromAreaId?.split(',') || [];
+      const cityId = fromAreaIdArr[1] || '';
       this.$store.dispatch('DispathOrder/setPerfectAction', setPerfectActionData).then(() => {
         const {
           unitCode,
@@ -367,65 +369,32 @@ export default {
           // reassignUnitCode,
           usageDate,
         } = this.formData;
-        let id = this.$route.params.id;
-        // let type = id == '0' ? 0 : 2;
+        let type = this.$route.params.type;
         const routeParams = this.$route.params || {};
-         this.$router.push({
+        if (type == 2) {
+          this.$router.push({
             name: 'DispatchVehicle',
             params: routeParams,
             query: {
+              ...this.$route.query,
               reqAssignmentsIndex: 0,
-              id,
-              unitCode,
-              deptId,
-              reassignUnitCode: '',
-              usageDate,
             }
           })
-        // if (id == '0') {
-        //   this.$router.push({
-        //     name: 'DispatchVehicle',
-        //     params: {
-        //       type: '0',
-        //       id: '0'
-        //     },
-        //     query: {
-        //       reqAssignmentsIndex: 0,
-        //       id,
-        //       unitCode,
-        //       deptId,
-        //       reassignUnitCode: '',
-        //       usageDate,
-        //     }
-        //   })
-        //   return
-        // }
-        // this.$router.push({
-        //   name: 'DispatchVehicle',
-        //   params: { type: 0, id, },
-        //   query: {
-        //     reqAssignmentsIndex: 0,
-        //     id,
-        //     unitCode,
-        //     deptId,
-        //     reassignUnitCode: '',
-        //     usageDate,
-        //   }
-        // })
-        return
-        //  else {
-        //   this.$router.push({
-        //     name: 'DispatchVehicle',
-        //     // 2为复制订单
-        //     params: { type: 2, id: 0 },
-        //     query: {
-        //       unitCode,
-        //       deptId,
-        //       tunUnitCode: reassignUnitCode || '',
-        //     }
-        //   })
-        // }
-
+          return
+        }
+        this.$router.push({
+          name: 'DispatchVehicle',
+          params: routeParams,
+          query: {
+            reqAssignmentsIndex: 0,
+            unitCode,
+            deptId,
+            reassignUnitCode: '',
+            usageDate,
+            assignUnitCode: unitCode,
+            cityId,
+          },
+        })
 
       });
     },

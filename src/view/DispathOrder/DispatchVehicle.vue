@@ -3,7 +3,7 @@
     <p class="titleVeh">
       <span>车辆:</span>
       <span>{{radioData.carNumber}}</span>
-      <span :class="`${'disabled-driving'}`">
+      <span :class="`${isDisableDriving === '不限行' ? '' : 'disabled-driving'}`">
         {{isDisableDriving}}
       </span>
     </p>
@@ -81,10 +81,6 @@ export default {
   },
 
   filters: {
-    isDrivingFormat(mes) {
-      console.log("🚀 ~ file: DispatchVehicle.vue ~ line 83 ~ isDrivingFormat ~ mes", mes)
-
-    }
   },
   watch: {
   },
@@ -200,7 +196,7 @@ export default {
     },
 
     // 查询车辆限行
-    viewCarIsDriving(carNumber, index) {
+    viewCarIsDriving(carNumber, _index) {
       const { usageDate, cityId } = this.$route.query || {};
       let obj = {
         carNumber: carNumber,

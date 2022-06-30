@@ -320,13 +320,11 @@ export default {
     onSubmit() {
       // let id = this.$route.params.id;
       this.$store.dispatch('DispathOrder/setOneDataAction', this.formData).then(() => {   // 存储开始订单的数据，以防止回退
-        const params = this.$route.params;
-        this.$router.push({ name: 'DispathPerfect', params })
-        // if (id != '0') {
-        //   this.$router.push({ name: 'DispathPerfect', params: { id, type: '2' } });  // 待派车复制订单
-        // } else {
-        //   this.$router.push({ name: 'DispathPerfect', params: { id: '0', type: '0' } });  // 新增
-        // }
+        this.$router.push({
+          name: 'DispathPerfect',
+          params: this.$route.params,
+          query: this.$route.query,
+        })
       });
     },
     // 复制订单操作！

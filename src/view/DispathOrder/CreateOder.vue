@@ -69,19 +69,15 @@ export default {
     },
     // 添加车辆按钮
     addCar() {
-      const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
-      const { id, type } = this.$route.params
+      // const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      // const { id, type } = this.$route.params
       const reqAssignmentsIndex = this.reqAssignments.length;
       this.$router.push({
         name: 'DispatchVehicle',
-        params: { id, type },
+        params: this.$route.params,
         query: {
+          ...this.$route.query,
           reqAssignmentsIndex,
-          id,
-          unitCode,
-          deptId,
-          reassignUnitCode,
-          usageDate,
         }
       });
     },
@@ -142,18 +138,13 @@ export default {
     },
     // 重新选择
     reselect(index) {
-      this.$emit('reselect', index);
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      // const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
-        params: { type: '0', id, },
+        params: this.$route.params,
         query: {
+          ...this.$route.query,
           reqAssignmentsIndex: index,
-          id,
-          unitCode,
-          deptId,
-          reassignUnitCode,
-          usageDate,
         }
       });
     },

@@ -80,7 +80,6 @@ export default {
 
   },
   mounted() {
-    console.log('orderListData', this.orderListData);
   },
   methods: {
     clickItem(id, orderType) {
