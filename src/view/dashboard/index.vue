@@ -4,7 +4,7 @@
         <div class="dashboard-menu">
             <div class="menu-title">
                 <h3>公务用车管理系统</h3>
-                <p>用户名：{{userInfo.username}}</p>
+                <p style="margin-bottom:30px">用户名：{{userInfo.username}}</p>
             </div>
             <div class="menu-btnlist">
                 <van-button color="#3681ee" v-if="checkMenuDisplay('myCar')" type="primary" :icon="dash1" block to="/CarApplication/OutstandOrder">申请用车</van-button>
@@ -105,9 +105,10 @@ export default {
             display: -webkit-flex;
             flex-direction: column;
             -webkit-flex-direction: column;
-            justify-content: space-evenly;
-            -webkit-justify-content: space-evenly;
+            // justify-content: space-evenly;
+            // -webkit-justify-content: space-evenly;
             .van-button {
+                margin-bottom: 20px;
                 font-size: 16px;
                 height:52px;
                 // margin-bottom: 12px;
