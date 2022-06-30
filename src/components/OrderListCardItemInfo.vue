@@ -24,23 +24,32 @@
           {{childItem.toAddr.split('/')[2].split(' ')[1] | splitLongString}}
         </span>
       </li>
-      <li class="info-label">
+      <div class="info-label">
         <span>分派车辆：</span>
         <span
           class="infor-overflow"
-          v-if="childItem.carNumbe"
+          v-if="childItem.reqAssignments && childItem.reqAssignments.length === 1"
         >
-          {{childItem.carBrand}}
-          {{childItem.carNumber}}
+          {{childItem.reqAssignments[0]['carBrand'] || ''}}
+          {{childItem.reqAssignments[0]['carNumber'] || ''}}
         </span>
         <span
           class="infor-overflow"
+          v-else-if="childItem.reqAssignments && childItem.reqAssignments.length >= 1"
+        >
+          {{childItem.reqAssignments[0]['carBrand'] || ''}}
+          {{`${childItem.reqAssignments[0]['carNumber']} 等${childItem.reqAssignments.length}辆` || ''}}
+        </span>
+        <span
+          class="-overflow"
           v-else
         >
           暂未分配
         </span>
-      </li>
-      <li class="info-label"><span>分派司机：</span><span>{{childItem.driver || '暂未分配'}}</span></li>
+      </div>
+      <li class="info-label" v-if="childItem.reqAssignments && childItem.reqAssignments.length === 1"><span>分派司机：</span><span>{{childItem.reqAssignments[0]['driver'] || ''}}</span></li>
+      <li class="info-label" v-else-if="childItem.reqAssignments && childItem.reqAssignments.length > 1"><span>分派司机：</span><span>{{`${childItem.reqAssignments[0]['driver']} 等${childItem.reqAssignments.length}位` || ''}}</span></li>
+      <li class="info-label" v-else><span>分派司机：</span><span>暂未分配</span></li>
       <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.reqNo}}</span></li>
     </ul>
   </div>
