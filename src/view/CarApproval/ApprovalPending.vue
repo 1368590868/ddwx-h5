@@ -245,7 +245,7 @@ export default {
       const params = {
         ...this.requestQuery,
         // 待审审核的状态
-        status: '2',
+        reviewCompleted: '0'
       }
       approvalOrderList(params).then(({ data }) => {
         if (this.requestRefresh && this.requestQuery.pageNum === 1) {
@@ -273,7 +273,7 @@ export default {
       const params = {
         ...this.historyQuery,
         // 已审核的固定参数
-        reviewCompleted: '1',
+       reviewCompleted: '1',
       }
       approvalOrderList(params).then(({ data }) => {
         if (this.historyRefresh && this.historyQuery.pageNum === 1) {

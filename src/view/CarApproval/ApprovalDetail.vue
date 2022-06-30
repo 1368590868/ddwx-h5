@@ -9,7 +9,7 @@
 
     <div
       class="button-box"
-      v-if="orderDetail.status == '2'"
+      v-if="!orderDetail.endTimeMe"
     >
       <van-button
         block
