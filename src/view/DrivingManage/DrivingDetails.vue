@@ -102,7 +102,7 @@
         <!-- <div class="button-box" v-else-if="orderDetail.stateCode == 5"> -->
         <div class="button-box" v-else-if="orderDetail.status == '4'">
             <van-button block type="default" @click="drivingPickupReminder">接车提醒</van-button>
-            <van-button block type="info"  @click="transferCar=true">确认还车</van-button>
+            <van-button block type="info"  @click="handleTransferCarClick()">确认还车</van-button>
         </div>
 
         <van-popup v-model="dispatchCar" position="bottom"  @close="handleDispatchClose()">    
@@ -142,7 +142,7 @@
         
         <van-popup v-model="transferCar" position="bottom" @close="handleTransferClose()">    
             <van-form class="form-scroll" validate-first @failed="onFailed" @submit="drivingreturnCar">
-                <van-field type="digit" required label="出车里程：" center v-model="transferCarData.beginMiles" placeholder="请输入当前出车里程数" :rules="[{ required: true }, {validator: asyncValidate, message: '还车里程必须大于出车里程!'}]" name="beginMiles">
+                <van-field type="digit" required label="出车里程：" center v-model="transferCarData.beginMiles" :disabled="true" :rules="[{ required: true }, {validator: asyncValidate, message: '还车里程必须大于出车里程!'}]" name="beginMiles">
                     <template #extra><span>千米</span></template>
                 </van-field>
                 <van-field type="digit" required label="还车里程：" center v-model="transferCarData.endMiles" placeholder="请输入当前表显里程数" :rules="[{ required: true }, {validator: asyncValidate, message: '还车里程必须大于出车里程!'}]" name="endMiles">
@@ -389,6 +389,13 @@ export default {
             }).catch(()=>{
 
             })
+        },
+        //确认还车点击回调
+        handleTransferCarClick(){
+            this.transferCar = true;
+            if (!!this.orderDetail.beginMiles) {
+                this.transferCarData.beginMiles = this.orderDetail.beginMiles;
+            }
         },
         //图片上传前
         beforeRead(file) {
