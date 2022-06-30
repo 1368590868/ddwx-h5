@@ -92,7 +92,7 @@
 
                 nReasonActiveIndex: 0,      // 用车事由默认
                 nRangeActiveIndex: 0,       // 用车需求默认
-                sHopeCartyActiveIndex: 0,   // 期望车型默认
+                sHopeCartyActiveIndex: 1,   // 期望车型默认
 
                 assigneeList:[],    //工作流数据
                 //定义工作流取值字段名称
@@ -113,13 +113,13 @@
                     reasonCode: "",        
                     demand: "",           //用车需求
                     demandCode: "",
-                    timeLength: "",        //预计时长
+                    timeLength: "2",        //预计时长
                     longDistanceTag: "0",      //是否长途
                     userName: "",  //乘车人
                     phone: "",      //联系电话
                     hopeBrand: "",     //期望车型
                     hopeBrandName:"",
-                    usagePersons: "",  //乘坐人数
+                    usagePersons: "1",  //乘坐人数
                     remark: "",  //备注
                     source: "2",      //来源 1PC 2APP
                     procDefId: "",
@@ -132,6 +132,8 @@
             dictGetModelType () {
                 getListByParentId("101801").then(({data}) => {
                     this.dictModelType = data;
+                    this.form.hopeBrandName = data[this.sHopeCartyActiveIndex].name;
+                    this.form.hopeBrand = data[this.sHopeCartyActiveIndex].code;
 
                     if (Object.keys(this.CarCopData).length) {
                         this.sHopeCartyActiveIndex = this.dictModelType.findIndex((item) => {
@@ -150,6 +152,8 @@
             dictGetReqRange () {
                 getListByParentId("10018").then(({data}) => {
                     this.dictReqRange = data;
+                    this.form.demand = data[this.nRangeActiveIndex].name;
+                    this.form.demandCode = data[this.nRangeActiveIndex].code;
 
                     if (Object.keys(this.CarCopData).length) {
                         this.nRangeActiveIndex = this.dictReqRange.findIndex((item) => {
@@ -168,6 +172,8 @@
             dictGetReqReason () {
                 getListByParentId("1016").then(({data}) => {
                     this.dictReqReason = data;
+                    this.form.reason = data[this.nReasonActiveIndex].name;
+                    this.form.reasonCode = data[this.nReasonActiveIndex].code;
 
                     if (Object.keys(this.CarCopData).length) {
                         this.nReasonActiveIndex = this.dictReqReason.findIndex((item) => {
@@ -275,7 +281,7 @@
                     }
                 });
             }
-            this.form.userName = this.userInfo.username;
+            this.form.userName = this.userInfo.realName;
             this.form.phone = this.userInfo.phone;
 
             this.form.fromAddr = this.CarOneHist.sFromAddr + ' ' + this.CarOneHist.sFromAddrDetail;
