@@ -25,12 +25,22 @@
         </span>
       </li>
       <li class="info-label">
-        <span>乘 车 人 ：</span>
-        <span class="infor-overflow">
-          {{childItem.userName}}
+        <span>分派车辆：</span>
+        <span
+          class="infor-overflow"
+          v-if="childItem.carNumbe"
+        >
+          {{childItem.carBrand}}
+          {{childItem.carNumber}}
+        </span>
+        <span
+          class="infor-overflow"
+          v-else
+        >
+          暂未分配
         </span>
       </li>
-      <li class="info-label"><span>用车事由：</span><span>{{childItem.reason}}</span></li>
+      <li class="info-label"><span>分派司机：</span><span>{{childItem.driver || '暂未分配'}}</span></li>
       <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.reqNo}}</span></li>
     </ul>
   </div>
@@ -38,7 +48,7 @@
 
 <script>
 export default {
-  name: 'OrderListCardItem',
+  name: 'OrderListCardItemInfo',
   components: {
 
   },

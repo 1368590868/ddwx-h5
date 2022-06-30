@@ -39,7 +39,7 @@
                 v-for="(childItem, index) in item"
                 @click="goOrderDetailClick(childItem.id)"
               >
-                <OrderListCardItem
+                <OrderListCardItemInfo
                   :child-item="childItem"
                   :dict-data="dictData"
                 />
@@ -77,7 +77,7 @@
                 v-for="(childItem, index) in item"
                 @click="goOrderDetailClick(childItem.id)"
               >
-                <OrderListCardItem
+                <OrderListCardItemInfo
                   :child-item="childItem"
                   :dict-data="dictData"
                 />
