@@ -109,7 +109,7 @@
             <van-form class="form-scroll" validate-first @failed="onFailed" @submit="drivingConfirmDriving">
                 <van-field label="出车里程：" center readonly>
                     <template #input>
-                        <span style="color:red;">{{orderDetail.beginMiles}}</span>
+                        <span style="color:red;">{{orderDetail.beginMiles || 0}}</span>
                         <span style="margin-left:10px;">千米</span>
                     </template>
                 </van-field>
