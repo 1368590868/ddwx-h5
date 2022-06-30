@@ -115,19 +115,15 @@ export default {
     },
     // 添加车辆按钮
     addCar() {
-      const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
+      // const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       const { id, type } = this.$route.params
       const reqAssignmentsIndex = this.reqAssignments.length;
       this.$router.push({
         name: 'DispatchVehicle',
         params: { id, type },
         query: {
+          ...this.$route.query,
           reqAssignmentsIndex,
-          id,
-          unitCode,
-          deptId,
-          reassignUnitCode,
-          usageDate,
         }
       });
     },

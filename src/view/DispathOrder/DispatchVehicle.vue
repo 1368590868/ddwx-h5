@@ -2,7 +2,7 @@
   <div class="ChoiceVehicies">
     <p class="titleVeh">
       <span>车辆:</span>
-      <span>{{isDisableDriving}}</span>
+      <span>{{radioData.carNumber}}</span>
       <span :class="`${'disabled-driving'}`">
         {{isDisableDriving}}
       </span>
