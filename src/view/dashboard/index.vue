@@ -80,6 +80,7 @@ export default {
 <style scoped lang="less">
 .dashboard-container {
     background-color:#4395FB;
+    overflow: auto;
     .dashboard-menu {
         height: 70%;
         .menu-title {
@@ -99,8 +100,8 @@ export default {
         }
         .menu-btnlist {
             width:327px;
-            height: calc(100% - 78px);
-            margin: 0 auto;
+            // height: calc(100% - 78px);
+            margin: 0 auto 78px;
             display: flex;
             display: -webkit-flex;
             flex-direction: column;

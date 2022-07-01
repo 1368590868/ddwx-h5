@@ -39,14 +39,14 @@
                     </template>
                 </van-field>
 
-                <van-field center required v-model="form.userName" name="userName" label="乘车人：" placeholder="请输入乘车人" :rules="[{ required: true }]" />
+                <van-field center required v-model="form.userName" name="userName" label="乘车人：" placeholder="请输入乘车人" maxlength="5" :rules="[{ required: true }]" />
                 <van-field center required v-model="form.phone" name="phone" type="tel" label="联系电话：" placeholder="请输入联系电话" :rules="[{ required: true }, {pattern, message: '联系电话输入错误!'}]" />
                 <van-field center required v-model="form.hopeBrandName" name="hopeBrand" readonly right-icon="arrow-down" clickable label="期望车型：" :rules="[{ required: true}]" placeholder="点击选择期望车型" @click="sHopeCartyPicker=true" />
                 <van-popup v-model="sHopeCartyPicker" position="bottom">
                     <van-picker show-toolbar value-key="name" :default-index="sHopeCartyActiveIndex" :columns="dictModelType" @confirm="sHopeCartyConfirm" @cancel="sHopeCartyPicker=false" />
                 </van-popup>
 
-                <van-field center required v-model="form.usagePersons" name="usagePersons"  type="digit" label="乘坐人数：" placeholder="请输入乘坐人数" :rules="[{ required: true}]">
+                <van-field center required v-model="form.usagePersons" name="usagePersons"  type="digit" label="乘坐人数：" maxlength="2" placeholder="请输入乘坐人数" :rules="[{ required: true}]">
                     <template #extra><span>人</span></template>
                 </van-field>
                 <van-field class="form-textarea" v-model="form.remark" name="remark" rows="2" autosize type="textarea" maxlength="50" placeholder="请输入备注" show-word-limit />

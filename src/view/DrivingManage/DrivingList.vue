@@ -11,7 +11,7 @@
                                     <div class="li-address"><b class="b1">{{childItem.fromAddr | checkArea()}}</b><b class="b2">{{childItem.toAddr | checkArea()}}</b></div>
                                     <div class="li-timestu"><time>{{childItem.startDate}}</time><span>出发</span><b class="b-status">{{childItem.status | checkStatus()}}</b></div>
                                 </li>
-                                <li class="info-label"><span>详细地址：</span><span class="infor-overflow">{{childItem.fromAddr.split(' ')[1]}} 到 {{childItem.toAddr.split(' ')[1]}}</span></li>
+                                <li class="info-label"><span>详细地址：</span><span class="infor-overflow" style="margin-right:80px">{{childItem.fromAddr.split(' ')[1]}} 到 {{childItem.toAddr.split(' ')[1]}}</span></li>
                                 <li class="info-label"><span>分派车辆：</span><span class="infor-overflow">{{childItem.carBrand}} {{childItem.carNumber}}</span></li>
                                 <li class="info-label"><span>分派司机：</span><span>{{childItem.driver}}</span></li>
                                 <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.reqNo}}</span></li>
