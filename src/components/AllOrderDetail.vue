@@ -16,10 +16,10 @@
     >
       <div class="reject-title">驳回原因：</div>
       <van-notice-bar
-        :scrollable="orderDetail.auditDesc && orderDetail.auditDesc.length > 20"
+        :scrollable="orderDetail.auditComment && orderDetail.auditComment.length > 20"
         color="#2e2e2e"
         background="#fef9e9"
-      >{{orderDetail.auditDesc || '未填写明确申请原因'}}</van-notice-bar>
+      >{{orderDetail.auditComment || '未填写明确申请原因'}}</van-notice-bar>
     </div>
     <div
       class="reject-box"
