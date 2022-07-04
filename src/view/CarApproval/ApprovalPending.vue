@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="not-class"
-    ref="notClass"
-  >
+  <div class="not-class" ref="notClass">
     <van-tabs
       type="card"
       :sticky="true"
@@ -10,10 +7,7 @@
       :animated="true"
       offset-top="0px"
     >
-      <van-tab
-        title="待审批"
-        :name="0"
-      >
+      <van-tab title="待审批" :name="0">
         <van-pull-refresh
           v-model="requestRefresh"
           @refresh="orderOnRefresh"
@@ -32,54 +26,60 @@
               v-for="(item, usageDate) in approvalOrderList"
               :key="usageDate"
             >
-              <div class="log-title">{{usageDate}}</div>
+              <div class="log-title">{{ usageDate }}</div>
               <ul
                 v-for="(childItem, index) in item"
-                :class="['list-ul', childItem.longDistanceTag == 1 ? 'longway':''] "
+                :class="[
+                  'list-ul',
+                  childItem.longDistanceTag == 1 ? 'longway' : '',
+                ]"
                 :key="childItem.reqNo + index"
                 @click="goOrderDetailClick(childItem.id)"
               >
                 <li class="list-li">
-                  <div class="li-address"><b class="b1">
-                      {{childItem.fromAddr.split('/')[2].split(' ')[0]}}
+                  <div class="li-address">
+                    <b class="b1">
+                      {{ childItem.fromAddr.split("/")[2].split(" ")[0] }}
                     </b>
                     <b class="b2">
-                      {{childItem.toAddr.split('/')[2].split(' ')[0]}}
+                      {{ childItem.toAddr.split("/")[2].split(" ")[0] }}
                     </b>
                   </div>
                   <div class="li-timestu">
-                    <time>{{childItem.usageTime}}</time>
+                    <time>{{ childItem.usageTime }}</time>
                     <span>出发</span>
                     <b class="b-status">
-                      {{dictData.statusDict[childItem.status]}}
+                      {{ dictData.statusDict[childItem.status] }}
                     </b>
                   </div>
                 </li>
-                <li class="info-label"><span>详细地址：</span>
-                  <span>
-                    {{childItem.fromAddr.split('/')[2].split(' ')[1]}}
+                <li class="info-label">
+                  <span>详细地址：</span>
+                  <span class="infor-overflow" style="margin-right:15px">
+                    {{ childItem.fromAddr.split("/")[2].split(" ")[1] }}
                     &nbsp;到&nbsp;
-                    {{childItem.toAddr.split('/')[2].split(' ')[1]}}
+                    {{ childItem.toAddr.split("/")[2].split(" ")[1] }}
                   </span>
                 </li>
                 <li class="info-label">
                   <span>分派车辆：</span>
                   <span class="infor-overflow">
                     <!-- {{childItem.brand || '空的'}} -->
-                    {{childItem.carNumber}}
+                    {{ childItem.carNumber }}
                   </span>
                 </li>
-                <li class="info-label"><span>分派司机：</span><span>{{childItem.driver}}</span></li>
-                <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.reqNo}}</span></li>
+                <li class="info-label">
+                  <span>分派司机：</span><span>{{ childItem.driver }}</span>
+                </li>
+                <li class="info-label">
+                  <span>订 单 号 ：</span><span>{{ childItem.reqNo }}</span>
+                </li>
               </ul>
             </div>
           </van-list>
         </van-pull-refresh>
       </van-tab>
-      <van-tab
-        title="已审批"
-        :name="1"
-      >
+      <van-tab title="已审批" :name="1">
         <van-pull-refresh
           v-model="historyRefresh"
           @refresh="historyOnRefresh"
@@ -98,10 +98,13 @@
               v-for="(item, usageDate) in approvedOrderList"
               :key="usageDate"
             >
-              <div class="log-title">{{usageDate}}</div>
+              <div class="log-title">{{ usageDate }}</div>
               <ul
                 v-for="(childItem, index) in item"
-                :class="['list-ul', childItem.longDistanceTag == 1 ? 'longway':''] "
+                :class="[
+                  'list-ul',
+                  childItem.longDistanceTag == 1 ? 'longway' : '',
+                ]"
                 :key="childItem.reqNo + index"
                 @click="goOrderDetailClick(childItem.id)"
               >
@@ -111,36 +114,41 @@
                     v-if="childItem.fromAddr && childItem.toAddr"
                   >
                     <b class="b1">
-                      {{childItem.fromAddr.split('/')[2].split(' ')[0]}}
+                      {{ childItem.fromAddr.split("/")[2].split(" ")[0] }}
                     </b>
                     <b class="b2">
-                      {{childItem.toAddr.split('/')[2].split(' ')[0]}}
+                      {{ childItem.toAddr.split("/")[2].split(" ")[0] }}
                     </b>
                   </div>
                   <div class="li-timestu">
-                    <time>{{childItem.usageTime}}</time>
+                    <time>{{ childItem.usageTime }}</time>
                     <span>出发</span>
                     <b class="b-status">
-                      {{dictData.statusDict[childItem.status]}}
+                      {{ dictData.statusDict[childItem.status] }}
                     </b>
                   </div>
                 </li>
-                <li class="info-label"><span>详细地址：</span>
+                <li class="info-label">
+                  <span>详细地址：</span>
                   <span v-if="childItem.fromAddr && childItem.toAddr">
-                    {{childItem.fromAddr.split('/')[2].split(' ')[1]}}
+                    {{ childItem.fromAddr.split("/")[2].split(" ")[1] }}
                     &nbsp;到&nbsp;
-                    {{childItem.toAddr.split('/')[2].split(' ')[1]}}
+                    {{ childItem.toAddr.split("/")[2].split(" ")[1] }}
                   </span>
                 </li>
                 <li class="info-label">
                   <span>分派车辆：</span>
                   <span class="infor-overflow">
                     <!-- {{childItem.brand || '空的'}} -->
-                    {{childItem.carNumber}}
+                    {{ childItem.carNumber }}
                   </span>
                 </li>
-                <li class="info-label"><span>分派司机：</span><span>{{childItem.driver}}</span></li>
-                <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.reqNo}}</span></li>
+                <li class="info-label">
+                  <span>分派司机：</span><span>{{ childItem.driver }}</span>
+                </li>
+                <li class="info-label">
+                  <span>订 单 号 ：</span><span>{{ childItem.reqNo }}</span>
+                </li>
               </ul>
             </div>
           </van-list>
@@ -150,14 +158,14 @@
   </div>
 </template>
 <script>
-import { approvalOrderList } from '@/api/order'
-import getDict from "@/view/mixins/getDict"
-import { mapGetters } from 'vuex'
+import { approvalOrderList } from "@/api/order";
+import getDict from "@/view/mixins/getDict";
+import { mapGetters } from "vuex";
 export default {
   mixins: [getDict],
-  computed: mapGetters('CarApplication', ['isFefresh']),
+  computed: mapGetters("CarApplication", ["isFefresh"]),
   beforeRouteEnter(to, from, next) {
-    if (from.name === 'SubSuccess') {
+    if (from.name === "SubSuccess") {
       to.meta.keepAlive = false;
     } else {
       to.meta.keepAlive = true;
@@ -170,7 +178,8 @@ export default {
     });
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'ApprovalDetail') {   // 去往详情页
+    if (to.name === "ApprovalDetail") {
+      // 去往详情页
       let notClass = this.$refs.notClass;
       let top = notClass.scrollTop;
       from.meta.scrollTop = top;
@@ -190,8 +199,8 @@ export default {
       requestQuery: {
         pageSize: 10,
         pageNum: 0,
-        orderByColumn: 'usageDate',
-        isAsc: 'asc'
+        orderByColumn: "usageDate",
+        isAsc: "asc",
       },
       historyRefresh: false,
       historyLoading: false,
@@ -200,18 +209,17 @@ export default {
       historyQuery: {
         pageSize: 10,
         pageNum: 0,
-        orderByColumn: 'usageDate',
-        isAsc: 'asc'
+        orderByColumn: "usageDate",
+        isAsc: "asc",
       },
       dictIds: {
         // 订单状态
-        statusDict: '1522830760585670657',
+        statusDict: "1522830760585670657",
       },
       dictData: {
-        statusDict: '',
+        statusDict: "",
       },
-    }
-
+    };
   },
   methods: {
     orderOnRefresh() {
@@ -226,71 +234,87 @@ export default {
       this.historyLoading = true;
       this.orderHistoryOrderList();
     },
-    // 
-    dealArrToObject(arr = [], key = '') {
+    //
+    dealArrToObject(arr = [], key = "") {
       //   return Object.fromEntries(arr.map((item) => [item[key], [item]]));
       return arr.map((item) => [item[key], [item]]);
     },
     // 获取当前页面的通用字典下拉数据
     async handleSystemCardDict(dict = {}) {
       for (const item in dict) {
-        const res = await this.getCommonDictList(dict[item]) || [];
-        this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
+        const res = (await this.getCommonDictList(dict[item])) || [];
+        this.dictData[item] = Object.fromEntries(
+          res.map((item) => [item.code, item.name])
+        );
       }
     },
-    orderRequestList() {    // 用车审批待审批列表
+    orderRequestList() {
+      // 用车审批待审批列表
       let pageNum = this.requestQuery.pageNum;
       this.requestLoading = true;
       this.requestQuery.pageNum = pageNum + 1;
       const params = {
         ...this.requestQuery,
         // 待审审核的状态
-        reviewCompleted: '0'
-      }
-      approvalOrderList(params).then(({ data }) => {
-        if (this.requestRefresh && this.requestQuery.pageNum === 1) {
-          this.approvalOrderList = {};
-        }
-        this.requestRefresh = false;
-        if (data?.list?.length === 0) {
-          this.requestFinished = true;
-          return;
-        }
-        let list = data?.list || [];
-        list = this.dealArrToObject(list, 'usageDate') || [];
-        this.approvalOrderList = this.computedGroupDate(list, 'approvalOrderList')
-      }).catch((e) => {
-        console.error(e);
-        alert("错误");
-      }).finally(() => {
-        this.requestLoading = false;
-      });
+        reviewCompleted: "0",
+      };
+      approvalOrderList(params)
+        .then(({ data }) => {
+          if (this.requestRefresh && this.requestQuery.pageNum === 1) {
+            this.approvalOrderList = {};
+          }
+          this.requestRefresh = false;
+          if (data?.list?.length === 0) {
+            this.requestFinished = true;
+            return;
+          }
+          let list = data?.list || [];
+          list = this.dealArrToObject(list, "usageDate") || [];
+          this.approvalOrderList = this.computedGroupDate(
+            list,
+            "approvalOrderList"
+          );
+        })
+        .catch((e) => {
+          console.error(e);
+          alert("错误");
+        })
+        .finally(() => {
+          this.requestLoading = false;
+        });
     },
-    orderHistoryOrderList() {  // 用车审批已审批列表
+    orderHistoryOrderList() {
+      // 用车审批已审批列表
       let pageNum = this.historyQuery.pageNum;
       this.historyLoading = true;
       this.historyQuery.pageNum = pageNum + 1;
       const params = {
         ...this.historyQuery,
         // 已审核的固定参数
-       reviewCompleted: '1',
-      }
-      approvalOrderList(params).then(({ data }) => {
-        if (this.historyRefresh && this.historyQuery.pageNum === 1) {
-          this.approvedOrderList = {};
-        }
-        this.historyRefresh = false;
-        if (data?.list?.length === 0) {
-          this.historyFinished = true;
-        }
-        let list = data?.list || [];
-        list = this.dealArrToObject(list, 'usageDate') || [];
-        this.approvedOrderList = this.computedGroupDate(list, 'approvedOrderList')
-      }).catch(() => {
-        alert("错误");
-      }).finally(() => {
-        this.historyLoading = false;
-      });
+        reviewCompleted: "1",
+      };
+      approvalOrderList(params)
+        .then(({ data }) => {
+          if (this.historyRefresh && this.historyQuery.pageNum === 1) {
+            this.approvedOrderList = {};
+          }
+          this.historyRefresh = false;
+          if (data?.list?.length === 0) {
+            this.historyFinished = true;
+          }
+          let list = data?.list || [];
+          list = this.dealArrToObject(list, "usageDate") || [];
+          this.approvedOrderList = this.computedGroupDate(
+            list,
+            "approvedOrderList"
+          );
+        })
+        .catch(() => {
+          alert("错误");
+        })
+        .finally(() => {
+          this.historyLoading = false;
+        });
     },
     computedGroupDate(data, dataKey) {
       let list = this[dataKey];
@@ -305,8 +329,8 @@ export default {
     },
     goOrderDetailClick(id) {
       this.$router.push({
-        name: 'ApprovalDetail',
-        params: { id }
+        name: "ApprovalDetail",
+        params: { id },
       });
     },
   },
@@ -324,11 +348,11 @@ export default {
         this.$refs.notClass.scrollTop = 0;
         clearTimeout(timer);
       }, 0);
-      this.$store.dispatch('CarApplication/triggerFefresh', false);
+      this.$store.dispatch("CarApplication/triggerFefresh", false);
     }
   },
   async created() {
     await this.handleSystemCardDict(this.dictIds);
   },
-}
+};
 </script>
