@@ -264,7 +264,7 @@ export default {
         //获取订单详情
         orderGetOrderDetail() {
             let id = this.$route.params.autoId;
-            drivingDrivingList({id}).then(({data}) => {
+            drivingDrivingList({assignmentId:id}).then(({data}) => {
                 this.orderDetail = data.list[0];
                 this.imagePath = checkCarImagePath(this.orderDetail.carBrand,this.orderDetail.carSeries);
             }).catch(() => {

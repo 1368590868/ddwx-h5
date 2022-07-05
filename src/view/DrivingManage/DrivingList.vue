@@ -6,7 +6,7 @@
                     <van-list v-model="requestLoading" offset="30" :finished="requestFinished" finished-text="没有更多了..." @load="drivingDrivingList">
                         <div class="list-container" v-for="(item, index) in requestList" :key="index">
                             <div class="log-title">{{item.usageDate }}</div>
-                            <ul :class="['list-ul', childItem.longDistanceTag === '1'?'longway':''] " v-for="(childItem, childIndex) in item.children" :key="childIndex" @click="goOrderDetailClick(childItem.id)">
+                            <ul :class="['list-ul', childItem.longDistanceTag === '1'?'longway':''] " v-for="(childItem, childIndex) in item.children" :key="childIndex" @click="goOrderDetailClick(childItem.assignmentId)">
                                 <li class="list-li">
                                     <div class="li-address"><b class="b1">{{childItem.fromAddr | checkArea()}}</b><b class="b2">{{childItem.toAddr | checkArea()}}</b></div>
                                     <div class="li-timestu"><time>{{childItem.startDate}}</time><span>出发</span><b class="b-status">{{childItem.status | checkStatus()}}</b></div>
@@ -25,7 +25,7 @@
                     <van-list v-model="historyLoading" offset="30" :finished="historyFinished" finished-text="没有更多了..." @load="drivingHistoryList">
                         <div class="list-container" v-for="(item, index) in historyList" :key="index">
                             <div class="log-title">{{item.usageDate }}</div>
-                            <ul :class="['list-ul', childItem.longDistanceTag === '1'?'longway':''] " v-for="(childItem, childIndex) in item.children" :key="childIndex" @click="goOrderDetailClick(childItem.id)">
+                            <ul :class="['list-ul', childItem.longDistanceTag === '1'?'longway':''] " v-for="(childItem, childIndex) in item.children" :key="childIndex" @click="goOrderDetailClick(childItem.assignmentId)">
                                 <li class="list-li">
                                     <div class="li-address"><b class="b1">{{childItem.fromAddr | checkArea()}}</b><b class="b2">{{childItem.toAddr | checkArea()}}</b></div>
                                     <div class="li-timestu"><time>{{childItem.startDate}}</time><span>出发</span><b class="b-status">{{childItem.status | checkStatus()}}</b></div>
