@@ -130,7 +130,7 @@
                 </li>
                 <li class="info-label">
                   <span>详细地址：</span>
-                  <span v-if="childItem.fromAddr && childItem.toAddr">
+                  <span v-if="childItem.fromAddr && childItem.toAddr" class="infor-overflow" style="margin-right:15px">
                     {{ childItem.fromAddr.split("/")[2].split(" ")[1] }}
                     &nbsp;到&nbsp;
                     {{ childItem.toAddr.split("/")[2].split(" ")[1] }}
