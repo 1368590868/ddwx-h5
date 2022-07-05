@@ -170,14 +170,14 @@
       >
         转派取消
       </van-button>
-      <van-button
+      <!-- <van-button
         block
         type="info"
         v-if="orderDetail.reassignStr == '0'"
         @click="cancelOrRefuseReDispatch"
       >
         转派拒绝
-      </van-button>
+      </van-button> -->
     </div>
     <!-- 已派单      显示 改派、复制、取消 ---end--- -->
     <!-- 历史订单  显示复制---start--- -->
