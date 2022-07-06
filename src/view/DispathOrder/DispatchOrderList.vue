@@ -180,7 +180,7 @@ export default {
       dispatchedQuery: {
         pageSize: 10,
         pageNum: 0,
-        status: 5,
+        dispatchedStatus: 1,
       },
 
       historyLoading: false,
