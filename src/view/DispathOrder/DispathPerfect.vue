@@ -400,20 +400,39 @@ export default {
     },
 
     computedFormData(formData) {
-      // this.reasonActiveIndex = this.$options.filters.nReasonGoIndex(formData.reasonCode);
-      // this.demandNameActiveIndex = this.$options.filters.nReasonGoIndex(formData.demandCode);
-      // this.sHopeCartyActiveIndex = this.$options.filters.cartypeGoIndex(formData.hopeBrand);   // 期望车型默认
-
-      this.formData.reasonName = formData.reason;    // no
-      this.formData.reasonCode = formData.reasonCode; // this.$options.filters.nReasonGo() 1,    // (number, optional): 用车事由编号 ,
       this.formData.unitName = formData.unitName
       this.formData.deptName = formData.deptName
       this.formData.unitCode = formData.unitCode
-      this.formData.demandName = formData.demand;
-      this.formData.demandCode = formData.demandCode;     // (number, optional): 用车需求编号 ,
 
-      this.formData.hopeBrandName = this.dictData.hopeBrandDict[formData.hopeBrand].name || '';// '轿车',   // no,
-      this.formData.hopeBrand = formData.hopeBrand; // '1',   // (string)          : 期望车型编号 ,
+      //用车事由回显
+      this.reasonActiveIndex = this.dictData.reasonNameDict.findIndex((item) => {
+          return item.code === formData.reasonCode;
+      });
+      let objReason =  this.dictData.reasonNameDict.find((item) => {
+          return item.code === formData.reasonCode;
+      });
+      this.formData.reasonName = objReason.name;
+      this.formData.reasonCode = formData.reasonCode; 
+
+      //用车需求回显
+      this.demandNameActiveIndex = this.dictData.demandNameDict.findIndex((item) => {
+          return item.code === formData.demandCode;
+      });
+      let objDemand =  this.dictData.demandNameDict.find((item) => {
+          return item.code === formData.demandCode;
+      });
+      this.formData.demandName = objDemand.name;
+      this.formData.demandCode = formData.demandCode; 
+
+      //期望车型回显
+      this.sHopeCartyActiveIndex = this.dictData.hopeBrandDict.findIndex((item) => {
+          return item.code === formData.hopeBrand;
+      });
+      let objHope =  this.dictData.hopeBrandDict.find((item) => {
+          return item.code === formData.hopeBrand;
+      });
+      this.formData.hopeBrandName = objHope.name;
+      this.formData.hopeBrand = formData.hopeBrand; 
 
       this.formData.longDistanceTag = formData.longDistanceTag;  // (string, optional): 是否长途 Y是；N否 ,
       this.formData.userName = formData.userName;     // (string, optional): 乘车人 ,  // 登录
