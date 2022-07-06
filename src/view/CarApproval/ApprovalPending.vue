@@ -210,7 +210,7 @@ export default {
         pageSize: 10,
         pageNum: 0,
         orderByColumn: "usageDate",
-        isAsc: "asc",
+        isAsc: "desc",
       },
       dictIds: {
         // 订单状态

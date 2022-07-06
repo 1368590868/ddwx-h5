@@ -77,7 +77,7 @@ export default {
                 pageSize: 10,
                 pageNum: 0,
                 orderByColumn:"usageDate",
-                isAsc:"desc",
+                isAsc:"asc",
                 statusList:"1,2,4"
             },
             historyrefresh: false,
