@@ -560,4 +560,8 @@ export default {
 .van-cell--required::before{
     left:15px;
 }
+.order-top .van-tag{
+    padding-left: 15px;
+    padding-right: 15px;
+} 
 </style>
