@@ -190,7 +190,7 @@ export default {
       historyQuery: {
         pageSize: 10,
         pageNum: 0,
-        status: 11,
+        historyStatus: 11,
       },
       detailType: 1,
 

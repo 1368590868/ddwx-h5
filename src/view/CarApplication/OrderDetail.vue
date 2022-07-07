@@ -404,4 +404,8 @@ export default {
 .warnning {
   color: #e6a23c !important;
 }
+.order-top .van-tag{
+    padding-left: 15px;
+    padding-right: 15px;
+} 
 </style>
