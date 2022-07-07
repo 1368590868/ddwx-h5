@@ -292,4 +292,8 @@ export default {
     justify-content: space-around;
   }
 }
+.order-top .van-tag{
+    padding-left: 15px;
+    padding-right: 15px;
+} 
 </style>

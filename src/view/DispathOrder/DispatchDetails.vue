@@ -130,7 +130,7 @@
       class="button-box"
       v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '是' && orderDetail.status != 6"
     >
-      <div class="button-box-image">
+      <!-- <div class="button-box-image">
         <van-image
           width="100%"
           height="20px"
@@ -140,7 +140,7 @@
         <div class="text">
           取消订单
         </div>
-      </div>
+      </div> -->
       <div
         class="button-box-image"
         @click="copyOrderChange"
