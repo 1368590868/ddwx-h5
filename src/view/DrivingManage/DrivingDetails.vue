@@ -109,7 +109,7 @@
             <van-form class="form-scroll" validate-first @failed="onFailed" @submit="drivingConfirmDriving">
                 <van-field label="出车里程：" center readonly>
                     <template #input>
-                        <span style="color:red;">{{orderDetail.beginMiles || 0}}</span>
+                        <span style="color:red;">{{beginMiles}}</span>
                         <span style="margin-left:10px;">千米</span>
                     </template>
                 </van-field>
@@ -193,7 +193,8 @@ import {gcywVehicleRequesTakeOrder,
         gcywVehicleRequesReturning,
         checkDriving,
         gcywVehicleRequesCancelOrder,
-        minioUpload} from '@/api/driving'
+        minioUpload,
+        vehicleInfoDetail} from '@/api/driving'
 import platform from '@/view/mixins/platform'
 import checkCarImagePath from '@/utils/carPath'
 
@@ -209,6 +210,7 @@ export default {
             imagePath:"",
             transferCar: false, // 确认还车
             dispatchCar:false,  //确认出车
+            beginMiles:"",  //确认出车显示出车里程
             orderDetail: {},
             apprlogList: [],
             carTypeOptions:[],
@@ -267,9 +269,22 @@ export default {
             drivingDrivingList({assignmentId:id}).then(({data}) => {
                 this.orderDetail = data.list[0];
                 this.imagePath = checkCarImagePath(this.orderDetail.carBrand,this.orderDetail.carSeries);
+                this.getVehicleInfo();
             }).catch(() => {
                 
             });
+        },
+        //获取车辆信息详情
+        async getVehicleInfo(){
+            await vehicleInfoDetail(this.orderDetail.vinNumber).then(({data}) => {
+                if (!data.startMiles) {
+                  this.beginMiles = 0
+                } else {
+                  this.beginMiles = data.startMiles;
+                }
+            }).catch((err) => {
+                
+            })
         },
         //获取日志信息
         orderApprovalLog () {

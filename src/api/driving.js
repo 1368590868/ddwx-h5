@@ -118,3 +118,11 @@ export function carIsDriving(params) {
     params
   })
 }
+
+///车辆信息-详情
+export function vehicleInfoDetail(vinNumber) {
+	return request({
+	  url: `/vehicleInfo/detail/${vinNumber}`,
+	  method: 'get',
+	})
+  }
