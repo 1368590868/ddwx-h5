@@ -34,7 +34,7 @@
                   childItem.longDistanceTag == 1 ? 'longway' : '',
                 ]"
                 :key="childItem.reqNo + index"
-                @click="goOrderDetailClick(childItem.id)"
+                @click="goOrderDetailClick(childItem.id,childItem.detailId)"
               >
                 <li class="list-li">
                   <div class="li-address">
@@ -106,7 +106,7 @@
                   childItem.longDistanceTag == 1 ? 'longway' : '',
                 ]"
                 :key="childItem.reqNo + index"
-                @click="goOrderDetailClick(childItem.id)"
+                @click="goOrderDetailClick(childItem.id,childItem.detailId)"
               >
                 <li class="list-li">
                   <div
@@ -327,10 +327,10 @@ export default {
       }
       return list;
     },
-    goOrderDetailClick(id) {
+    goOrderDetailClick(id,detailId) {
       this.$router.push({
         name: "ApprovalDetail",
-        params: { id },
+        params: { id,detailId},
       });
     },
   },

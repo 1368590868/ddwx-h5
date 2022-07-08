@@ -155,8 +155,9 @@ export default {
     // 获取订单详情
     getOrderDetail() {
       let id = this.$route.params.id;
+      let detailId = this.$route.params.detailId;
       console.log("🚀 ~ file: ApprovalDetail.vue ~ line 105 ~ getOrderDetail ~ id", id)
-      approvalOrderList({ id }).then(({ data: { list = [] } }) => {
+      approvalOrderList({ id,detailId }).then(({ data: { list = [] } }) => {
         const orderDetail = (list[0] ?? {}) || {};
         if (orderDetail.reqAssignments?.length > 0) {
           orderDetail.reqAssignments.forEach(async (item) => {

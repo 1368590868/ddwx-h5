@@ -90,7 +90,7 @@ export function agreeApprovalOrder(data) {	// 同意审批单
 		data
 	})
 }
-export function approvalOrderList(params) {	// 获取待审批列表 审批列表详情 传id
+export function approvalOrderList(params) {	// 获取待审批列表 审批列表详情 传id detailId
 	return request({
 		url: '/gcywVehicleRequest/listPage',
 		method: 'GET',
