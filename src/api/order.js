@@ -162,3 +162,12 @@ export function gcywVehicleRequestLogList(params) {
 	})
 }
 
+//用车审批-我的用车单-分页
+export function gcywVehicleRequestListPageForH5(params) {
+	return request({
+	  url: `/gcywVehicleRequest/listPageForH5`,
+	  method: 'get',
+	  params
+	})
+}
+

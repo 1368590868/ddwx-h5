@@ -65,11 +65,11 @@
                   <span>分派车辆：</span>
                   <span class="infor-overflow">
                     <!-- {{childItem.brand || '空的'}} -->
-                    {{ childItem.carNumber }}
+                    {{ childItem.assignmentList | checkCarNumber }}
                   </span>
                 </li>
                 <li class="info-label">
-                  <span>分派司机：</span><span>{{ childItem.driver }}</span>
+                  <span>分派司机：</span><span>{{ childItem.assignmentList | checkCarDriver }}</span>
                 </li>
                 <li class="info-label">
                   <span>订 单 号 ：</span><span>{{ childItem.reqNo }}</span>
@@ -140,11 +140,11 @@
                   <span>分派车辆：</span>
                   <span class="infor-overflow">
                     <!-- {{childItem.brand || '空的'}} -->
-                    {{ childItem.carNumber }}
+                    {{ childItem.assignmentList | checkCarNumber }}
                   </span>
                 </li>
                 <li class="info-label">
-                  <span>分派司机：</span><span>{{ childItem.driver }}</span>
+                  <span>分派司机：</span><span>{{ childItem.assignmentList | checkCarDriver }}</span>
                 </li>
                 <li class="info-label">
                   <span>订 单 号 ：</span><span>{{ childItem.reqNo }}</span>
@@ -158,7 +158,7 @@
   </div>
 </template>
 <script>
-import { approvalOrderList } from "@/api/order";
+import { approvalOrderList ,gcywVehicleRequestListPageForH5} from "@/api/order";
 import getDict from "@/view/mixins/getDict";
 import { mapGetters } from "vuex";
 export default {
@@ -258,7 +258,7 @@ export default {
         // 待审审核的状态
         reviewCompleted: "0",
       };
-      approvalOrderList(params)
+      gcywVehicleRequestListPageForH5(params)
         .then(({ data }) => {
           if (this.requestRefresh && this.requestQuery.pageNum === 1) {
             this.approvalOrderList = {};
@@ -293,7 +293,7 @@ export default {
         // 已审核的固定参数
         reviewCompleted: "1",
       };
-      approvalOrderList(params)
+      gcywVehicleRequestListPageForH5(params)
         .then(({ data }) => {
           if (this.historyRefresh && this.historyQuery.pageNum === 1) {
             this.approvedOrderList = {};
@@ -349,6 +349,22 @@ export default {
         clearTimeout(timer);
       }, 0);
       this.$store.dispatch("CarApplication/triggerFefresh", false);
+    }
+  },
+  filters:{
+    checkCarNumber(assignmentList){
+      if(assignmentList.length===1){
+        return assignmentList[0].carNumber;
+      }else if(assignmentList.length>1){
+         return assignmentList[0].carNumber + ' 等' + assignmentList.length + '辆';
+      } 
+    },
+    checkCarDriver(assignmentList){
+      if(assignmentList.length===1){
+        return assignmentList[0].driver;
+      }else if(assignmentList.length>1){
+        return assignmentList[0].driver + ' 等' + assignmentList.length + '位';
+      } 
     }
   },
   async created() {
