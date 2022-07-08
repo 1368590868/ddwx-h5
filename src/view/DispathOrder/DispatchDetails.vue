@@ -14,41 +14,33 @@
             "8": "已接单","9": "已出车","10": "已还车","11": "已确认" -->
     <div
       class="button-box"
-      v-if="$route.params.type == 1 && orderType == 'dispatch' && (orderDetail.reassignStatus === '否' || [3].includes(orderDetail.status) )"
+      v-if="
+        $route.params.type == 1 &&
+        orderType == 'dispatch' &&
+        (orderDetail.reassignStatus === '否' ||
+          [3].includes(orderDetail.status))
+      "
     >
       <!-- 待派单  非转派/驳回    显示派单、转派、取消 -->
-      <div
-        class="button-box-image"
-        v-if="orderDetail.status != 6"
-      >
+      <div class="button-box-image" v-if="orderDetail.status != 6">
         <van-image
           width="100%"
           height="20px"
           :src="quxiao"
           @click="cancelOrderButton"
         />
-        <div class="text">
-          取消订单
-        </div>
+        <div class="text">取消订单</div>
       </div>
-      <van-button
-        block
-        type="info"
-        @click="distribute"
-      >
-        派单
-      </van-button>
-      <van-button
-        block
-        type="info"
-        @click="reDispatch"
-      >
-        转派
-      </van-button>
+      <van-button block type="info" @click="distribute"> 派单 </van-button>
+      <van-button block type="info" @click="reDispatch"> 转派 </van-button>
     </div>
     <div
       class="button-box"
-      v-if="$route.params.type == 1 && orderType == 'dispatch' && orderDetail.reassignStatus === '是'"
+      v-if="
+        $route.params.type == 1 &&
+        orderType == 'dispatch' &&
+        orderDetail.reassignStatus === '是'
+      "
     >
       <van-button
         block
@@ -87,133 +79,91 @@
         驳回
       </van-button> -->
     </div>
-    <!-- 已派单      显示 改派、复制、取消 ---start--- -->
-    <div
-      class="button-box"
-      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '否' && orderDetail.status != 6"
-    >
-      <!-- 已派单      显示 改派、复制、取消 -->
-      <div class="button-box-image">
-        <van-image
-          width="100%"
-          height="20px"
-          :src="quxiao"
-          v-show="orderDetail.status != 6"
-          @click="cancelOrderButton"
-        />
-        <div class="text">
-          取消订单
+
+    <!-- 已派单      显示 改派、复制、取消   "5": "已派单","7": "部分接单","8": "已接单","9": "已出车","10": "已还车"---start--- -->
+    <div class="button-box" v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '否' && orderDetail.status != 6">
+        <div class="button-box-image" v-show="orderDetail.status != 9 && orderDetail.status != 10">
+            <van-image
+                width="100%"
+                height="20px"
+                :src="quxiao"
+                @click="cancelOrderButton"/>
+            <div class="text">取消订单</div>
         </div>
-      </div>
-      <div
-        class="button-box-image"
-        @click="copyOrderChange"
-      >
-        <van-image
-          width="100%"
-          height="20px"
-          :src="fuzhi"
-        />
-        <div class="text">
-          复制订单
+        <div class="button-box-image" @click="copyOrderChange">
+            <van-image 
+                width="100%" 
+                height="20px" 
+                :src="fuzhi" />
+            <div class="text">复制订单</div>
         </div>
-      </div>
-      <van-button
-        block
-        type="info"
-        @click="reassignmentClick"
-      >
-        改派
-      </van-button>
+        <van-button 
+            block type="info" 
+            @click="reassignmentClick" 
+            v-show="orderDetail.status != 9 && orderDetail.status != 10">
+            改派
+        </van-button>
     </div>
-    <div
-      class="button-box"
-      v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '是' && orderDetail.status != 6"
-    >
-      <!-- <div class="button-box-image">
-        <van-image
-          width="100%"
-          height="20px"
-          :src="quxiao"
-          @click="cancelOrderButton"
-        />
-        <div class="text">
-          取消订单
+    <div class="button-box" v-if="$route.params.type == 1 && orderType == 'dispatched' && orderDetail.reassignStatus === '是' && orderDetail.status != 6">
+        <div class="button-box-image" v-show="orderDetail.status != 9 && orderDetail.status != 10">
+            <van-image
+                width="100%"
+                height="20px"
+                :src="quxiao"
+                @click="cancelOrderButton"/>
+            <div class="text">取消订单</div>
         </div>
-      </div> -->
-      <div
-        class="button-box-image"
-        @click="copyOrderChange"
-      >
-        <van-image
-          width="100%"
-          height="20px"
-          :src="fuzhi"
-        />
-        <div class="text">
-          复制订单
+        <div class="button-box-image" @click="copyOrderChange">
+            <van-image 
+                width="100%" 
+                height="20px" 
+                :src="fuzhi" />
+            <div class="text">复制订单</div>
         </div>
-      </div>
-      <van-button
-        block
-        type="info"
-        @click="reassignmentClick"
-        v-if="orderDetail.reassignStr == '0'"
-      >
-        改派
-      </van-button>
-      <van-button
-        block
-        type="info"
-        v-if="orderDetail.reassignStr == '1'"
-        @click="cancelOrRefuseReDispatch"
-      >
-        转派取消
-      </van-button>
-      <!-- <van-button
-        block
-        type="info"
-        v-if="orderDetail.reassignStr == '0'"
-        @click="cancelOrRefuseReDispatch"
-      >
-        转派拒绝
-      </van-button> -->
+        <van-button
+            block
+            type="info"
+            @click="reassignmentClick"
+            v-if="orderDetail.reassignStr == '0' && orderDetail.status != 9 && orderDetail.status != 10">
+            改派
+        </van-button>
+        <van-button
+            block
+            type="info"
+            v-if="orderDetail.reassignStr == '1' && orderDetail.status != 9 && orderDetail.status != 10"
+            @click="cancelOrRefuseReDispatch">
+            转派取消
+        </van-button>
     </div>
     <!-- 已派单      显示 改派、复制、取消 ---end--- -->
+
     <!-- 历史订单  显示复制---start--- -->
     <div
       class="form-button"
-      v-if="$route.params.type == 1  && orderType === 'history'"
+      v-if="$route.params.type == 1 && orderType === 'history'"
     >
-      <van-button
-        block
-        type="default"
-        @click="copyOrderChange"
-      >复制订单</van-button>
+      <van-button block type="default" @click="copyOrderChange"
+        >复制订单</van-button
+      >
     </div>
     <!-- 历史订单  显示复制---end--- -->
-    <van-popup
-      v-model="showCancel"
-      position="bottom"
-    >
+    <van-popup v-model="showCancel" position="bottom">
       <div class="CancelOrder">
         <p>取消原因：</p>
       </div>
       <van-field
         v-model="closeReason"
         rows="2"
-        :autosize="{minHeight: 100}"
+        :autosize="{ minHeight: 100 }"
         type="textarea"
         maxlength="50"
         placeholder="请输入取消原因"
         show-word-limit
         label-width="60px"
       />
-      <van-button
-        block
-        type="info"
-        @click="popupCancelOrderBtn"
-      >取消订单</van-button>
+      <van-button block type="info" @click="popupCancelOrderBtn"
+        >取消订单</van-button
+      >
     </van-popup>
   </div>
 </template>
@@ -222,19 +172,15 @@ import {
   gcywVehicleRequestDispatchList,
   orderApprovalLog,
   orderCancelOrder,
-} from '@/api/order';
-import {
-  carPic,
-  reject,
-  updateChangeOrder,
-} from '@/api/dispatch';
-import fuzhi from '@/assets/icon/fuzhi.svg';
-import quxiao from '@/assets/icon/quxiao.svg';
-import { mapGetters } from 'vuex'
-import platform from '@/view/mixins/platform'
-import getDict from "@/view/mixins/getDict"
+} from "@/api/order";
+import { carPic, reject, updateChangeOrder } from "@/api/dispatch";
+import fuzhi from "@/assets/icon/fuzhi.svg";
+import quxiao from "@/assets/icon/quxiao.svg";
+import { mapGetters } from "vuex";
+import platform from "@/view/mixins/platform";
+import getDict from "@/view/mixins/getDict";
 export default {
-  name: 'DispatchDetails',
+  name: "DispatchDetails",
   mixins: [platform, getDict],
   data() {
     return {
@@ -244,34 +190,40 @@ export default {
       orderDetail: {},
       approveLogList: [],
       showCancel: false,
-      closeReason: '',
-      type: '',
-      redispatchOrReject: '',
+      closeReason: "",
+      type: "",
+      redispatchOrReject: "",
       // 字典编号
       dictIds: {
         // 订单状态
-        statusDict: '1522830760585670657',
+        statusDict: "1522830760585670657",
         // 期望车型I
-        hopeBrandDict: '101801'
+        hopeBrandDict: "101801",
       },
       dictData: {
-        statusDict: '',
-        hopeBrandDict: '',
+        statusDict: "",
+        hopeBrandDict: "",
       },
       // 订单类型，订单来源
-      orderType: '',
+      orderType: "",
     };
   },
   computed: {
-    ...mapGetters('DispathOrder', ['ChoiceVehicie', 'ChoiceDriver', 'CarPerfect']),
-    ...mapGetters(['userInfo', 'reqAssignments']),
+    ...mapGetters("DispathOrder", [
+      "ChoiceVehicie",
+      "ChoiceDriver",
+      "CarPerfect",
+    ]),
+    ...mapGetters(["userInfo", "reqAssignments"]),
   },
   methods: {
     // 获取当前页面的通用字典下拉数据
     async handleSystemCardDict(dict = {}) {
       for (const item in dict) {
-        const res = await this.getCommonDictList(dict[item]) || [];
-        this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
+        const res = (await this.getCommonDictList(dict[item])) || [];
+        this.dictData[item] = Object.fromEntries(
+          res.map((item) => [item.code, item.name])
+        );
       }
     },
     // 获取订单详情
@@ -296,21 +248,21 @@ export default {
     popupCancelOrderBtn() {
       if (this.closeReason) {
         this.$dialog.confirm({
-          title: '提示',
-          message: '是否要取消订单?',
-          beforeClose: this.orderCancelOrder
+          title: "提示",
+          message: "是否要取消订单?",
+          beforeClose: this.orderCancelOrder,
         });
       } else {
         this.$notify({
-          type: 'warning',
-          message: '请输入取消原因！'
+          type: "warning",
+          message: "请输入取消原因！",
         });
       }
     },
     // 二次弹出框确认 关闭之前
     orderCancelOrder(action, done) {
-      if (action === 'confirm') {
-        this.cancelOrder(done)
+      if (action === "confirm") {
+        this.cancelOrder(done);
         return false;
       }
       done();
@@ -322,36 +274,48 @@ export default {
       const params = {
         id,
         closeReason,
-      }
-      orderCancelOrder([params]).then((data) => {
-        if (data?.code === 0) {
-          this.$notify({
-            type: 'success',
-            message: '取消成功!'
-          });
-          this.isCancelVis = "";
-          this.showCancel = false;
-          this.getOrderDetail();
-          this.orderApprovalLog();
-        } else {
-          this.$notify({
-            type: 'warning',
-            message: (data?.message ?? '取消失败，请重试!') || '取消失败，请重试!',
-          });
-        }
-        done();
-      }).catch(() => {
-        done(false);
-      });
+      };
+      orderCancelOrder([params])
+        .then((data) => {
+          if (data?.code === 0) {
+            this.$notify({
+              type: "success",
+              message: "取消成功!",
+            });
+            this.isCancelVis = "";
+            this.showCancel = false;
+            this.getOrderDetail();
+            this.orderApprovalLog();
+          } else {
+            this.$notify({
+              type: "warning",
+              message:
+                (data?.message ?? "取消失败，请重试!") || "取消失败，请重试!",
+            });
+          }
+          done();
+        })
+        .catch(() => {
+          done(false);
+        });
     },
     // 派单 type: 5
-    distribute() { // 保存当前数据
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId } = this.orderDetail;
-      const fromAreaIdArr = fromAreaId?.split(',') || [];
-      const cityId = fromAreaIdArr[1] || '';
+    distribute() {
+      // 保存当前数据
+      const {
+        id,
+        unitCode,
+        deptId,
+        reassignUnitCode,
+        usageDate,
+        assignUnitCode,
+        fromAreaId,
+      } = this.orderDetail;
+      const fromAreaIdArr = fromAreaId?.split(",") || [];
+      const cityId = fromAreaIdArr[1] || "";
       this.$router.push({
-        name: 'DispatchVehicle',
-        params: { type: 5, id, },
+        name: "DispatchVehicle",
+        params: { type: 5, id },
         query: {
           reqAssignmentsIndex: 0,
           id,
@@ -361,17 +325,26 @@ export default {
           usageDate,
           assignUnitCode,
           cityId,
-        }
+        },
       });
-      this.$store.dispatch('DispathOrder/removeReqAssignments')
+      this.$store.dispatch("DispathOrder/removeReqAssignments");
     },
     // 改派 type: '3'
     reassignmentClick() {
-      const { id, unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
-      const fromAreaIdArr = fromAreaId?.split(',') || [];
-      const cityId = fromAreaIdArr[1] || '';
-      this.$router.push({ // 改派为3
-        name: 'DispatchVehicle',
+      const {
+        id,
+        unitCode,
+        deptId,
+        reassignUnitCode,
+        usageDate,
+        assignUnitCode,
+        fromAreaId,
+      } = this.orderDetail;
+      const fromAreaIdArr = fromAreaId?.split(",") || [];
+      const cityId = fromAreaIdArr[1] || "";
+      this.$router.push({
+        // 改派为3
+        name: "DispatchVehicle",
         params: { type: 3, id },
         query: {
           reqAssignmentsIndex: 0,
@@ -382,18 +355,25 @@ export default {
           usageDate,
           assignUnitCode,
           cityId,
-        }
+        },
       });
     },
     // 复制订单 type: '2'
     copyOrderChange() {
-      const { unitCode, deptId, reassignUnitCode, usageDate, assignUnitCode, fromAreaId, } = this.orderDetail;
-      const fromAreaIdArr = fromAreaId?.split(',') || [];
-      const cityId = fromAreaIdArr[1] || '';
+      const {
+        unitCode,
+        deptId,
+        reassignUnitCode,
+        usageDate,
+        assignUnitCode,
+        fromAreaId,
+      } = this.orderDetail;
+      const fromAreaIdArr = fromAreaId?.split(",") || [];
+      const cityId = fromAreaIdArr[1] || "";
       let id = this.$route.params.id;
       this.$router.push({
-        name: 'DispathApply',
-        params: { id, type: '2' },
+        name: "DispathApply",
+        params: { id, type: "2" },
         query: {
           reqAssignmentsIndex: 0,
           unitCode,
@@ -402,34 +382,34 @@ export default {
           usageDate,
           assignUnitCode,
           cityId,
-        }
+        },
       });
     },
     // 转派转单 type: '1' 按钮 前往转单 选择单位的页面
     reDispatch() {
       let id = this.$route.params.id;
       this.$router.push({
-        name: 'ChangeOder',
+        name: "ChangeOder",
         params: {
-          type: '1',
+          type: "1",
           id,
-        }
-      })
+        },
+      });
     },
     // 驳回
     reject() {
       let id = this.$route.params.id;
       reject({ id }).then(({ data }) => {
-        this.$toast.success("驳回成功！")
-        this.$router.push({ path: '/DispathOrder', query: { refresh: true } });
-      })
+        this.$toast.success("驳回成功！");
+        this.$router.push({ path: "/DispathOrder", query: { refresh: true } });
+      });
     },
     // 转派取消 或者 转派拒绝
     async cancelOrRefuseReDispatch() {
       let toast = this.$toast.loading({
         duration: 0,
         message: "提交中..",
-        forbidClick: true
+        forbidClick: true,
       });
       try {
         const {
@@ -439,16 +419,16 @@ export default {
         const params = [
           {
             id,
-          }
-        ]
+          },
+        ];
         const res = await updateChangeOrder(params);
         if (res?.code === 0) {
-          this.$toast.success("操作成功")
-          this.$store.dispatch('DispathOrder/triggerFefresh', true).then(() => {
+          this.$toast.success("操作成功");
+          this.$store.dispatch("DispathOrder/triggerFefresh", true).then(() => {
             this.$router.push({
-              name: 'DispatchOrderList',
+              name: "DispatchOrderList",
             });
-          })
+          });
         } else {
           this.$toast.fail(res?.message || "操作失败!，请重试");
         }
@@ -465,7 +445,7 @@ export default {
     await this.getOrderDetail();
     this.orderApprovalLog();
   },
-}
+};
 </script>
 <style scoped lang="less">
 .warnning {
