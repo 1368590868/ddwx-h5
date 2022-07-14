@@ -72,7 +72,7 @@
         },
         data() {
             return {
-                pattern: /^1[34578]\d{9}$/,
+                pattern: /^1[3456789]\d{9}$/,
 
                 nReasonShowPicker: false,   // 用车事由弹窗
                 nRangeShowPicker: false,    // 用车需求弹窗
