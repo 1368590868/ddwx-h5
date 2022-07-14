@@ -356,7 +356,7 @@ export default {
       if(assignmentList.length===1){
         return assignmentList[0].carNumber;
       }else if(assignmentList.length>1){
-         return assignmentList[0].carNumber + ' 等' + assignmentList.length + '辆';
+        return assignmentList[0].carNumber + ' 等' + assignmentList.length + '辆';
       } 
     },
     checkCarDriver(assignmentList){

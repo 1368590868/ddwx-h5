@@ -79,7 +79,7 @@
         },
         data() {
             return {
-                pattern: /^1[34578]\d{9}$/,
+                pattern: /^1[3456789]\d{9}$/,
 
                 dictReqReason:[],   //用车事由
                 dictReqRange:[],   //用车需求

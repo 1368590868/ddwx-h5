@@ -267,7 +267,7 @@ export default {
   data() {
 
     return {
-      pattern: /^1[34578]\d{9}$/,
+      pattern: /^1[3456789]\d{9}$/,
 
       reasonNameShowPicker: false,   // 用车事由弹窗
       demandNameShowPicker: false,    // 用车需求弹窗
