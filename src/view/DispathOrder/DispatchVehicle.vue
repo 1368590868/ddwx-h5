@@ -41,7 +41,7 @@
                   >
                   <span>{{item.carNumber}}</span>
                   <span>{{item.carBrand}} {{item.carSeries}}</span>
-                  <span class="sright">{{item.carModel}}</span>
+                  <!-- <span class="sright">{{item.carModel}}</span> -->
                 </p>
               </div>
             </div>

@@ -44,12 +44,15 @@
               placeholder="请输入详细地址"
               :rules="[{ required: true}]"
             />
-            <div
-              class="defatul-button"
-              @click="handleDefaultClick('1')"
-            >
-              <i class="icon-default-address"></i>
-              <span>常用出发地址</span>
+            <div class="address-control"> 
+              <div class="address-button" @click="handleSetDefaultClick('1')">
+                <i class="icon-set-address "></i>
+                <span>设为默认地址</span>
+              </div>
+              <div class="address-button" @click="handleDefaultClick('1')">
+                <i class="icon-default-address"></i>
+                <span>常用出发地址</span>
+              </div>
             </div>
           </div>
 
@@ -89,12 +92,15 @@
               placeholder="请输入详细地址"
               :rules="[{ required: true}]"
             />
-            <div
-              class="defatul-button"
-              @click="handleDefaultClick('2')"
-            >
-              <i class="icon-default-address"></i>
-              <span>常用目的地址</span>
+             <div class="address-control"> 
+              <div class="address-button" @click="handleSetDefaultClick('2')">
+                <i class="icon-set-address "></i>
+                <span>设为默认地址</span>
+              </div>
+              <div class="address-button" @click="handleDefaultClick('2')">
+                <i class="icon-default-address"></i>
+                <span>常用出发地址</span>
+              </div>
             </div>
           </div>
           <div class="form-block">
@@ -137,6 +143,7 @@
                 :min-hour="minHour"
                 :min-minute="minMinute"
                 type="time"
+                :filter="timefilter"
                 @confirm="TimeDetailConfirm"
                 @cancel="showsTimeDetail=false"
               ></van-datetime-picker>
@@ -159,7 +166,7 @@
 import { parseTime } from '@/utils/index'
 import { mapGetters } from 'vuex'
 import { gcywVehicleRequestDispatchList } from '@/api/order';
-import { commonAddressListAll, gcjcDivisionList } from "@/api/mine/commonAddress"
+import { commonAddressListAll, gcjcDivisionList,addCommonAddress } from "@/api/mine/commonAddress"
 import eventBus from '@/utils/eventBus.js'
 import keepPages from '@/view/mixins/keepPages'
 
@@ -174,12 +181,15 @@ export default {
       minMinute: 0,   // 最小时间
       minHour: 0,
       formData: {
+        fromId:'',
+        targetId:'',
+
         fromAddrActive: '',  // 
         targetAddrActive: '',// 
 
         fromAddrDetail: '',      // 出发地详细地址 ,
         toAddrDetail: '',    // 目的地详细地址
-        usageTime: parseTime(nowDate, '{h}:{i}'), // 发出时间 {h}:{i}
+        usageTime: '', // 发出时间 {h}:{i}
 
         fromAddr: '',      // (string, optional): 出发地 ,
         toAddr: '',    // (string, optional): 目的地
@@ -227,6 +237,8 @@ export default {
     eventBus.$on('defaultAddress', function(item) {
       this.setFromAndTargetAddress(item);
     }.bind(this));
+    //清楚keep-alive状态
+    this.$store.commit('removeThisPage', 'DispathPerfect')
   },
   methods: {
     //获取出发地和目的地默认地址
@@ -291,6 +303,13 @@ export default {
       }).catch((err) => {
 
       })
+    },
+    //选择时间过滤器
+    timefilter(type, options){
+      if (type === 'minute') {
+        return options.filter((option) => option % 15 === 0);
+      }
+      return options;
     },
     selectMinTime() {
       let hour = this.formData.usageTime.split(':')[0];
@@ -394,6 +413,7 @@ export default {
     setFromAndTargetAddress(item) {
       console.log("🚀 ~ file: DispathApply.vue ~ line 397 ~ setFromAndTargetAddress ~ item", item)
       if (item.addressType === "1") {
+        this.formData.fromId = item.id;
         this.formData.fromAddr = item.areaLongName;
         this.formData.fromAddrDetail = item.address;
         this.formData.fromAddrActive = item.areaId
@@ -401,6 +421,7 @@ export default {
         this.formData.fromCityId = item.cityId;
         this.formData.fromAreaId = item.areaId
       } else if (item.addressType === "2") {
+        this.formData.targetId = item.id;
         this.formData.toAddr = item.areaLongName;
         this.formData.toAddrDetail = item.address;
         this.formData.targetAddrActive = item.areaId
@@ -408,6 +429,29 @@ export default {
         this.formData.targetCityId = item.cityId;
         this.formData.targetAreaId = item.areaId
       }
+    },
+    //设为常用地址
+    handleSetDefaultClick(addressType){
+        let form = {
+            id:addressType==='1'?this.formData.fromId:this.formData.targetId,
+            deleteTag: '0', //保存：0;删除：1
+            defualtTag:"1",//是否默认0否 1是
+            name:"",    //别名
+            address:addressType==='1'?this.formData.fromAddrDetail:this.formData.toAddrDetail, //详细地址
+            provinceId:addressType==='1'?this.formData.fromProvinceId:this.formData.targetProvinceId,//省份ID
+            cityId:addressType==='1'?this.formData.fromCityId:this.formData.targetCityId,  //城市id
+            areaId:addressType==='1'?this.formData.fromAreaId:this.formData.targetAreaId,  //区县id
+            addressType:addressType,//地址类型 1出发地 2目的地
+            areaLongName:addressType==='1'?this.formData.fromAddr:this.formData.toAddr,//区县长名称
+        };
+        addCommonAddress(Object.assign({},form)).then(({message}) => {
+            this.$notify({
+                type: 'success',
+                message: message
+            });
+        }).catch((err) => {
+            
+        })
     },
     //常用地址点击
     handleDefaultClick(addressType) {
@@ -431,6 +475,22 @@ export default {
   align-items: center;
   margin: 10px 20px 10px 20px;
   line-height: 30px;
+  border: 0.5px solid #cccccc;
+  border-radius: 50px;
+}
+.address-control {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: right;
+}
+.address-button {
+  padding:0px 10px;
+  font-size: 14px;
+  line-height: 30px;
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   border: 0.5px solid #cccccc;
   border-radius: 50px;
 }

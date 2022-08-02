@@ -82,14 +82,15 @@
       round
       position="bottom"
     >
-      <van-cascader
+      <!-- <van-cascader
         v-model="cascaderValue"
         title="请选审批人"
         :field-names="fieldNames"
         :options="assigneeList"
         @close="assigneeShow = false"
         @finish="onFinish"
-      />
+      /> -->
+      <van-picker show-toolbar value-key="name" title="请选择下一级审批人" :columns="assigneeList" @confirm="assigneeConfirm" @cancel="assigneeShow=false" />
     </van-popup>
   </div>
 </template>
@@ -246,7 +247,7 @@ export default {
         }
         // 如果有审批人列表存在, 则直接展示审批人列表供其选择 选择值后在调用 审批通过接口
         if (res?.data?.assigneeList?.length > 0) {
-          this.selectAssigneeShow = true;
+          this.assigneeShow = true;
           const data = res.data || [];
           this.assigneeListInfo = data;
           this.assigneeList = this.dealTreeListEmptyChildren(data?.assigneeList) || [];
@@ -286,7 +287,7 @@ export default {
       const id = this.$route.params.id;
       if (action === 'confirm') {
         let param = {
-          assignee: this.cascaderValue,
+          assignee: this.assignee,
           businessId: id || this.orderDetail.id,
           procInstId: this.orderDetail.procInstId,
           comment: '同意',
@@ -320,6 +321,15 @@ export default {
       });
       this.assignee = selectedOptions.map((option) => option.name).join('/');
     },
+    assigneeConfirm(values){
+      this.assigneeShow = false;
+      this.$dialog.confirm({
+        title: '提示',
+        message: '是否要审批通过?',
+        beforeClose: this.approvalOrder
+      });
+      this.assignee = values.code;
+    }
   },
   created() {
     this.handleSystemCardDict(this.dictIds);

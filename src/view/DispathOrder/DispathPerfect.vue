@@ -289,7 +289,7 @@ export default {
         userName: '',     // (string, optional): 乘车人 ,  // 登录
         phone: '',         // (string, optional): 联系电话 ,// 登录
         usagePersons: 1,     // (integer, optional): 乘坐人数 ,
-        timeLength: 2,     // (number, optional): 预计时长 ,
+        timeLength: '2',     // (number, optional): 预计时长 ,
         remark: '',        // (string, optional): 备注 ,
         unitName: '',
         unitCode: '',
@@ -330,6 +330,11 @@ export default {
         const res = await this.getCommonDictList(dict[item]) || [];
         this.dictData[item] = res
       }
+      this.formData.reasonCode = this.dictData['reasonNameDict'][this.reasonActiveIndex].code;
+      this.formData.reasonName = this.dictData['reasonNameDict'][this.reasonActiveIndex].name;
+
+      this.formData.demandCode = this.dictData['demandNameDict'][this.demandNameActiveIndex].code;
+      this.formData.demandName = this.dictData['demandNameDict'][this.demandNameActiveIndex].name;
     },
     returnArtificials() {   // 返回上一步
       let id = this.$route.params.id;
@@ -444,7 +449,7 @@ export default {
     // 获取单位
     getAvailableUnitList() {
       getAvailableUnit().then(({ data }) => {
-        this.unitData = data
+        this.unitData = data;
       })
     },
     // 获取部门
@@ -455,8 +460,8 @@ export default {
     },
     // 选中单位之后 根据单位的code获取 部门
     onUnitConfirm(value) {
-      this.formData.unitName = value.unitName
-      this.formData.unitCode = value.unitCode
+      this.formData.unitName = value.unitName;
+      this.formData.unitCode = value.unitCode;
       this.getDeptByUnitList({ unitCode: value.unitCode })
       this.formData.deptId = ""
       this.formData.deptName = ""
@@ -477,7 +482,7 @@ export default {
     onDeptConfirm({ value, selectedOptions }) {
       this.formData.deptId = value
       this.formData.deptCode = selectedOptions?.at(-1)?.deptCode || '',
-        this.showDeptPicker = false
+      this.showDeptPicker = false
       this.assigneeShow = false;
       this.formData.deptName = selectedOptions.map((option) => option.deptName).join('/');
     },
@@ -488,9 +493,12 @@ export default {
   async created() {
     this.getAvailableUnitList();
     const userInfo = this.userInfo;
-    this.formData.userName = userInfo.name;
+    this.formData.userName = userInfo.realName;
     this.formData.phone = userInfo.phone;
-
+    this.formData.unitName = userInfo.unitName;
+    this.formData.unitCode = userInfo.unitCode;
+    this.formData.deptName = userInfo.deptName;
+    this.formData.deptId = userInfo.deptId;
 
     await this.handleSystemCardDict(this.dictIds);
 
@@ -509,8 +517,8 @@ export default {
       this.computedFormData(CarCopData);
       this.getDeptByUnitList({ unitCode: CarCopData.unitCode })
     } else {
-      let CarPerfect = this.CarPerfect;
-      this.formData = CarPerfect;
+      // let CarPerfect = this.CarPerfect;
+      // this.formData = CarPerfect;
       this.getDeptByUnitList({ unitCode: this.formData.unitCode })
     }
   }

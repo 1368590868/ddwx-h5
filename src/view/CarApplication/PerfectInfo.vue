@@ -51,7 +51,7 @@
                 </van-field>
                 <van-field class="form-textarea" v-model="form.remark" name="remark" rows="2" autosize type="textarea" maxlength="50" placeholder="请输入备注" show-word-limit />
             </div>
-            <van-popup v-model="assigneeShow" position="bottom">
+            <!-- <van-popup v-model="assigneeShow" position="bottom">
                 <van-cascader
                     v-model="form.assignee"
                     title="请选择审批人"
@@ -60,6 +60,9 @@
                     @close="assigneeShow = false"
                     @change="onChange"
                     @finish="onFinish"/>
+            </van-popup> -->
+            <van-popup v-model="assigneeShow" position="bottom">
+                <van-picker show-toolbar value-key="name" title="请选择审批人" :columns="assigneeList" @confirm="assigneeConfirm" @cancel="assigneeShow=false" />
             </van-popup>
             <div class="form-button">
                 <van-button block type="info" :disabled="!Object.keys(CarOneData).length" native-type="submit">提交</van-button>
@@ -203,6 +206,11 @@
                 this.form.hopeBrandName = values.name;
                 this.form.hopeBrand = values.code;
                 this.sHopeCartyPicker = false;
+            },
+            assigneeConfirm(values){
+                this.assigneeShow = false;
+                this.form.assign = values.code;
+                this.vehicleInfoAdd();
             },
             onSubmit (values) {
                 activitiAssigneeListByType({type: '用车审批'}).then( ({data}) => {

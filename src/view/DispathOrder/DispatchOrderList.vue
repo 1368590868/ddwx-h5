@@ -380,7 +380,7 @@ export default {
     }
   },
   async created() {
-    // this.$store.commit('removeThisPage', 'DispatchOrderList')
+    this.$store.commit('removeThisPage', 'DispathApply')
     await this.handleSystemCardDict(this.dictIds);
   },
 }
