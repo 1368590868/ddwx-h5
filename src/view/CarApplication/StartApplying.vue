@@ -16,9 +16,15 @@
                             @finish="onFromFinish"/>
                     </van-popup>
                     <van-field required v-model="formData.sFromAddrDetail" name="sFromAddrDetail" label="详细地址：" maxlength="50" placeholder="请输入详细地址" :rules="[{ required: true}]" />
-                    <div class="defatul-button" @click="handleDefaultClick('1')">
-                        <i class="icon-default-address"></i>
-                        <span>常用出发地址</span>
+                   <div class="address-control"> 
+                        <div class="address-button" @click="handleSetDefaultClick('1')">
+                            <i class="icon-set-address "></i>
+                            <span>设为常用地址</span>
+                        </div>
+                        <div class="address-button" @click="handleDefaultClick('1')">
+                            <i class="icon-default-address"></i>
+                            <span>常用出发地址</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-block">
@@ -35,9 +41,15 @@
                             @finish="onTargetFinish"/>
                     </van-popup>
                     <van-field required v-model="formData.sTargetAddrDetail" name="sTargetAddrDetail" label="详细地址：" maxlength="50" placeholder="请输入详细地址" :rules="[{ required: true}]" />
-                    <div class="defatul-button" @click="handleDefaultClick('2')">
-                        <i class="icon-default-address"></i>
-                        <span>常用目的地址</span>
+                    <div class="address-control"> 
+                        <div class="address-button" @click="handleSetDefaultClick('2')">
+                            <i class="icon-set-address "></i>
+                            <span>设为常用地址</span>
+                        </div>
+                        <div class="address-button" @click="handleDefaultClick('2')">
+                            <i class="icon-default-address"></i>
+                            <span>常用目的地址</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-block">
@@ -48,7 +60,7 @@
                     <div class="block-content"><span>{{carTotalCount}} (车辆) - {{carSubscribeCount}} (已预约) - {{carAcceptCount}} (已受理) = {{carUsableCount}} (可用)</span></div>
                     <van-field required v-model="formData.dDepartureTimeDetail" readonly right-icon="arrow-down" clickable name="dDepartureTimeDetail" label="出发时间：" @click="showsTimeDetail=true;selectMinTime()"  placeholder="请选择出发时间" :rules="[{ required: true, message: '请选择出发时间' }]" />
                     <van-popup v-model="showsTimeDetail" position="bottom">
-                        <van-datetime-picker v-model="formData.dDepartureTimeDetail" @change="selectMinTime" :min-hour="minHour" :min-minute="minMinute" type="time" @confirm="TimeDetailConfirm" @cancel="showsTimeDetail=false"></van-datetime-picker>
+                        <van-datetime-picker v-model="formData.dDepartureTimeDetail" @change="selectMinTime" :min-hour="minHour" :min-minute="minMinute" type="time" @confirm="TimeDetailConfirm" :filter="timefilter" @cancel="showsTimeDetail=false"></van-datetime-picker>
                     </van-popup>
                 </div>
             </div>
@@ -62,7 +74,7 @@
     import {parseTime} from '@/utils/index'
     import {gcywVehicleRequestDispatchList} from '@/api/order'
     import {getCarCount} from '@/api/dispatch'
-    import {commonAddressListAll,gcjcDivisionList} from "@/api/mine/commonAddress"
+    import {commonAddressListAll,gcjcDivisionList,addCommonAddress} from "@/api/mine/commonAddress"
     import eventBus from '@/utils/eventBus.js'
     import keepPages from '@/view/mixins/keepPages'
 
@@ -81,6 +93,9 @@
                 carUsableCount:0,
                 
                 formData: {
+                    fromId:'',
+                    targetId:'',
+
                     sFromAddrActive: '',  // 
                     sTargetAddrActive: '',// 
 
@@ -125,7 +140,6 @@
             if(this.id==='0'){
                 this.$nextTick(() => {
                     this.formData.dDepartureTime = parseTime(Date.now(), '{y}-{m}-{d}');
-                    this.formData.dDepartureTimeDetail = parseTime(Date.now() + 1000*60*60, '{h}:{i}');
                 })
                 this.getProvinceOptions(0);
                 this.getDefaultAddress();
@@ -204,6 +218,13 @@
                 }).catch((err) => {
 
                 })
+            },
+            //选择时间过滤器
+            timefilter(type, options){
+                if (type === 'minute') {
+                    return options.filter((option) => option % 15 === 0);
+                }
+                return options;
             },
             selectMinTime () {
                 let hour = this.formData.dDepartureTimeDetail.split(':')[0];
@@ -324,6 +345,7 @@
             //出发地和目的地地址设置
             setFromAndTargetAddress(item){
                 if(item.addressType==="1"){
+                    this.formData.fromId = item.id;
                     this.formData.sFromAddr = item.areaLongName;
                     this.formData.sFromAddrDetail = item.address;
                     this.formData.sFromAddrActive = item.areaId
@@ -331,6 +353,7 @@
                     this.formData.fromCityId = item.cityId;
                     this.formData.fromAreaId = item.areaId
                 }else if(item.addressType==="2"){
+                    this.formData.targetId = item.id;
                     this.formData.sTargetAddr = item.areaLongName;
                     this.formData.sTargetAddrDetail = item.address;
                     this.formData.sTargetAddrActive = item.areaId
@@ -338,6 +361,29 @@
                     this.formData.targetCityId = item.cityId;
                     this.formData.targetAreaId = item.areaId
                 }
+            },
+            //设为常用地址
+            handleSetDefaultClick(addressType){
+                let form = {
+                    id:addressType==='1'?this.formData.fromId:this.formData.targetId,
+                    deleteTag: '0', //保存：0;删除：1
+                    defualtTag:"1",//是否默认0否 1是
+                    name:"",    //别名
+                    address:addressType==='1'?this.formData.sFromAddrDetail:this.formData.sTargetAddrDetail, //详细地址
+                    provinceId:addressType==='1'?this.formData.fromProvinceId:this.formData.targetProvinceId,//省份ID
+                    cityId:addressType==='1'?this.formData.fromCityId:this.formData.targetCityId,  //城市id
+                    areaId:addressType==='1'?this.formData.fromAreaId:this.formData.targetAreaId,  //区县id
+                    addressType:addressType,//地址类型 1出发地 2目的地
+                    areaLongName:addressType==='1'?this.formData.sFromAddr:this.formData.sTargetAddr,//区县长名称
+                };
+                addCommonAddress(Object.assign({},form)).then(({message}) => {
+                    this.$notify({
+                        type: 'success',
+                        message: message
+                    });
+                }).catch((err) => {
+                    
+                })
             },
             //常用地址点击
             handleDefaultClick(addressType){
@@ -353,15 +399,31 @@
 </script>
 
 <style>
-   .defatul-button{
-       font-size: 14px;
-       display: flex;
-       flex-flow: row nowrap;
-       justify-content:center;
-       align-items: center;
-       margin: 10px 20px 10px 20px;
-       line-height: 30px;
-       border: 0.5px solid #cccccc;
-       border-radius: 50px;
-   }
+.defatul-button {
+    font-size: 14px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 20px 10px 20px;
+    line-height: 30px;
+    border: 0.5px solid #cccccc;
+    border-radius: 50px;
+}
+.address-control {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: right;
+}
+.address-button {
+    padding:0px 10px;
+    font-size: 14px;
+    line-height: 30px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 0.5px solid #cccccc;
+    border-radius: 50px;
+}                           
 </style>

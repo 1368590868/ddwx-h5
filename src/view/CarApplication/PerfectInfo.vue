@@ -94,7 +94,7 @@
                 assigneeShow:false,         //选择审批人弹框
 
                 nReasonActiveIndex: 0,      // 用车事由默认
-                nRangeActiveIndex: 0,       // 用车需求默认
+                nRangeActiveIndex: 2,       // 用车需求默认
                 sHopeCartyActiveIndex: 1,   // 期望车型默认
 
                 assigneeList:[],    //工作流数据
@@ -209,7 +209,7 @@
             },
             assigneeConfirm(values){
                 this.assigneeShow = false;
-                this.form.assign = values.code;
+                this.form.assignee = values.code;
                 this.vehicleInfoAdd();
             },
             onSubmit (values) {

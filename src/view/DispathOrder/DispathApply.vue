@@ -47,7 +47,7 @@
             <div class="address-control"> 
               <div class="address-button" @click="handleSetDefaultClick('1')">
                 <i class="icon-set-address "></i>
-                <span>设为默认地址</span>
+                <span>设为常用地址</span>
               </div>
               <div class="address-button" @click="handleDefaultClick('1')">
                 <i class="icon-default-address"></i>
@@ -95,11 +95,11 @@
              <div class="address-control"> 
               <div class="address-button" @click="handleSetDefaultClick('2')">
                 <i class="icon-set-address "></i>
-                <span>设为默认地址</span>
+                <span>设为常用地址</span>
               </div>
               <div class="address-button" @click="handleDefaultClick('2')">
                 <i class="icon-default-address"></i>
-                <span>常用出发地址</span>
+                <span>常用目的地址</span>
               </div>
             </div>
           </div>

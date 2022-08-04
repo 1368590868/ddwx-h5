@@ -275,7 +275,7 @@ export default {
 
       reasonActiveIndex: 0,      // 用车事由默认
       demandNameActiveIndex: 2,       // 用车需求默认
-      sHopeCartyActiveIndex: 0,   // 期望车型默认
+      sHopeCartyActiveIndex: 1,   // 期望车型默认
       unitData: [],//用车单位
       deptData: [],//用车部门
       formData: {
@@ -335,6 +335,9 @@ export default {
 
       this.formData.demandCode = this.dictData['demandNameDict'][this.demandNameActiveIndex].code;
       this.formData.demandName = this.dictData['demandNameDict'][this.demandNameActiveIndex].name;
+
+      this.formData.hopeBrand = this.dictData['hopeBrandDict'][this.sHopeCartyActiveIndex].code;
+      this.formData.hopeBrandName = this.dictData['hopeBrandDict'][this.sHopeCartyActiveIndex].name;
     },
     returnArtificials() {   // 返回上一步
       let id = this.$route.params.id;
@@ -483,7 +486,6 @@ export default {
       this.formData.deptId = value
       this.formData.deptCode = selectedOptions?.at(-1)?.deptCode || '',
       this.showDeptPicker = false
-      this.assigneeShow = false;
       this.formData.deptName = selectedOptions.map((option) => option.deptName).join('/');
     },
     // 根据部门 和 单位变化 获取

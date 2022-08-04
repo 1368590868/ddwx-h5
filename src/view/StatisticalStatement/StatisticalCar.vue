@@ -125,7 +125,7 @@ export default {
           '货车':carCargo,
           '客车':carCoach,
           '越野车':carSuv,
-          '专用车':carSpecial,
+          '其他车辆':carSpecial,
         }
     }
   },
