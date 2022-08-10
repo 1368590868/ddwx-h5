@@ -124,7 +124,7 @@
                         }else{
                             this.$router.push({name: 'artificials', params: {autoId: '0'}});  // 新增
                         }
-                    };
+                    }
                 });
             },
             // 复制订单操作！
@@ -152,7 +152,7 @@
         created () {
             if (Object.keys(this.CarOneHist).length) {
                 this.formData = Object.assign({}, this.CarOneHist);
-            };
+            }
             let autoId = this.$route.params.autoId;
             if(autoId != '0'){
                 this.orderGetOrderDetail(autoId);

@@ -30,7 +30,7 @@ const actions = {
             if (state.dictModelType.length !== 0) {
                 resolve(state.dictModelType);
                 return false;
-            };
+            }
             getListByParentId("101801").then(({data}) => {
                 commit('SET_MODELTYPE', data);
                 resolve(data);
@@ -43,7 +43,7 @@ const actions = {
             if (state.dictReqRange.length !== 0) {
                 resolve(state.dictReqRange);
                 return false;
-            };
+            }
             getListByParentId("10018").then(({data}) => {
                 commit('SET_REQRANGE', data);
                 resolve(data);
@@ -56,7 +56,7 @@ const actions = {
             if (state.dictReqReason.length !== 0) {
                 resolve(state.dictReqReason);
                 return false;
-            };
+            }
             getListByParentId("1016").then(({data}) => {
                 commit('SET_REQREASON', data);
                 resolve(data);

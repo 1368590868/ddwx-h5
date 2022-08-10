@@ -49,7 +49,7 @@ export default {
                 this.active = '/Information';
             } else if (route.path.includes('/MyManager')) {
                 this.active = '/MyManager';
-            };
+            }
         }
     },
     created () {

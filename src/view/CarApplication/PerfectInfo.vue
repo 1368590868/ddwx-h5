@@ -39,7 +39,7 @@
                     </template>
                 </van-field>
 
-                <van-field center required v-model="form.userName" name="userName" label="乘车人：" placeholder="请输入乘车人" maxlength="5" :rules="[{ required: true }]" />
+                <van-field center required v-model="form.userName" name="userName" label="乘车人：" placeholder="请输入乘车人" maxlength="20" :rules="[{ required: true }]" />
                 <van-field center required v-model="form.phone" name="phone" type="tel" label="联系电话：" placeholder="请输入联系电话" :rules="[{ required: true }, {pattern, message: '联系电话输入错误!'}]" />
                 <van-field center required v-model="form.hopeBrandName" name="hopeBrand" readonly right-icon="arrow-down" clickable label="期望车型：" :rules="[{ required: true}]" placeholder="点击选择期望车型" @click="sHopeCartyPicker=true" />
                 <van-popup v-model="sHopeCartyPicker" position="bottom">
@@ -135,8 +135,6 @@
             dictGetModelType () {
                 getListByParentId("101801").then(({data}) => {
                     this.dictModelType = data;
-                    this.form.hopeBrandName = data[this.sHopeCartyActiveIndex].name;
-                    this.form.hopeBrand = data[this.sHopeCartyActiveIndex].code;
 
                     if (Object.keys(this.CarCopData).length) {
                         this.sHopeCartyActiveIndex = this.dictModelType.findIndex((item) => {
@@ -146,6 +144,9 @@
                             return item.code === this.form.hopeBrand;
                         });
                         this.form.hopeBrandName = obj.name;
+                    }else{
+                        this.form.hopeBrandName = data[this.sHopeCartyActiveIndex].name;
+                        this.form.hopeBrand = data[this.sHopeCartyActiveIndex].code;
                     }
                 }).catch((err) => {
                     
@@ -155,8 +156,6 @@
             dictGetReqRange () {
                 getListByParentId("10018").then(({data}) => {
                     this.dictReqRange = data;
-                    this.form.demand = data[this.nRangeActiveIndex].name;
-                    this.form.demandCode = data[this.nRangeActiveIndex].code;
 
                     if (Object.keys(this.CarCopData).length) {
                         this.nRangeActiveIndex = this.dictReqRange.findIndex((item) => {
@@ -166,6 +165,9 @@
                             return item.code === this.form.demandCode;
                         })
                         this.form.demand = obj.name;
+                    }else{
+                        this.form.demand = data[this.nRangeActiveIndex].name;
+                        this.form.demandCode = data[this.nRangeActiveIndex].code;
                     }
                 }).catch((err) => {
                     
@@ -175,10 +177,9 @@
             dictGetReqReason () {
                 getListByParentId("1016").then(({data}) => {
                     this.dictReqReason = data;
-                    this.form.reason = data[this.nReasonActiveIndex].name;
-                    this.form.reasonCode = data[this.nReasonActiveIndex].code;
 
                     if (Object.keys(this.CarCopData).length) {
+                        console.log('aaaa')
                         this.nReasonActiveIndex = this.dictReqReason.findIndex((item) => {
                             return item.code === this.form.reasonCode;
                         });
@@ -186,6 +187,9 @@
                             return item.code === this.form.reasonCode;
                         })
                         this.form.reason = obj.name;
+                    }else{
+                        this.form.reason = data[this.nReasonActiveIndex].name;
+                        this.form.reasonCode = data[this.nReasonActiveIndex].code;
                     }
                 }).catch((err) => {
                     
@@ -299,7 +303,6 @@
             this.form.usageDate= this.CarOneHist.dDepartureTime;
             this.form.usageTime= this.CarOneHist.dDepartureTimeDetail;
 
-            
             if (Object.keys(this.CarCopData).length) {
                 this.form.reasonCode = this.CarCopData.reasonCode;
                 this.form.demandCode = this.CarCopData.demandCode;

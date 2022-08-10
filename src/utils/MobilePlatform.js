@@ -43,7 +43,7 @@ export const loadJSAPI = () => {
             }
         } else {
             resolve(DevelopmentJSAPI);
-        };
+        }
     });
 }
 

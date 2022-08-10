@@ -40,7 +40,7 @@
                         </template>
                     </van-field>
 
-                    <van-field v-model="formData.sPassenger" name="sPassenger" label="乘车人：" placeholder="请输入乘车人" :rules="[{ required: true, message: '请输入乘车人' }]" />
+                    <van-field v-model="formData.sPassenger" name="sPassenger" label="乘车人：" placeholder="请输入乘车人" :rules="[{ required: true, message: '请输入乘车人' }]" maxlength="20" />
                     <van-field v-model="formData.sPhone" name="sPhone" label="联系电话：" placeholder="请输入联系电话" :rules="[{ required: true, message: '请输入联系电话' }]" />
 
                     <van-field v-model="formData.sHopeCarname" name="sHopeCartype" readonly right-icon="arrow-down" clickable label="期望车型：" placeholder="点击选择期望车型" @click="sHopeCartyPicker=true" />
@@ -161,7 +161,7 @@
                         this.$router.push({name: 'StartApplying',params: { autoId:'0' }});
                     }
                 });
-            };
+            }
         }
     }
 </script>

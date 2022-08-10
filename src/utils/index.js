@@ -61,10 +61,10 @@ export function formatTime(time) {
 			return '下午 '+ parseTime(d, '{h}:{s}');
 		} else if (parseTime(d, '{h}') < 12) {
 			return '上午 '+ parseTime(d, '{h}:{s}');
-		};
+		}
 	} else if (diff < 3600 * 24 * 2) {
 		return '昨天'
-	};
+	}
 	if (parseTime(d, '{y}') == new Date().getFullYear()) { // 同一年
 		return parseTime(time, '{m}月{d}日');
 	} else {
@@ -123,7 +123,7 @@ export function param(json) {
 export function jsonp(url, params = null, callback) {
 	if (!url) {
 		return false;
-	};
+	}
 	let script_id = Math.random().toString().substr(2, 5);
 	let callbackName = 'jsonp_callback' + Date.now() + script_id;
 	let script = document.createElement('script');

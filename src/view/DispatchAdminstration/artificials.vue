@@ -40,7 +40,7 @@
                         </template>
                     </van-field>
 
-                    <van-field center required v-model="formData.sPassenger" name="sPassenger" label="乘车人：" placeholder="请输入乘车人" :rules="[{ required: true }]" />
+                    <van-field center required v-model="formData.sPassenger" name="sPassenger" label="乘车人：" placeholder="请输入乘车人" :rules="[{ required: true }]" maxlength="20"/>
                     <van-field center required v-model="formData.sPhone" name="sPhone" type="tel" label="联系电话：" placeholder="请输入联系电话" :rules="[{ required: true }, {pattern, message: '联系电话输入错误!'}]" />
                     <van-field center required v-model="formData.sHopeCarname" name="sHopeCartype" readonly right-icon="arrow-down" clickable label="期望车型：" :rules="[{ required: true}]" placeholder="点击选择期望车型" @click="sHopeCartyPicker=true" />
                     <van-popup v-model="sHopeCartyPicker" position="bottom">
@@ -154,7 +154,7 @@
                         this.$router.push({ name: 'StartApplyings', params: { autoId, type: '0' } });
                     }
                 });
-            };
+            }
             let Details = this.Details;
             console.log(Details)
             if (Object.keys(Details).length) { // 如果有此数据。则为选择车辆返回上一步的数据

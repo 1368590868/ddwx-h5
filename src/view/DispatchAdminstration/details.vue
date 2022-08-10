@@ -197,7 +197,7 @@ export default {
                     });
                 } else {
                     doneCallback();
-                };
+                }
             });
             
         },
@@ -249,7 +249,7 @@ export default {
                     this.$router.go(-1);
                 });
                 return false;
-            };
+            }
             done();
         },
         distribute () {

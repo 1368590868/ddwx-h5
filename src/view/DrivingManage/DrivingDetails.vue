@@ -293,7 +293,7 @@ export default {
                 this.apprlogList = data;
             }).catch(() => {
                 
-            });;
+            });
         },
         //接单
         drivingCconfirmReceipt() { 
@@ -355,7 +355,7 @@ export default {
                         });
                     } else {
                         doneCallback();
-                    };
+                    }
                 }).catch((err) => {
                     
                 })
@@ -374,7 +374,7 @@ export default {
                     });
                 } else {
                     doneCallback();
-                };
+                }
             }).catch((err) => {
                 
             })
@@ -408,7 +408,7 @@ export default {
         //确认还车点击回调
         handleTransferCarClick(){
             this.transferCar = true;
-            if (!!this.orderDetail.beginMiles) {
+            if (this.orderDetail.beginMiles) {
                 this.transferCarData.beginMiles = this.orderDetail.beginMiles;
             }
         },

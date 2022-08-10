@@ -136,7 +136,6 @@
         },
         created(){
             this.id = this.$route.params.id;
-
             if(this.id==='0'){
                 this.$nextTick(() => {
                     this.formData.dDepartureTime = parseTime(Date.now(), '{y}-{m}-{d}');
@@ -144,6 +143,7 @@
                 this.getProvinceOptions(0);
                 this.getDefaultAddress();
                 this.getCarCount(this.formData.dDepartureTime)
+                this.$store.dispatch('CarApplication/clearCopyDataAction');
             }else{  
                 this.orderGetOrderDetail(); // 如果有id则是再来一单的操作
             }
@@ -414,7 +414,7 @@
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    justify-content: right;
+    justify-content: flex-end;
 }
 .address-button {
     padding:0px 10px;

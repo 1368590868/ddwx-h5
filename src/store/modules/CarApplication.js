@@ -29,6 +29,9 @@ const mutations = {
     SET_CARCOPdATA: (state, data) => {
         state.CarCopData = data;
     },
+    CLEAR_CARCOPdATA: (state) => {
+        state.CarCopData = {};
+    },
     SET_FEFRESH: (state, data) => {
         state.isFefresh = data;
     }
@@ -49,7 +52,9 @@ const actions = {
     setCopyDataAction ({commit}, data){
         commit('SET_CARCOPdATA', data);
     },
-
+    clearCopyDataAction ({commit}){
+        commit('CLEAR_CARCOPdATA');
+    },
     triggerFefresh ({commit}, data){
         commit('SET_FEFRESH', data);
     },

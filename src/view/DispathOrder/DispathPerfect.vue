@@ -138,6 +138,7 @@
           v-model="formData.userName"
           name="userName"
           placeholder="请输入乘车人"
+          maxlength="20"
           :rules="[{ required: true }]"
         />
         <van-field
@@ -488,8 +489,6 @@ export default {
       this.showDeptPicker = false
       this.formData.deptName = selectedOptions.map((option) => option.deptName).join('/');
     },
-    // 根据部门 和 单位变化 获取
-
   },
 
   async created() {
