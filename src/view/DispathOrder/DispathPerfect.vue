@@ -238,7 +238,7 @@
         :field-names="fieldNames"
         :options="deptData"
         @close="showDeptPicker = false"
-        @finish="onDeptConfirm"
+        @change="onDeptChange"
       />
       <!-- <van-picker
         show-toolbar
@@ -249,6 +249,7 @@
       >
       </van-picker> -->
     </van-popup>
+    <van-button class="select-unit-button" type="info" size="normal" v-show="showDeptPicker" @click="handleSelectUnit">确定</van-button>
     <!-- </div> -->
   </div>
 </template>
@@ -321,6 +322,9 @@ export default {
         demandNameDict: [],
         hopeBrandDict: [],
       },
+
+      unitValue:'',
+      unitSelectedOptions:[],
     }
   },
   methods: {
@@ -484,11 +488,29 @@ export default {
     },
     // 选中单位之后 根据单位的code获取 部门
     onDeptConfirm({ value, selectedOptions }) {
-      this.formData.deptId = value
-      this.formData.deptCode = selectedOptions?.at(-1)?.deptCode || '',
-      this.showDeptPicker = false
-      this.formData.deptName = selectedOptions.map((option) => option.deptName).join('/');
+      // this.unitValue = value;
+      // this.unitSelectedOptions = selectedOptions;
+      // this.showDeptPicker = false
+      // this.formData.deptId = value
+      // this.formData.deptCode = selectedOptions?.at(-1)?.deptCode || '',
+      // this.formData.deptName = selectedOptions.map((option) => option.deptName).join('/');
     },
+    // 选择部门按钮回调
+    handleSelectUnit(){
+        if(this.unitSelectedOptions.length===0){
+          return;
+        }
+        if(!this.unitSelectedOptions[this.unitSelectedOptions.length-1].children){
+            this.formData.deptId = this.unitValue;
+            this.formData.deptCode = this.unitSelectedOptions[this.unitSelectedOptions.length-1].deptCode;
+            this.showDeptPicker = false;
+            this.formData.deptName = this.unitSelectedOptions.map((option) => option.deptName).join('/');
+        }
+    },
+    onDeptChange({ value, selectedOptions, tabIndex }){
+        this.unitValue = value;
+        this.unitSelectedOptions = selectedOptions;
+    }
   },
 
   async created() {
@@ -525,3 +547,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.select-unit-button {
+    width: 100px;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 99999;
+}
+::v-deep .van-tabs__content.van-tabs__content--animated {
+  margin-bottom: 70px !important;
+} 
+</style>

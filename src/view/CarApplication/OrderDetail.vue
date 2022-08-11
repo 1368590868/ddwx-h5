@@ -149,7 +149,7 @@
             "8": "已接单","9": "已出车","10": "已还车","11": "已确认" -->
     <div
       class="button-box"
-      v-if="[1,2,4,5,7,8].includes(orderDetail.status)"
+      v-if="[1,2,4].includes(orderDetail.status)"
     >
       <!-- 不需要用车时，在调度没有派车之前用车人可以取消用车单。 -->
       <van-button
