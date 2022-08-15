@@ -1,74 +1,25 @@
 <template>
   <div class="apply-container container">
-    <AllOrderDetail
-      :order-detail="orderDetail"
-      :approve-log-list="approveLogList"
-      :dict-data="dictData"
-    />
+    <AllOrderDetail :order-detail="orderDetail" :approve-log-list="approveLogList" :dict-data="dictData" />
     <!-- TODO button-box的v-if的条件处理 -->
 
-    <div
-      class="button-box"
-      v-if="!orderDetail.endTimeMe"
-    >
-      <van-button
-        block
-        type="default"
-        @click="transferCar=true"
-      >驳回</van-button>
-      <van-button
-        block
-        type="info"
-        @click="approvalOrderChange"
-      >通过</van-button>
+    <div class="button-box" v-if="!orderDetail.endTimeMe">
+      <van-button block type="default" @click="transferCar = true">驳回</van-button>
+      <van-button block type="info" @click="approvalOrderChange">通过</van-button>
     </div>
-    <van-popup
-      v-model="transferCar"
-      position="bottom"
-    >
-      <van-form
-        class="form-scroll"
-        validate-first
-        @failed="onFailed"
-        @submit="approvalOrdeReject"
-      >
-        <van-field
-          label="驳回原因："
-          required
-          class="form-textarea"
-          v-model="formData.comment"
-          name="comment"
-          rows="1"
-          autosize
-          type="textarea"
-          maxlength="50"
-          placeholder="请输入驳回原因"
-          :rules="[{ required: true}]"
-          show-word-limit
-        />
+    <van-popup v-model="transferCar" position="bottom">
+      <van-form class="form-scroll" validate-first @failed="onFailed" @submit="approvalOrdeReject">
+        <van-field label="驳回原因：" required class="form-textarea" v-model="formData.comment" name="comment" rows="1"
+          autosize type="textarea" maxlength="50" placeholder="请输入驳回原因" :rules="[{ required: true }]" show-word-limit />
         <div class="form-button">
-          <van-button
-            block
-            type="info"
-            native-type="submit"
-          >确认驳回</van-button>
+          <van-button block type="info" native-type="submit">确认驳回</van-button>
         </div>
       </van-form>
     </van-popup>
     <!-- 下一级审批人 -->
-    <van-popup
-      v-model="selectAssigneeShow"
-      position="bottom"
-    >
-      <van-field
-        v-model="assignee"
-        required
-        is-link
-        readonly
-        label="下一级审批人"
-        placeholder="请选择下一级审批人"
-        @click="assigneeShow = true"
-      />
+    <van-popup v-model="selectAssigneeShow" position="bottom">
+      <van-field v-model="assignee" required is-link readonly label="下一级审批人" placeholder="请选择下一级审批人"
+        @click="assigneeShow = true" />
       <!-- <div class="form-button">
         <van-button
           block
@@ -77,19 +28,12 @@
         >确认</van-button>
       </div> -->
     </van-popup>
-    <van-popup
-      v-model="assigneeShow"
-      round
-      position="bottom"
-    >
-      <van-cascader
-        v-model="cascaderValue"
-        title="请选审批人"
-        :field-names="fieldNames"
-        :options="assigneeList"
-        @close="assigneeShow = false"
-        @finish="onFinish"
-      />
+    <van-popup v-model="assigneeShow" round position="bottom">
+      <!-- <van-cascader v-model="cascaderValue" title="请选审批人" :field-names="fieldNames" :options="assigneeList"
+        @close="assigneeShow = false" @finish="onFinish" /> -->
+      <div class="popup-title">请选择审批人</div>
+      <van-tree-select :active-id.sync="activeIds" :main-active-index.sync="activeIndex" :items="assigneeList" />
+      <van-button class="van-button-sure" @click="handleTreeSelect">确定</van-button>
     </van-popup>
   </div>
 </template>
@@ -142,6 +86,8 @@ export default {
         hopeBrandDict: '',
       },
       cascaderValue: '',
+      activeIds: [],
+      activeIndex: 0,
     };
   },
   methods: {
@@ -157,7 +103,7 @@ export default {
       let id = this.$route.params.id;
       let detailId = this.$route.params.detailId;
       console.log("🚀 ~ file: ApprovalDetail.vue ~ line 105 ~ getOrderDetail ~ id", id)
-      approvalOrderList({ id,detailId }).then(({ data: { list = [] } }) => {
+      approvalOrderList({ id, detailId }).then(({ data: { list = [] } }) => {
         const orderDetail = (list[0] ?? {}) || {};
         if (orderDetail.reqAssignments?.length > 0) {
           orderDetail.reqAssignments.forEach(async (item) => {
@@ -249,7 +195,7 @@ export default {
           this.selectAssigneeShow = true;
           const data = res.data || [];
           this.assigneeListInfo = data;
-          this.assigneeList = this.dealTreeListEmptyChildren(data?.assigneeList) || [];
+          this.assigneeList = this.getTreeData(data?.assigneeList) || [];
           return
         }
         // 如果两者都没有 则是最后一级，直接通过
@@ -281,6 +227,18 @@ export default {
       });
       return arr;
     },
+    //整理tree data
+    getTreeData(data) {
+      let treeList = []
+      treeList.push({ text: '', children: [] })
+      data.forEach((item) => {
+        treeList[0].children.push({
+          text: item.name,
+          id: item.code
+        })
+      })
+      return treeList
+    },
     // 确定通过按钮
     async approvalOrder(action, done) {
       const id = this.$route.params.id;
@@ -288,6 +246,7 @@ export default {
         let param = {
           assignee: this.cascaderValue,
           businessId: id || this.orderDetail.id,
+          candidateUser: this.activeIds,
           procInstId: this.orderDetail.procInstId,
           comment: '同意',
           taskId: this.orderDetail.taskId,
@@ -311,14 +270,33 @@ export default {
       })
     },
     // 全部选项选择完毕后，会触发 finish 事件 选择完人员之后
-    onFinish({ selectedOptions }) {
+    // onFinish({ selectedOptions }) {
+    //   this.assigneeShow = false;
+    //   this.$dialog.confirm({
+    //     title: '提示',
+    //     message: '是否要审批通过?',
+    //     beforeClose: this.approvalOrder
+    //   });
+    //   this.assignee = selectedOptions.map((option) => option.name).join('/');
+    // },
+    handleTreeSelect() {
       this.assigneeShow = false;
       this.$dialog.confirm({
         title: '提示',
         message: '是否要审批通过?',
         beforeClose: this.approvalOrder
       });
-      this.assignee = selectedOptions.map((option) => option.name).join('/');
+      let activeName = []
+      if (this.activeIds.length) {
+        this.activeIds.forEach(idItem => {
+          this.assigneeList[0].children.forEach(listItem => {
+            if(listItem.id == idItem){
+              activeName.push(listItem.text)
+            }
+          })
+        })
+      }
+      this.assignee = activeName.map((option) => option).join('/');
     },
   },
   created() {
@@ -331,5 +309,33 @@ export default {
 <style scoped lang="less">
 .warnning {
   color: #e6a23c !important;
+}
+
+.popup-title {
+  padding: .2rem 0 .1rem 0.2rem;
+  height: .42rem;
+}
+
+.van-sidebar {
+  width: 0;
+}
+
+.van-tree-select__nav {
+  flex: 0;
+}
+
+.van-tree-select__content {
+  height: calc(300px - 1rem) !important;
+}
+
+.van-button-sure {
+  width: 5.2rem;
+  height: 1rem;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4f99ff;
+  color: #fff;
 }
 </style>

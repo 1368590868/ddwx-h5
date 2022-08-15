@@ -62,7 +62,8 @@ import {
   Cascader,
   Grid,
   GridItem,
-  Uploader
+  Uploader,
+  TreeSelect ,
 } from "vant";
 Vue.use(Row);
 Vue.use(Col);
@@ -104,6 +105,7 @@ Vue.use(Uploader);
 Vue.use(VanImage);
 Vue.use(Grid);
 Vue.use(GridItem);
+Vue.use(TreeSelect);
 
 Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key]);
