@@ -139,6 +139,16 @@ export default {
         this.$toast("请选择司机！");
         return false;
       }
+      let obj = this.reqAssignments.some((item) => {
+          if(!!item.driverInfo){
+             return item.driverInfo.driverCode===radio;
+          }
+          return null;
+      })
+      if(!!obj){
+        this.$toast("该司机已经选择过，无法重复选择!");
+        return false;
+      }
       //   await this.$store.dispatch("DispathOrder/setChoiceDriver", Object.assign({}, this.radioData));
       const { reqAssignmentsIndex } = this.$route.query;
       this.$store.dispatch('DispathOrder/setCarAndDriverData', { ...this.radioData, reqAssignmentsIndex, setDataType: 'driverInfo' })

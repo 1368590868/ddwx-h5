@@ -104,6 +104,7 @@ export default {
       gcywVehicleRequestDispatchList({ id }).then(({ data: { list = [] } }) => {
         let orderDetail = (list[0] ?? {}) || {};
         this.orderDetail = this.dealReqAssignments(orderDetail) || {};
+        console.log(this.orderDetail)
       });
     },
     // 获取车辆审批日志

@@ -77,7 +77,8 @@ import checkCarImagePath from '@/utils/carPath'
 export default {
   name: 'DispatchVehicle',
   computed: {
-    ...mapGetters(['DispathOrder'])
+    ...mapGetters(['DispathOrder']),
+    ...mapGetters(['reqAssignments']),
   },
 
   filters: {
@@ -166,6 +167,14 @@ export default {
         this.$toast("请选择车型！");
         return false;
       }
+      let obj = this.reqAssignments.some((item) => {
+        return item.carInfo.carNumber===radio;
+      })
+      if(!!obj){
+        this.$toast("该车辆已经选择过，无法重复选择!");
+        return false;
+      }
+      // return
       // const id = this.$route.params.id;
       // const type = this.$route.params.type;
       const {
@@ -220,7 +229,6 @@ export default {
     this.typeVehicie = typeVehicie
     let type = this.$route.params.type
     this.type = type
-    console.log('this.$route', this.$route);
     this.getAvailableCar();
   }
 }
