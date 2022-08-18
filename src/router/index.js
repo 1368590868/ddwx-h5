@@ -371,7 +371,13 @@ export const routes = [
 		// redirect: '/DrivingManage/index',
 		meta: {title: '文档管理'},
 		hidden: true,
-	}
+	},
+	{
+		path:'/car3d',
+		name:'Car3d',
+		component: () => import('@/view/Car3d/index.vue'),
+		meta: {title: '车辆展示',keepAlive: false},
+	},
 ];
 
 // add route path

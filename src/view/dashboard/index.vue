@@ -4,7 +4,7 @@
         <div class="dashboard-menu">
             <div class="menu-title">
                 <h3>公务用车管理系统</h3>
-                <p style="margin-bottom:30px">用户名：{{userInfo.username}}</p>
+                <p style="margin-bottom:30px">{{userInfo.realName}}</p>
             </div>
             <div class="menu-btnlist">
                 <van-button color="#3681ee" v-if="checkMenuDisplay('myCar')" type="primary" :icon="dash1" block to="/CarApplication/OutstandOrder">申请用车</van-button>

@@ -149,7 +149,6 @@ export default {
         tunUnitCode: reassignUnitCode || '',
       }
       vehicleInfoGetAvailableCar(params, reassignUnitCode).then(({ data = [] }) => {
-
         this.requestRefreshLoading = false;
         this.requestFinished = true;
         this.requestLoading = false;

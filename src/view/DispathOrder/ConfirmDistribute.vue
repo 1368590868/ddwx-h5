@@ -119,6 +119,7 @@ export default {
       // const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       const { id, type } = this.$route.params
       const reqAssignmentsIndex = this.reqAssignments.length;
+      console.log(reqAssignmentsIndex)
       this.$router.push({
         name: 'DispatchVehicle',
         params: { id, type },
@@ -239,6 +240,7 @@ export default {
       this.$store.dispatch('DispathOrder/deleteReqAssignmentsItem', index).then(() => {
         this.orderDetail = this.dealReqAssignments(this.orderDetail) || {};
       })
+    
     },
     // 去除空数组
     dealTreeListEmptyChildren(arr = []) {

@@ -59,7 +59,7 @@
         >
           <ul>
 
-            <li><img :src="car.carImage || defaultCarImage"></li>
+            <li><img :src="car.carImage || defaultCarImage" @click="handleImageClick(car)"></li>
             <li>
               <h3>{{car.carNumber}}</h3>
               <p>{{car.carBrand}}</p>
@@ -390,6 +390,13 @@ export default {
         name: 'StartApplying',
         params: { id: id }
       });
+    },
+    //跳转车辆3d显示页面
+    handleImageClick(car){
+      // this.$router.push({
+      //   name: 'Car3d',
+      //   params:{carSeries:car.carSeries}
+      // })
     }
   },
   created() {

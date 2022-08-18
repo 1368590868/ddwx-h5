@@ -145,6 +145,7 @@ export default {
           }
           return null;
       })
+      console.log(obj)
       if(!!obj){
         this.$toast("该司机已经选择过，无法重复选择!");
         return false;
@@ -152,7 +153,7 @@ export default {
       //   await this.$store.dispatch("DispathOrder/setChoiceDriver", Object.assign({}, this.radioData));
       const { reqAssignmentsIndex } = this.$route.query;
       this.$store.dispatch('DispathOrder/setCarAndDriverData', { ...this.radioData, reqAssignmentsIndex, setDataType: 'driverInfo' })
-      console.log('this.$store.getters', this.$store.getters);
+      
       const type = this.$route.params.type;
       // const id = this.$route.params.id;
       // if (type == '1') {  // type ==1  是从详情过来的正常派单
@@ -190,7 +191,7 @@ export default {
         this.$router.push({
           name: 'ConfirmDistribute',
           params: { ...this.$route.params },
-          query: this.$route.query,
+          query: Object.assign({}, this.$route.query,{t:Math.random()}),
         });
         return
       }

@@ -265,7 +265,7 @@ export default {
         },
         //获取订单详情
         orderGetOrderDetail() {
-            let id = this.$route.params.autoId;
+            let id = this.$route.params.assignmentId;
             drivingDrivingList({assignmentId:id}).then(({data}) => {
                 this.orderDetail = data.list[0];
                 this.imagePath = checkCarImagePath(this.orderDetail.carBrand,this.orderDetail.carSeries);
@@ -288,7 +288,7 @@ export default {
         },
         //获取日志信息
         orderApprovalLog () {
-            let id = this.$route.params.autoId;
+            let id = this.$route.params.id;
             gcywVehicleRequestLogList({reqId:id}).then(({data}) => {
                 this.apprlogList = data;
             }).catch(() => {
@@ -395,7 +395,7 @@ export default {
                     toast.clear();
                     this.$router.push({
                         name: 'DriSuccess',
-                        params: {autoId: this.$route.params.autoId}
+                        params: {autoId: this.$route.params.assignmentId}
                     });
                 }).catch((err)=>{
                     this.transferCar = false;
