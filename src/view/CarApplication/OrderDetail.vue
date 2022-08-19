@@ -385,7 +385,6 @@ export default {
     // 复制按钮
     CopyOrderChange() {
       let id = this.$route.params.id;
-      console.log(id)
       this.$router.push({
         name: 'StartApplying',
         params: { id: id }
@@ -393,10 +392,13 @@ export default {
     },
     //跳转车辆3d显示页面
     handleImageClick(car){
-      // this.$router.push({
-      //   name: 'Car3d',
-      //   params:{carSeries:car.carSeries}
-      // })
+      this.$router.push({
+        name: 'Car3d',
+        params:{
+            carSeries:car.carSeries,
+            carBrand:car.carBrand
+          }
+      })
     }
   },
   created() {

@@ -16,7 +16,7 @@
             </div>
             <div class="ChoiceVehicie">
                 <ul>
-                    <li><img :src="imagePath"></li>
+                    <li><img :src="imagePath" @click="handleImageClick()"></li>
                     <li>
                         <h3>{{orderDetail.carNumber}}</h3>
                         <p>{{orderDetail.carBrand}}</p>
@@ -508,7 +508,19 @@ export default {
         handleCatchClick(){
             this.isShowCatch = !this.isShowCatch
         },
-       
+        //跳转车辆3d显示页面
+        handleImageClick(){
+            let carSeries=this.orderDetail.carSeries;
+            let carBrand=this.orderDetail.carBrand;
+            
+            this.$router.push({
+                name: 'Car3d',
+                params:{
+                    carSeries:carSeries,
+                    carBrand:carBrand,
+                }
+            })
+        },
         checkDriving(params){
           return new Promise((resolve,reject)=>{
             checkDriving(params).then(({data})=>{

@@ -58,7 +58,7 @@
         :key="car.carNumber + index"
       >
         <ul>
-          <li><img :src="checkCarImagePath(car.carBrand, car.carSeries)"></li>
+          <li><img :src="checkCarImagePath(car.carBrand, car.carSeries)" @click="handleImageClick(car)"></li>
           <li>
             <h3>{{car.carNumber}}</h3>
             <p>{{car.carBrand}} {{car.carSeries}}</p>
@@ -243,6 +243,16 @@ export default {
     deleteCar(index) {
       this.$emit('deleteCar', index)
     },
+     //跳转车辆3d显示页面
+    handleImageClick(car){
+      this.$router.push({
+        name: 'Car3d',
+        params:{
+            carSeries:car.carSeries,
+            carBrand:car.carBrand
+          }
+      })
+    }
   },
 };
 </script>

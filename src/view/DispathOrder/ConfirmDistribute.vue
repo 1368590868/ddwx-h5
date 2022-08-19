@@ -104,7 +104,6 @@ export default {
       gcywVehicleRequestDispatchList({ id }).then(({ data: { list = [] } }) => {
         let orderDetail = (list[0] ?? {}) || {};
         this.orderDetail = this.dealReqAssignments(orderDetail) || {};
-        console.log(this.orderDetail)
       });
     },
     // 获取车辆审批日志
@@ -119,7 +118,6 @@ export default {
       // const { unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       const { id, type } = this.$route.params
       const reqAssignmentsIndex = this.reqAssignments.length;
-      console.log(reqAssignmentsIndex)
       this.$router.push({
         name: 'DispatchVehicle',
         params: { id, type },

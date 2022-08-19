@@ -145,7 +145,6 @@ export default {
           }
           return null;
       })
-      console.log(obj)
       if(!!obj){
         this.$toast("该司机已经选择过，无法重复选择!");
         return false;
