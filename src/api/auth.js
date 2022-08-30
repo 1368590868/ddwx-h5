@@ -31,3 +31,12 @@ export function userMenu(params) {
 		params
 	})
 }
+
+// 修改短信状态
+export function userModifys(data) {
+	return request({
+		url: '/user/modifys',
+		method: 'POST',
+		data
+	})
+}

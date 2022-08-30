@@ -13,6 +13,9 @@ const mutations = {
   SET_BADGENO: (state, data) => {
     state.badgeNo = data;
   },
+  CHANGE_SMS_STATUS:(state,smsFlag) => {
+    state.userInfo.smsFlag = smsFlag;
+  }
 };
 
 const actions = {
@@ -46,6 +49,9 @@ const actions = {
       commit("SET_BADGENO", data);
     });
   },
+  changeSmsStatus({commit},data){
+    commit('CHANGE_SMS_STATUS',data);
+  }
 };
 
 export default {
