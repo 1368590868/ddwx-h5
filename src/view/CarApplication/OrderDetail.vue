@@ -61,7 +61,8 @@
 
             <li><img :src="car.carImage || defaultCarImage" @click="handleImageClick(car)"></li>
             <li>
-              <h3>{{car.carNumber}}</h3>
+              <h3 class="link_h3" v-if="orderDetail.status===10 || orderDetail.status===11" @click="handleRouteClick(car)">{{car.carNumber}}</h3>
+              <h3 v-else>{{car.carNumber}}</h3>
               <p>{{car.carBrand}}</p>
               <p>司机：{{car.driver}}<span><a :href="`tel:${car.driverPhone}`">{{car.driverPhone}}</a></span></p>
             </li>
@@ -399,6 +400,15 @@ export default {
             carBrand:car.carBrand
           }
       })
+    },
+    //跳转行车轨迹界面
+    handleRouteClick(car){
+      this.$router.push({
+        name: 'ArcgisMap',
+        params:{
+            carInfo:car,
+        }
+      })
     }
   },
   created() {
@@ -417,4 +427,8 @@ export default {
     padding-left: 15px;
     padding-right: 15px;
 } 
+.link_h3 {
+    color: #2893ff;
+    text-decoration: underline;
+}
 </style>

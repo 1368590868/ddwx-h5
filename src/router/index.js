@@ -378,6 +378,12 @@ export const routes = [
 		component: () => import('@/view/Car3d/index.vue'),
 		meta: {title: '车辆展示',keepAlive: false},
 	},
+	{
+		path:'/arcgisMap',
+		name:'ArcgisMap',
+		component: () => import('@/view/ArcgisMap/index.vue'),
+		meta: {keepAlive: false},
+	},
 ];
 
 // add route path

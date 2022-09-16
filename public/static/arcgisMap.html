@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title></title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html, body, #map{
+            height: 100%;
+            width: 100%;
+        }
+        #marklayer_layer image:not(#carMarkerImage){
+            width: 36px !important;
+            height: 36px !important;
+            transform: translateY(-25px);
+        }
+        image#carMarkerImage {
+            width: 32px;
+            height: 64px;
+        }
+    </style>
+    <script>
+        var host="http://172.20.98.215:8080";
+        var serverIP="http://172.20.98.215:8080";
+        var itemName="/Portal";
+        var map_wkid = "4490";
+
+        window.urlPath = host;
+        document.write("<script src='http://172.20.98.215:8080/Portal/arcgis2D.js'><\/script>");
+        document.write('<script src="'+host+itemName+'/js/jquery/jquery-1.9.1.min.js"><\/script>');
+    </script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+<script type="text/javascript">
+    //arcgis 对象
+    var MapObj,TianDiTuLayerObj,ExtentObj,RAddMarkObj,SimpleLineSymbolObj,GraphicObj,ColorObj,PolylineObj;
+
+    //arcgis map属性数据
+    var newData = {};
+
+    //图层显示相关对象
+    var map,graphic,rmark,graphicsLayerObj;
+
+    //图层数据
+    var paths=[],pointList=[];
+
+    //轨迹回放相关,初始x,初始y,结束x,结束y,动画,计数,是否动画
+    var startPointX,startPointY,endPointX,endPointY,moving,count=0,isMoving=false;
+    require([
+        "esri/map",
+        "rgis/layers/TianDiTuLayer",
+        "esri/geometry/Extent",
+        "rgis/tools/RAddMark",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/graphic",
+        "esri/Color",
+        "esri/geometry/Polyline",
+        "dojo/domReady!"
+    ], function (Map,TianDiTuLayer,Extent,RAddMark,SimpleLineSymbol,Graphic,Color,Polyline) {
+        MapObj = Map;
+        TianDiTuLayerObj = TianDiTuLayer;
+        ExtentObj = Extent;
+        RAddMarkObj = RAddMark;
+        SimpleLineSymbolObj = SimpleLineSymbol;
+        GraphicObj = Graphic;
+        ColorObj = Color;
+        PolylineObj = Polyline;
+
+        initNewData();
+        createMapLayer();
+    });
+    function initNewData(){
+        if(map_wkid == "3857"){
+            newData.map_xmax = 16129613.41200118;
+            newData.map_xmin = 6737012.590944539;
+            newData.map_ymax = 6690886.142179154;
+            newData.map_ymin = 2165805.0174513455;
+            newData.map_wkid = 3857;
+            newData.tileMatrixSet = "w";
+            newData.layer_vec = "http://10.3.24.101:8080/OneMapServer/rest/services/BASE_VEC_W/WMTS";
+            newData.layer_vecZj = "http://10.3.24.101:8080/OneMapServer/rest/services/BASE_CVA_W/WMTS";
+        }else{
+            newData.map_xmax = 116.51738;
+            newData.map_xmin = 116.266754;
+            newData.map_ymax = 39.989872;
+            newData.map_ymin = 39.83503;
+            newData.map_wkid = 4490;
+            newData.tileMatrixSet = "c";
+            newData.layer_vec = "http://172.20.98.215:8080/OneMapServer/rest/services/TDT_VEC/wmts";
+            newData.layer_vecZj = "http://172.20.98.215:8080/OneMapServer/rest/services/TDT_CVA/wmts";
+        };
+    }
+    function createMapLayer(){
+        map = new MapObj("map", {
+            logo: false,
+            zoom: 12,
+            minZoom: 3,
+            maxZoom:15,
+            sliderPosition: "top-right",
+            sliderStyle: "small",
+            extent: new ExtentObj({
+                xmin: newData.map_xmin,
+                ymin: newData.map_ymin,
+                xmax: newData.map_xmax,
+                ymax: newData.map_ymax,
+                spatialReference: {wkid: newData.map_wkid}
+            })
+        });
+        //添加图层
+        var layer = new TianDiTuLayerObj(newData.layer_vec,{wkid: newData.map_wkid,identifier: "vec", visible: true, tileMatrixSet: newData.tileMatrixSet});
+        map.addLayer(layer);
+        var layerZJ = new TianDiTuLayerObj(newData.layer_vecZj,{wkid: newData.map_wkid,identifier: "cva", visible: true, tileMatrixSet: newData.tileMatrixSet});
+        map.addLayer(layerZJ);
+
+        rmark = new RAddMarkObj();
+        map.addLayer(rmark);
+    }
+
+    //创建坐标点的路线
+    function addMarkerAndRoute(){
+        var geometry = new PolylineObj({
+            type:'polyline',
+            paths:paths
+        })
+        var symbol = new SimpleLineSymbolObj(SimpleLineSymbolObj.STYLE_SOLID, new ColorObj([255, 0, 0]), 8);
+        graphic=new GraphicObj();
+        graphic.geometry=geometry;
+        graphic.symbol=symbol;
+
+        map.graphics.add(graphic);
+
+        addEndMarker();
+        addStartMarker();
+
+        //调整图层,将Marker图层放到线路图层之上
+        document.getElementById('map_gc').appendChild(document.getElementById('marklayer_layer'));
+    }
+
+    //起点
+    function addStartMarker(){
+        rmark.addMarker({
+            x: startPointX,
+            y: startPointY,
+            id: 'pointAddStart',
+            img: "/static/startRoute.png",
+        });
+    }
+
+    //终点
+    function addEndMarker(){
+        rmark.addMarker({
+            x: endPointX,
+            y: endPointY,
+            id: 'pointAddEnd',
+            img: "/static/endRoute.png",
+        });
+    }
+
+    //车
+    function addCarMarker(x,y){
+        rmark.addMarker({
+            x: x,
+            y: y,
+            id: 'pointCarIcon',
+            img: "/static/carIcon.png",
+        });
+    }
+
+    //车辆轨迹
+    function drawRoute(data){
+        if(isMoving){
+            return;
+        }
+
+        pointList=[];
+        paths=[];
+
+        rmark.clear();
+        map.graphics.clear();
+
+        pointList=data;
+        initData();
+    }
+
+    //车辆定位
+    function drawCarLocation(data){
+        if(isMoving){
+            return;
+        }
+        rmark.clear();
+        map.graphics.clear();
+
+        let x = data[0].longitude;
+        let y = data[0].latitude;
+
+        addCarMarker(x,y);
+        setCarMarkerStyle();
+    }
+
+    function initData(data){
+        //去除重复坐标
+        let arr = [];
+
+        for (let i = 0; i < this.pointList.length; i++) {
+            if(i===0){
+                arr.push(this.pointList[i]);
+                continue;
+            }
+            let obj = arr.find((item) => {
+                return item.latitude===this.pointList[i].latitude && item.longitude===this.pointList[i].longitude;
+            })
+            if(!obj){
+                arr.push(this.pointList[i]);
+            }
+        }
+        this.pointList = arr;
+
+        //封装轨迹坐标
+        let pathArr = [];
+        for (let i = 0; i < pointList.length; i++) {
+            let path = [];
+            path.push(Number(pointList[i].longitude));
+            path.push(Number(pointList[i].latitude));
+            pathArr.push(path);
+        }
+        paths.push(pathArr);
+
+        startPointX = paths[0][0][0];
+        startPointY = paths[0][0][1]
+        endPointX = paths[0][paths[0].length-1][0];
+        endPointY = paths[0][paths[0].length-1][1];
+
+        addMarkerAndRoute();
+    }
+
+    //轨迹回放
+    function moveReplay(){ 
+        if(!isMoving){
+            isMoving = true;
+            map.disableDoubleClickZoom();
+            map.disableScrollWheelZoom();
+            map.hideZoomSlider();
+            moveingStart();
+        }
+    }   
+
+    function moveingStart(){
+        if(count>=paths[0].length-1){
+            return;
+        }
+        //原始位置
+        let x = paths[0][count][0];
+        let y = paths[0][count][1];
+
+        //起点
+        let x1 = paths[0][count][0];
+        let y1 = paths[0][count][1];
+       
+        //终点
+        let x2 = paths[0][count+1][0];
+        let y2 = paths[0][count+1][1];
+
+        //速度
+        let speed = 0.0008;
+
+        //角度
+        let slope = (y2 - y1) / (x2 - x1);
+        let atan = Math.atan(slope);
+
+        if(x2 - x1 < 0){
+            atan = atan + Math.PI
+        }
+
+        moving = setInterval(() => {
+            rmark.removeById('pointCarIcon');
+
+            //每次动画运动点坐标
+            x += Math.cos(atan)*speed;
+            y += Math.sin(atan)*speed;
+
+            addCarMarker(x,y);
+            setCarMarkerStyle();
+            setCarMovingAngle(atan,x1,x2,y1,y2);
+  
+            if(x2-x1<0){
+                if(Number(x)<=Number(x2)){
+                    clearInterval(moving);
+                    count++;
+                    if(count<paths[0].length-1){
+                        moveingStart();
+                    }else{
+                        count = 0;
+                        isMoving = false;
+                        map.enableDoubleClickZoom();
+                        map.enableScrollWheelZoom();
+                        map.showZoomSlider();
+                    }
+                }
+            }else{
+                if(Number(x)>=Number(x2)){
+                    clearInterval(moving);
+                    count++;
+                    if(count<paths[0].length-1){
+                        moveingStart();
+                    }else{
+                        count = 0;
+                        isMoving = false;
+                        map.enableDoubleClickZoom();
+                        map.enableScrollWheelZoom();
+                        map.showZoomSlider();
+                    }
+                }
+            }
+        }, 50);
+    }
+
+    //设置车辆样式
+    function setCarMarkerStyle(){
+        //获取车辆控件
+        let carImage;
+        let imageArr = document.getElementsByTagName('image');
+        
+        for (let i = 0; i < imageArr.length; i++) {
+            if(imageArr[i].href.baseVal==='/static/carIcon.png'){
+                carImage = imageArr[i];
+                break;
+            }
+        }
+        carImage.setAttribute('id','carMarkerImage');
+    }
+
+    //设置轨迹回放车辆角度
+    function setCarMovingAngle(atan,x1,x2,y1,y2){
+        let car_x =$("#carMarkerImage").attr("x");
+        let car_y =$("#carMarkerImage").attr("y");
+        let car_atan = -atan/Math.PI*180+90;
+
+        car_x = Number(car_x) + 15;
+        car_y = Number(car_y) + 15;
+
+        $("#carMarkerImage").attr("transform","rotate("+car_atan+","+car_x+","+car_y+")");
+    }
+</script>
+</html>
