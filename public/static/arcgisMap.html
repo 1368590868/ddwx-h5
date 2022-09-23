@@ -25,14 +25,16 @@
         }
     </style>
     <script>
-        var host="http://172.20.98.215:8080";
-        var serverIP="http://172.20.98.215:8080";
-        var itemName="/Portal";
+        // var host="http://172.20.98.215:8080";
+        var host="http://172.17.113.199/api/map";
+        var itemName="/Portal"
         var map_wkid = "4490";
 
         window.urlPath = host;
-        document.write("<script src='http://172.20.98.215:8080/Portal/arcgis2D.js'><\/script>");
+        document.write('<script src="'+host+itemName+'/arcgis2D.js"><\/script>');
         document.write('<script src="'+host+itemName+'/js/jquery/jquery-1.9.1.min.js"><\/script>');
+        // document.write("<script src='http://172.20.98.215:8080/Portal/arcgis2D.js'><\/script>");
+        // document.write('<script src="'+host+itemName+'/js/jquery/jquery-1.9.1.min.js"><\/script>');
     </script>
 </head>
 <body>
@@ -93,8 +95,8 @@
             newData.map_ymin = 39.83503;
             newData.map_wkid = 4490;
             newData.tileMatrixSet = "c";
-            newData.layer_vec = "http://172.20.98.215:8080/OneMapServer/rest/services/TDT_VEC/wmts";
-            newData.layer_vecZj = "http://172.20.98.215:8080/OneMapServer/rest/services/TDT_CVA/wmts";
+            newData.layer_vec = host+"/OneMapServer/rest/services/TDT_VEC/wmts";
+            newData.layer_vecZj = host+"/OneMapServer/rest/services/TDT_CVA/wmts";
         };
     }
     function createMapLayer(){
@@ -138,6 +140,7 @@
 
         addEndMarker();
         addStartMarker();
+        centerPointAndZoom();
 
         //调整图层,将Marker图层放到线路图层之上
         document.getElementById('map_gc').appendChild(document.getElementById('marklayer_layer'));
@@ -200,8 +203,12 @@
         let x = data[0].longitude;
         let y = data[0].latitude;
 
-        addCarMarker(x,y);
-        setCarMarkerStyle();
+        map.setZoom(map.getMaxZoom());
+
+        setTimeout(() => {
+            addCarMarker(x,y);
+            setCarMarkerStyle();
+        }, 1000)
     }
 
     function initData(data){
@@ -238,6 +245,48 @@
         endPointY = paths[0][paths[0].length-1][1];
 
         addMarkerAndRoute();
+    }
+
+    function centerPointAndZoom(){
+        let centerMaxX=this.pointList[0].longitude;
+        let centerMaxY=this.pointList[0].latitude;
+        let centerMinX=this.pointList[0].longitude;
+        let centerMinY=this.pointList[0].latitude;
+
+        for (let i = 0; i < this.pointList.length; i++) {
+            if(Number(this.pointList[i].longitude)>Number(centerMaxX)){
+                centerMaxX = this.pointList[i].longitude;
+            }
+            if(Number(this.pointList[i].latitude)>Number(centerMaxY)){
+                centerMaxY = this.pointList[i].latitude;
+            }
+        }
+        for (let i = 0; i < this.pointList.length; i++) {
+            if(Number(this.pointList[i].longitude)<Number(centerMinX)){
+                centerMinX = this.pointList[i].longitude;
+            }
+            if(Number(this.pointList[i].latitude)<Number(centerMinY)){
+                centerMinY = this.pointList[i].latitude;
+            }
+        }
+        
+        //计算缩放比例-判断基准轴
+        let zoom1;
+        if((Number(centerMaxX)-Number(centerMinX))/(Number(centerMaxY)-Number(centerMinY))
+            >(Number(map.extent.xmax)-Number(map.extent.xmin))/(Number(map.extent.ymax)-Number(map.extent.ymin))){
+            zoom1 = (centerMaxX-centerMinX)/(map.extent.xmax-map.extent.xmin);
+        }else{
+            zoom1 = (centerMaxY-centerMinY)/(map.extent.ymax-map.extent.ymin);
+        }
+        let zoom2 = Math.log2(zoom1)
+        let zoom3 = Math.floor(map.getZoom()-zoom2);
+        map.setZoom(zoom3);
+
+        //中心点位置
+        let centerX = (Number(centerMaxX)+Number(centerMinX))/2;
+        let centerY = (Number(centerMaxY)+Number(centerMinY))/2;
+
+        rmark.setMapCenterAt(centerX,centerY);
     }
 
     //轨迹回放
