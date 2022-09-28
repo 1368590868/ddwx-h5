@@ -200,7 +200,7 @@ export default {
         pageSize: 10,
         pageNum: 0,
         orderByColumn: "usageDate",
-        isAsc: "asc",
+        isAsc: "desc",
       },
       historyRefresh: false,
       historyLoading: false,
