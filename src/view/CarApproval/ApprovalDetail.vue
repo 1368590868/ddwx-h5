@@ -17,21 +17,11 @@
       </van-form>
     </van-popup>
     <!-- 下一级审批人 -->
-    <van-popup v-model="selectAssigneeShow" position="bottom">
-      <van-field v-model="assignee" required is-link readonly label="下一级审批人" placeholder="请选择下一级审批人"
-        @click="assigneeShow = true" />
-      <!-- <div class="form-button">
-        <van-button
-          block
-          type="info"
-          native-type="button"
-        >确认</van-button>
-      </div> -->
-    </van-popup>
-    <van-popup v-model="assigneeShow" round position="bottom">
-      <!-- <van-cascader v-model="cascaderValue" title="请选审批人" :field-names="fieldNames" :options="assigneeList"
-        @close="assigneeShow = false" @finish="onFinish" /> -->
-      <div class="popup-title">请选择审批人</div>
+    <van-popup v-model="assigneeShow" position="bottom">
+      <div class="popup-title">
+          <span>请选择下一级审批人</span>
+          <van-button class="more-button" type="info" size="small" native-type="button" @click="handleMoreClick">更多审核人</van-button>
+      </div>
       <van-tree-select :active-id.sync="activeIds" :main-active-index.sync="activeIndex" :items="assigneeList" />
       <van-button class="van-button-sure" @click="handleTreeSelect">确定</van-button>
     </van-popup>
@@ -47,8 +37,12 @@ import {
   vehicleInfoGetVehicleFile,
 } from '@/api/order'
 import getDict from "@/view/mixins/getDict"
+import { mapGetters } from 'vuex'
 export default {
   mixins: [getDict],
+  computed: {
+      ...mapGetters(['userInfo']),
+  },
   data() {
     return {
       transferCar: false,
@@ -58,8 +52,6 @@ export default {
       },
       // 下一级审批人的id
       assignee: '',
-      // 审批人级联选择器是否展示
-      selectAssigneeShow: false,
       assigneeShow: false,
       // 自定义选择
       fieldNames: {
@@ -67,8 +59,8 @@ export default {
         value: 'code',
         children: 'children',
       },
-      // 审批人列表信息
-      assigneeListInfo: {},
+      // 下级审批人原始数据
+      originAssigneeList: [],
       // 下级审批人的列表
       assigneeList: [],
       // 订单详情
@@ -192,10 +184,14 @@ export default {
         }
         // 如果有审批人列表存在, 则直接展示审批人列表供其选择 选择值后在调用 审批通过接口
         if (res?.data?.assigneeList?.length > 0) {
-          this.selectAssigneeShow = true;
           const data = res.data || [];
-          this.assigneeListInfo = data;
-          this.assigneeList = this.getTreeData(data?.assigneeList) || [];
+          this.originAssigneeList = this.getTreeData(data.assigneeList);
+          //隐藏数据
+          let tempAssigneeList = data.assigneeList.filter((item) => {
+              return item.hide === '0';
+          })
+          this.assigneeList = this.getTreeData(tempAssigneeList);
+          this.assigneeShow = true;
           return
         }
         // 如果两者都没有 则是最后一级，直接通过
@@ -279,6 +275,10 @@ export default {
     //   });
     //   this.assignee = selectedOptions.map((option) => option.name).join('/');
     // },
+    //点击更多审核人回调
+    handleMoreClick(){
+      this.assigneeList = this.originAssigneeList;
+    },
     handleTreeSelect() {
       this.assigneeShow = false;
       this.$dialog.confirm({
@@ -311,21 +311,20 @@ export default {
   color: #e6a23c !important;
 }
 
-.popup-title {
-  padding: .2rem 0 .1rem 0.2rem;
-  height: .42rem;
+.popup-title{
+    padding: 5px 10px;
+    line-height: 30px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 5px;
 }
-
-.van-sidebar {
-  width: 0;
+.van-sidebar{
+    width: 0;
 }
-
-.van-tree-select__nav {
-  flex: 0;
+.van-tree-select__nav{
+    flex: 0;
 }
-
-.van-tree-select__content {
-  height: calc(300px - 1rem) !important;
+.van-tree-select__content{
+    height: calc(300px - 1rem) !important;
 }
 
 .van-button-sure {
@@ -337,5 +336,8 @@ export default {
   transform: translateX(-50%);
   background-color: #4f99ff;
   color: #fff;
+}
+.more-button {
+    float: right;
 }
 </style>

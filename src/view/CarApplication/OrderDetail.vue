@@ -58,12 +58,11 @@
           :key="car.carNumber + index"
         >
           <ul>
-
-            <li><img :src="car.carImage || defaultCarImage" @click="handleImageClick(car)"></li>
+            <li><img :src="checkCarImagePath(car.carBrand, car.carSeries)" @click="handleImageClick(car)"></li>
             <li>
               <h3 class="link_h3" v-if="orderDetail.status===10 || orderDetail.status===11" @click="handleRouteClick(car)">{{car.carNumber}}</h3>
               <h3 v-else>{{car.carNumber}}</h3>
-              <p>{{car.carBrand}}</p>
+              <p>{{car.carBrand}} {{car.carSeries}}</p>
               <p>司机：{{car.driver}}<span><a :href="`tel:${car.driverPhone}`">{{car.driverPhone}}</a></span></p>
             </li>
           </ul>
@@ -236,7 +235,7 @@ import getDict from "@/view/mixins/getDict"
 import { carPic } from '@/api/dispatch';
 import { mapGetters } from 'vuex'
 import platform from '@/view/mixins/platform'
-import defaultCarImage from '@/assets/img/car.jpg'
+import checkCarImagePath from '@/utils/carPath'
 
 export default {
   mixins: [platform, getDict],
@@ -249,8 +248,6 @@ export default {
       closeReason: '',   // 取消原因
       orderDetail: {},
       approveLogList: [],
-      // 默认车图片
-      defaultCarImage,
       // 字典编号
       dictIds: {
         // 订单状态
@@ -262,6 +259,7 @@ export default {
         statusDict: '',
         hopeBrandDict: '',
       },
+      checkCarImagePath,
     };
   },
   methods: {

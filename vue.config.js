@@ -44,7 +44,7 @@ module.exports = {
 			},**/
       "/api": {
         // 开发
-        target: `http://192.168.61.141:8019/gwyc/`,
+        target: `http://172.28.20.247:8018/gwyc`,
         changeOrigin: true,
         pathRewrite: {
           "^/api": "",
@@ -94,6 +94,8 @@ module.exports = {
         return options;
       })
       .end();
+
+      
 
     config
       // https://webpack.js.org/configuration/devtool/#development

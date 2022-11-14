@@ -47,7 +47,7 @@
                 </van-field>
 
                 <van-field center required v-model="form.userName" name="userName" label="乘车人：" placeholder="请输入乘车人"
-                    maxlength="5" :rules="[{ required: true }]" />
+                    maxlength="20" :rules="[{ required: true }]" />
                 <van-field center required v-model="form.phone" name="phone" type="tel" label="联系电话："
                     placeholder="请输入联系电话" :rules="[{ required: true }, { pattern, message: '联系电话输入错误!' }]" />
                 <van-field center required v-model="form.hopeBrandName" name="hopeBrand" readonly
@@ -66,15 +66,10 @@
                     maxlength="50" placeholder="请输入备注" show-word-limit />
             </div>
             <van-popup v-model="assigneeShow" position="bottom">
-                <!-- <van-cascader
-                    v-model="form.assignee"
-                    title="请选择审批人"
-                    :options="assigneeList"
-                    :field-names="fieldNames"
-                    @close="assigneeShow = false"
-                    @change="onChange"
-                    @finish="onFinish"/> -->
-                <div class="popup-title">请选择审批人</div>
+                <div class="popup-title">
+                    <span>请选择审批人</span>
+                    <van-button class="more-button" type="info" size="small" native-type="button" @click="handleMoreClick">更多审核人</van-button>
+                </div>
                 <van-tree-select :active-id.sync="activeIds" :main-active-index.sync="activeIndex" :items="assigneeList" />
                 <van-button class="van-button-sure" @click="handleTreeSelect">确定</van-button>
             </van-popup>
@@ -113,7 +108,10 @@ export default {
             nRangeActiveIndex: 0,       // 用车需求默认
             sHopeCartyActiveIndex: 1,   // 期望车型默认
 
-            assigneeList: [],    //工作流数据
+            //工作流原始数据
+            originAssigneeList:[],
+            //工作流显示数据
+            assigneeList: [],   
             //定义工作流取值字段名称
             fieldNames: {
                 text: 'name',
@@ -235,7 +233,12 @@ export default {
                         this.form.assignee = data.assignee;
                         this.vehicleInfoAdd();
                     } else {
-                        this.assigneeList = this.getTreeData(data.assigneeList);
+                        this.originAssigneeList = this.getTreeData(data.assigneeList);
+                        //隐藏数据
+                        let tempAssigneeList = data.assigneeList.filter((item) => {
+                            return item.hide === '0';
+                        })
+                        this.assigneeList = this.getTreeData(tempAssigneeList);
                         this.assigneeShow = true;
                     }
                 }
@@ -251,6 +254,10 @@ export default {
                 })
             })
             return treeList
+        },
+        //点击更多审核人回调
+        handleMoreClick(){
+            this.assigneeList = this.originAssigneeList;
         },
         handleTreeSelect(){
             if(this.activeIds.length){
@@ -284,7 +291,6 @@ export default {
         //全部选项选择完毕后
         onFinish({ value, selectedOptions, tabIndex }) {
             let obj = selectedOptions[selectedOptions.length - 1];
-            console.log(obj)
             if (obj.type === "5") {
                 this.assigneeShow = false;
                 this.form.assign = obj.code;
@@ -353,8 +359,10 @@ export default {
 </script>
 <style>
 .popup-title{
-    padding: .2rem 0 .1rem 0.2rem;
-    height: .42rem;
+    padding: 5px 10px;
+    line-height: 30px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 5px;
 }
 .van-sidebar{
     width: 0;
@@ -374,5 +382,8 @@ export default {
     transform: translateX(-50%);
     background-color: #4f99ff;
     color: #fff;
+}
+.more-button {
+    float: right;
 }
 </style>

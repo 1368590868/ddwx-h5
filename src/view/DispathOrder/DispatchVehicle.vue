@@ -181,13 +181,12 @@ export default {
         // usageDate,
         // unitCode,
       } = this.$route.query;
-
       // this.$store.dispatch("DispathOrder/setChoiceVehicie", this.radioData);
       this.$store.dispatch('DispathOrder/setCarAndDriverData', { ...this.radioData, reqAssignmentsIndex, setDataType: 'carInfo' })
       this.$router.push({
         name: 'DispathDriver',
-        params: this.$route.params,
-        query: this.$route.query
+        params:this.$route.params,
+        query: Object.assign(this.$route.query, {vinNumber:this.radioData.vinNumber})
       });
       // let typeDriver = '0';
       // if(this.typeVehicie === 'Vehicie'){
