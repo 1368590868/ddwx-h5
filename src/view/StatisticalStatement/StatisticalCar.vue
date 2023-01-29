@@ -114,11 +114,11 @@ export default {
         useByYearyAxisData:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
         showPicker:false,
         showUnitPicker:false,
-        yeardata:['2022','2021','2020','2019','2018','2017','2016'],
+        yeardata:[],
         unitdata:[],
         unitval:'',
         selectedUnitId:'',
-        dateval:'2022',
+        dateval:'',
         carImage:{
           '轿车': car,
           '商务车':carBusiness,
@@ -130,6 +130,15 @@ export default {
     }
   },
   methods:{
+    //获取年份范围
+    getYearRange(){
+      let year = new Date().getFullYear();
+      this.dateval = year;
+
+      for (let i = 0; i < 7; i++) {
+          this.yeardata.push(Number(year)-i);
+      }
+    },
     tabClick(name,title){
         if(name == '1'){
           this.getUseStatisticByYear()
@@ -299,6 +308,7 @@ export default {
   created(){
     this.getCarStatisticByModel()
     this.getCarStatisticByYear()
+    this.getYearRange();
   },
   mounted(){
     this.getCarStatisticByOver()
