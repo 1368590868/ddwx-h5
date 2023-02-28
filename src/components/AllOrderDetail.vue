@@ -63,8 +63,7 @@
             <h3 class="link_h3" v-if="orderDetail.status===10 || orderDetail.status===11" @click="handleRouteClick(car)">{{car.carNumber}}</h3>
             <h3 v-else>{{car.carNumber}}</h3>
             <p>{{car.carBrand}} {{car.carSeries}}</p>
-            <p>司机：{{car.driver}}<span><a
-                  :href="`tel:${car.driverPhone || car.phone}`">{{car.driverPhone || car.phone}}</a></span></p>
+            <p>司机：{{car.driver}}<span style="color:blue;" @click="teleponeClick(car.driverPhone || car.phone)"></span></p>
           </li>
         </ul>
         <div
@@ -114,7 +113,7 @@
       </li>
       <li class="info-label">
         <i class="icon font_family icon-icon-contacts-20"></i>
-        <span>电话：</span><span><a :href="`tel:${orderDetail.phone}`">{{orderDetail.phone}}</a></span>
+        <span>电话：</span><span style="color:blue;" @click="teleponeClick(orderDetail.phone)">{{orderDetail.phone}}</span>
       </li>
       <li class="info-label">
         <i class="icon font_family icon-icon-company-20"></i>
@@ -175,7 +174,10 @@
 
 <script>
 import checkCarImagePath from '@/utils/carPath'
+import teleponeClick from '@/view/mixins/platform'
+import platform from '@/view/mixins/platform'
 export default {
+  mixins: [platform],
   name: 'AllOrderDetail',
   components: {
 

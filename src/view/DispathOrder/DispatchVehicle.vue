@@ -186,7 +186,7 @@ export default {
       this.$router.push({
         name: 'DispathDriver',
         params:this.$route.params,
-        query: Object.assign(this.$route.query, {vinNumber:this.radioData.vinNumber})
+        query: Object.assign(this.$route.query, {vinNumber:this.radioData.vinNumber},{reqAssignmentsIndex:reqAssignmentsIndex})
       });
       // let typeDriver = '0';
       // if(this.typeVehicie === 'Vehicie'){

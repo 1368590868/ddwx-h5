@@ -6,6 +6,7 @@ import store from "./store/index.js";
 import "vant/lib/index.css";
 import "./styles/index.less";
 import * as filters from "./utils/filters.js"; // global filters
+import { parseTime } from "@/utils/index.js";
 import MobilePlatform from "@/utils/MobilePlatform.js";
 import * as echarts from "echarts";
 Vue.prototype.$echarts = echarts;
@@ -106,6 +107,8 @@ Vue.use(VanImage);
 Vue.use(Grid);
 Vue.use(GridItem);
 Vue.use(TreeSelect);
+
+Vue.prototype.parseTime = parseTime;
 
 Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key]);

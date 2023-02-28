@@ -138,6 +138,10 @@ export default {
     },
     // 重新选择
     reselect(index) {
+      const { reqAssignmentsIndex } = this.$route.query || {};
+      this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'carInfo' })
+      this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'driverInfo' })
+
       this.$router.push({
         name: 'DispatchVehicle',
         params: this.$route.params,

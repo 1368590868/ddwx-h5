@@ -132,6 +132,9 @@ export default {
       });
     },
     returnChoiceVehicie() {
+      const { reqAssignmentsIndex } = this.$route.query || {};
+      this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'carInfo' })
+
       this.$router.go(-1);
     },
     async determine() {

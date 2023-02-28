@@ -292,9 +292,6 @@ export const routes = [
 			},
 		]
 	},
-	
-
-
 	{
 		path: '/DrivingManage',
 		component: () => import('@/view/DrivingManage/index.vue'),
@@ -321,6 +318,27 @@ export const routes = [
 				component: () => import('@/view/DrivingManage/DriSuccess')
 				
 			}
+		]
+	},
+	{
+		path: '/ChangeExamine',
+		component: () => import('@/view/ChangeExamine/index.vue'),
+		redirect: '/ChangeExamine/index',
+		meta: {title: '变更审核'},
+		hidden: true,
+		children: [
+			{
+				path: 'index',
+				name: 'ChangeExamineList',
+				meta: {title: '变更审核',keepAlive: true},
+				component: () => import('@/view/ChangeExamine/ChangeExamineList')
+			},
+			{
+				path: 'ChangeExamineDetail',
+				name: 'ChangeExamineDetail',
+				meta: {title: '变更单详情'},
+				component: () => import('@/view/ChangeExamine/ChangeExamineDetail')
+			},
 		]
 	},
 	{

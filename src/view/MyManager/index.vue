@@ -9,7 +9,7 @@
         <div class="my-card-content">
             <ul class="my-card-ul">
                 <li right-icon="arrow"><i class="icon font_family icon-icon-title-20"></i><span class="card-text">所属部门：{{userInfo.officeName}}</span></li>
-                <li><i class="icon font_family icon-icon-contacts-20"></i><span class="card-text">联系方式：<b class="phone-class" @click="teleponeClick(userInfo.phone)">{{userInfo.phone}}</b></span></li>
+                <li><i class="icon font_family icon-icon-contacts-20"></i><span class="card-text">联系方式：<b class="phone-class" style="color:blue;" @click="teleponeClick(userInfo.phone)">{{userInfo.phone}}</b></span></li>
                 <li><i class="icon font_family icon-icon-version-20"></i><span class="card-text">版本信息：v1.0.2</span></li>
                 <li>
                     <i class="icon font_family icon-icon-destination-20"></i>
@@ -39,6 +39,7 @@
     import {mapGetters} from 'vuex'
     import platform from '@/view/mixins/platform'
     import {userModifys} from '@/api/auth'
+    import teleponeClick from '@/view/mixins/platform'
 export default {
     mixins: [platform],
     computed: mapGetters(['userInfo']),

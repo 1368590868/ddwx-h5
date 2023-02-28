@@ -139,6 +139,7 @@
             if(this.id==='0'){
                 this.$nextTick(() => {
                     this.formData.dDepartureTime = parseTime(Date.now(), '{y}-{m}-{d}');
+                    this.initUsageTime();
                 })
                 this.getProvinceOptions(0);
                 this.getDefaultAddress();
@@ -156,6 +157,32 @@
             }.bind(this));
         },
         methods: {
+             //初始化出发时间
+            initUsageTime(){
+                let hh = new Date().getHours();
+                let mf = new Date().getMinutes();
+
+                hh = hh +1;
+
+                if(mf >= 0 && mf <= 15){
+                    mf = '30';
+                }else if(mf > 15 && mf <= 30){
+                    mf = '45';
+                }else if(mf > 30 && mf <= 45){
+                    mf = '00';
+                    hh = hh +1 ;
+                }else if(mf > 45){
+                    mf = '15';
+                    hh = hh +1 ;
+                }
+                if(hh < 10){
+                    hh = '0'+hh;
+                }
+                if(hh == 25){
+                    hh = '00'
+                }
+                this.formData.dDepartureTimeDetail = hh +':'+ mf;
+            },
             //获取出发地和目的地默认地址
             async getDefaultAddress(){
                 await commonAddressListAll({defualtTag:"1"}).then(({data}) => {

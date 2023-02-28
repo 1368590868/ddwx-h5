@@ -99,7 +99,8 @@ import carCoach from '../../assets/img/car_coach.jpg'
 import carSuv from '../../assets/img/car_suv.jpg'
 import carSpecial from '../../assets/img/car_special.jpg'
 import {mapGetters} from 'vuex'
-import {carStatisticByModel,carStatisticByOver,carStatisticByYear,useStatisticByYear,getParentUnit} from '@/api/statistic.js'
+import {carStatisticByModel,carStatisticByOver,carStatisticByYear,useStatisticByYear,} from '@/api/statistic.js'
+import {getAvailableUnit} from '@/api/dispatch.js'
 export default {  
   computed: mapGetters(['userInfo']),
   data(){     
@@ -156,7 +157,7 @@ export default {
       this.showUnitPicker = false
     },
     getParentUnit(){
-      getParentUnit().then(({data})=>{
+      getAvailableUnit().then(({data})=>{
         let udata = [{unitName:'全部',id:''}]
         data.forEach(item => {
           udata.push(item)

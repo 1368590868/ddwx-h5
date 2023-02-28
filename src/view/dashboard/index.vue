@@ -13,6 +13,7 @@
                 <van-button color="#3681ee" v-if="checkMenuDisplay('dispatch')" type="primary" :icon="dash3" block to="/DispathOrder">调度管理</van-button>
                 <van-button color="#3681ee" v-if="checkMenuDisplay('driverWorkBench')" type="primary" :icon="dash4" block to="/DrivingManage">出车管理</van-button>
                 <van-button color="#3681ee" v-if="checkMenuDisplay('statis')" type="primary" :icon="dash4" block to="/StatisticalStatement">统计报表</van-button>
+                <van-button color="#3681ee" v-if="checkMenuDisplay('dataChangeOrder')" type="primary" :icon="dash2" block to="/ChangeExamine">变更审核</van-button>
             </div>
         </div>
     </div>

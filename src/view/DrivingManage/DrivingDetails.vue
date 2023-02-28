@@ -20,7 +20,7 @@
                     <li>
                         <h3>{{orderDetail.carNumber}}</h3>
                         <p>{{orderDetail.carBrand}}</p>
-                        <p>司机：{{orderDetail.driver}}<span @click="teleponeClick(orderDetail.dreverPhone)">{{orderDetail.driverPhone}}</span></p>
+                        <p>司机：{{orderDetail.driver}}<span style="color:blue;" @click="teleponeClick(orderDetail.dreverPhone)">{{orderDetail.dreverPhone}}</span></p>
                     </li>
                 </ul>
             </div>
@@ -45,7 +45,7 @@
                 </li>
                 <li class="info-label">
                     <i class="icon font_family icon-icon-contacts-20"></i>
-                    <span>电话：</span><span><a style="color: ;" :href="'tel:'+orderDetail.phone"></a>{{orderDetail.phone}}</span>
+                    <span>电话：</span><span style="color:blue;" @click="teleponeClick(orderDetail.phone)">{{orderDetail.phone}}</span>
                 </li>
                 <li class="info-label">
                     <i class="icon font_family icon-icon-company-20"></i>
@@ -197,9 +197,12 @@ import {gcywVehicleRequesTakeOrder,
         vehicleInfoDetail} from '@/api/driving'
 import platform from '@/view/mixins/platform'
 import checkCarImagePath from '@/utils/carPath'
+import teleponeClick from '@/view/mixins/platform'
 
 let that;
 export default {
+    name:'DrivingDetails',
+
     mixins: [platform],
 
     beforeCreate() {
@@ -381,8 +384,23 @@ export default {
         },
         //还车
         drivingreturnCar () {   
+            let endMiles = parseFloat(this.transferCarData.endMiles);
+            let beginMiles = parseFloat(this.transferCarData.beginMiles);
+            let finalMiles =  (endMiles-beginMiles).toFixed(2);
+
+            let confirmMessage = '';
+            if(endMiles-beginMiles>100){
+                confirmMessage =  `<div style='line-height:10px'><p style='text-align:center;'>请确认还车里程为<span style='color:blue;'>`+this.transferCarData.endMiles+`</span>KM,</p>
+                    <p>行驶里程为<span style='color:red;'>`+finalMiles+`</span>KM,</p>
+                    <p>是否正确？</p></div>`;
+            }else{
+                confirmMessage =  `<div style='line-height:10px'><p style='text-align:center;'>请确认还车里程为<span style='color:blue;'>`+this.transferCarData.endMiles+`</span>KM,</p>
+                    <p>行驶里程为<span style='color:green;'>`+finalMiles+`</span>KM,</p>
+                    <p>是否正确？</p></div>`;
+            }
             this.$dialog.confirm({
-                    message:'还车里程为'+this.transferCarData.endMiles+'，是否正确？',
+                    title:'确认信息',
+                    message:confirmMessage,
                     confirmButtonText:'是',
                     cancelButtonText:'否'}).then(()=>{
                 let toast = this.$toast.loading({

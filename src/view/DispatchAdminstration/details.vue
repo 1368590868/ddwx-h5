@@ -20,7 +20,7 @@
                     <li>
                         <h3>{{ChoiceVehicie.carNumber}}</h3>
                         <p>{{ChoiceVehicie.brand}}</p>
-                        <p>司机：{{ChoiceDriver.name}}<span @click="teleponeClick(orderDetail.dreverPhone)">{{ChoiceDriver.phone}}</span></p>
+                        <p>司机：{{ChoiceDriver.name}}<span style="color:blue;" @click="teleponeClick(ChoiceDriver.phone)">{{ChoiceDriver.driverPhone}}</span></p>
                     </li>
                 </ul>
             </div>
@@ -30,7 +30,8 @@
                     <li>
                         <h3>{{orderDetail.sArrangedCar}}</h3>
                         <p>{{orderDetail.brand}}</p>
-                        <p>司机：{{orderDetail.driverName}}<span @click="teleponeClick(orderDetail.dreverPhone)">{{orderDetail.dreverPhone}}</span></p>
+                        <!-- <p>司机：{{orderDetail.driverName}}<span @click="teleponeClick(orderDetail.dreverPhone)">{{orderDetail.dreverPhone}}</span></p> -->
+                        <p>司机：{{orderDetail.driverName}}<span style="color:blue;" @click="teleponeClick(orderDetail.driverPhone)">{{orderDetail.dreverPhone}}</span></p>
                     </li>
                 </ul>
             </div>
@@ -160,6 +161,7 @@ import fuzhi from '@/assets/icon/fuzhi.svg';
 import quxiao from '@/assets/icon/quxiao.svg';
 import {mapGetters} from 'vuex'
 import platform from '@/view/mixins/platform'
+import teleponeClick from '@/view/mixins/platform'
 export default {
     mixins: [platform],
     data (){
