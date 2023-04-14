@@ -41,6 +41,10 @@
             <ul class="info-box">
                 <li class="info-label">
                     <i class="font_family icon-icon-mine-24"></i>
+                    <span>申请人：</span><span>{{orderDetail.handleUserName}}</span>
+                </li>
+                <li class="info-label">
+                    <i class="font_family icon-icon-mine-24"></i>
                     <span>乘车人：</span><span>{{orderDetail.userName}}</span>
                 </li>
                 <li class="info-label">

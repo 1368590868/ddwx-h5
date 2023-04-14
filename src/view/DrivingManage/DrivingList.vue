@@ -89,7 +89,7 @@ export default {
                 pageNum: 0,
                 orderByColumn:"usageDate",
                 isAsc:"desc",
-                statusList:"3,5"
+                statusList:"3,5,7"
             }
         }
 

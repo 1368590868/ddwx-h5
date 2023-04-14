@@ -254,16 +254,16 @@
                 return options;
             },
             selectMinTime () {
-                let hour = this.formData.dDepartureTimeDetail.split(':')[0];
-                let nowDate = new Date(),
-                    nowHour = nowDate.getHours();
-                if (new Date(this.formData.dDepartureTime).getTime() > nowDate.getTime()) {
-                    this.minMinute = 0;
-                    this.minHour = 0;
-                    return 0;
-                }
-                this.minHour = nowDate.getHours();
-                this.minMinute = (hour == nowHour)? nowDate.getMinutes():0;
+                // let hour = this.formData.dDepartureTimeDetail.split(':')[0];
+                // let nowDate = new Date(),
+                //     nowHour = nowDate.getHours();
+                // if (new Date(this.formData.dDepartureTime).getTime() > nowDate.getTime()) {
+                //     this.minMinute = 0;
+                //     this.minHour = 0;
+                //     return 0;
+                // }
+                // this.minHour = nowDate.getHours();
+                // this.minMinute = (hour == nowHour)? nowDate.getMinutes():0;
             },
             onFailed(errInfo) {
                 // console.log(errInfo);
