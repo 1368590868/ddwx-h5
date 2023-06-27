@@ -127,7 +127,7 @@ export function vehicleInfoGetAvailableCar(params, reassignUnitCode) {
 // 选择派车司机
 export function getDispatchAvailableDriver(params) {
   return request({
-    url: `/gcjcDriverClass/getAvailableDriver`,
+    url: `/gcjcDriverClass/getRGAvailableDriver`,
     method: "get",
     params,
   });
