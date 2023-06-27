@@ -49,20 +49,19 @@ export default {
             }
             await logisticsGetDrivingRecord(params).then(({data}) => {
                 this.loading = false;
-
-                this.startTime=parseTime(data[0].departureDate,'{m}/{d} {h}:{i} ');
-                this.endTime=parseTime(data[0].returnTime,'{m}/{d} {h}:{i}');
             
                 if(data.length===0 || !data[0].simNumber){
                     this.$notify({
                         type: 'warning',
-                        message: '暂无行程轨迹!',
+                        message: '该车辆没有绑定北斗设备!',
                         onClose: () => {
                             this.$router.back();
                         }
                     });
                     return;
                 }
+                this.startTime=parseTime(data[0].departureDate,'{m}/{d} {h}:{i} ');
+                this.endTime=parseTime(data[0].returnTime,'{m}/{d} {h}:{i}');
                 this.simNumber=data[0].simNumber;
 
                 this.getLogisticsTrajectoryAll()
@@ -73,15 +72,22 @@ export default {
         //获取车辆轨迹数据
         async getLogisticsTrajectoryAll(){
             let params = {
-                simNumber: this.simNumber,
+                deviceId: this.simNumber,
                 startTime: this.startTime,
                 endTime: this.endTime,
-                // simNumber: '121901105000',
-                // startTime: '2022-08-26 15:59:55',
-                // endTime: '2022-09-02 16:00:09',
             }
             await logisticsTrajectoryAll(params).then(({data}) => {
-                this.replayList = data;
+                this.loading = false;
+                this.replayList = [];
+
+                let tempArr = JSON.parse(message);
+
+                tempArr.forEach((item) => {
+                    if(new Date(item.locTime).getTime() > new Date(this.startTime).getTime() && 
+                        new Date(item.locTime).getTime() < new Date(this.endTime).getTime()){
+                        this.replayList.push(item)
+                    }
+                })
                 this.drawRoute();
             }).catch((err) => {
             })
