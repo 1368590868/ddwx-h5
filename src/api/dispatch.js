@@ -127,7 +127,7 @@ export function vehicleInfoGetAvailableCar(params, reassignUnitCode) {
 // 选择派车司机
 export function getDispatchAvailableDriver(params) {
   return request({
-    url: `/gcjcDriverClass/getRGAvailableDriver`,
+    url: `/gcjcDriverClass/getAvailableDriver`,
     method: "get",
     params,
   });
@@ -198,6 +198,15 @@ export function getAvailableUnit(params) {  // 单位列表
 export function getDispatchDept(params) {  
 	return request({
 		url: '/dept/tree',
+		method: 'GET',
+		params
+	})
+}
+
+//用车单 时间地点重合 校验接口 
+export function gcywVehicleRequestCheckRequestInfo(params) {  
+	return request({
+		url: '/gcywVehicleRequest/checkRequestInfo',
 		method: 'GET',
 		params
 	})

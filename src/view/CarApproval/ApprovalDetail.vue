@@ -10,7 +10,7 @@
     <van-popup v-model="transferCar" position="bottom">
       <van-form class="form-scroll" validate-first @failed="onFailed" @submit="approvalOrdeReject">
         <van-field label="驳回原因：" required class="form-textarea" v-model="formData.comment" name="comment" rows="1"
-          autosize type="textarea" maxlength="50" placeholder="请输入驳回原因" :rules="[{ required: true }]" show-word-limit />
+          autosize type="textarea" maxlength="40" placeholder="请输入驳回原因" :rules="[{ required: true }]" show-word-limit />
         <div class="form-button">
           <van-button block type="info" native-type="submit">确认驳回</van-button>
         </div>

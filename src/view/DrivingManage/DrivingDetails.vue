@@ -19,7 +19,7 @@
                     <li><img :src="imagePath" @click="handleImageClick()"></li>
                     <li>
                         <h3>{{orderDetail.carNumber}}</h3>
-                        <p>{{orderDetail.carBrand}}</p>
+                        <p>{{orderDetail.carBrand}} {{orderDetail.carSeries}}</p>
                         <p>司机：{{orderDetail.driver}}<span style="color:blue;" @click="teleponeClick(orderDetail.dreverPhone)">{{orderDetail.dreverPhone}}</span></p>
                     </li>
                 </ul>
@@ -51,11 +51,11 @@
                     <i class="icon font_family icon-icon-contacts-20"></i>
                     <span>电话：</span><span style="color:blue;" @click="teleponeClick(orderDetail.phone)">{{orderDetail.phone}}</span>
                 </li>
-                <li class="info-label">
+                <li class="info-label" v-if="false">
                     <i class="icon font_family icon-icon-company-20"></i>
                     <span>单位：</span><span>{{orderDetail.unitName}}</span>
                 </li>
-                <li class="info-label">
+                <li class="info-label" v-if="false">
                     <i class="icon font_family icon-icon-department-20"></i>
                     <span>部门：</span><span>{{orderDetail.deptName}}</span>
                 </li>
@@ -76,13 +76,13 @@
             <template>
                 <div class="log-title">行车信息</div>
                 <ul class="info-text">
-                    <li class="info-label"><span>出车里程：</span><span>{{orderDetail.beginMiles || 0}} 千米</span></li>
+                    <li class="info-label"><span>出车里程：</span><span>{{checkBeginMiles()}} 千米</span></li>
                     <li class="info-label"><span>还车里程：</span><span>{{orderDetail.endMiles || 0}} 千米</span></li>
                     <li class="info-label"><span>等待时长：</span><span>{{orderDetail.waitTimes || 0}} 小时</span></li>
                     <li class="info-label"><span>行程描述：</span><span class="info-address">{{orderDetail.itinerayDescription || '暂无描述'}}</span></li>
                 </ul>
             </template>
-            <div class="operlog-box">
+            <div class="operlog-box" v-if="false">
                 <div class="log-title">审批日志</div>
                 <ul class="log-container">
                     <li class="log-li" v-for="(logItem, logIndex) in apprlogList" :key="logIndex">
@@ -96,7 +96,7 @@
         </div>
         <!-- <div class="form-button" v-if="orderDetail.stateCode == 3"> -->
         <div class="button-box" v-if="orderDetail.status == '1'">
-            <van-button block type="default"  @click="drivingRefause">拒绝接单</van-button>
+            <!-- <van-button block type="default"  @click="drivingRefause">拒绝接单</van-button> -->
             <van-button block type="info" @click="drivingCconfirmReceipt">确认接单</van-button>
         </div>
         <!-- <div class="form-button" v-else-if="orderDetail.stateCode == 4"> -->
@@ -275,6 +275,7 @@ export default {
             let id = this.$route.params.assignmentId;
             drivingDrivingList({assignmentId:id}).then(({data}) => {
                 this.orderDetail = data.list[0];
+
                 this.imagePath = checkCarImagePath(this.orderDetail.carBrand,this.orderDetail.carSeries);
                 this.getVehicleInfo();
             }).catch(() => {
@@ -417,7 +418,10 @@ export default {
                     toast.clear();
                     this.$router.push({
                         name: 'DriSuccess',
-                        params: {autoId: this.$route.params.assignmentId}
+                        params: {
+                            id:this.$route.params.id,
+                            assignmentId: this.$route.params.assignmentId,
+                        }
                     });
                 }).catch((err)=>{
                     this.transferCar = false;
@@ -542,6 +546,13 @@ export default {
                     carBrand:carBrand,
                 }
             })
+        },
+        //判断行车里程中的出车里程值
+        checkBeginMiles(){
+            if(!this.orderDetail.beginMiles || this.orderDetail.beginMiles == 0){
+                return this.beginMiles;
+            }
+            return this.orderDetail.beginMiles
         },
         checkDriving(params){
           return new Promise((resolve,reject)=>{

@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="button-box">
-        <van-button type="default" :to="'/DrivingManage/DrivingDetails/' + $route.params.autoId">查看详情</van-button>
+        <van-button type="default" :to="'/DrivingManage/DrivingDetails/' + $route.params.id +'/' + $route.params.assignmentId">查看详情</van-button>
         <van-button type="info" to="/DrivingManage/index">返回列表</van-button>
     </div>
     
@@ -22,6 +22,9 @@ export default {
         return {
 
         }
+    },
+    created () {
+        
     }
 }
 </script>

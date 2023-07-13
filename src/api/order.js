@@ -171,3 +171,23 @@ export function gcywVehicleRequestListPageForH5(params) {
 	})
 }
 
+
+//我的用车单-评价
+export function gcywRequestEvaluateSave(data) {
+	return request({
+	  url: `/gcywRequestEvaluate/save`,
+	  method: 'post',
+	  data
+	})
+}
+
+//我的用车单-进行中和待评价 总数量
+export function gcywVehicleRequestDispatchCountH5(params) {
+	return request({
+	  url: `/gcywVehicleRequest/dispatchCountH5`,
+	  method: 'get',
+	  params
+	})
+}
+
+

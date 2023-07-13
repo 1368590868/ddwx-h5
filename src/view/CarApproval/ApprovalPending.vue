@@ -1,374 +1,373 @@
 <template>
-  <div class="not-class" ref="notClass">
-    <van-tabs
-      type="card"
-      :sticky="true"
-      v-model="activeIndex"
-      :animated="true"
-      offset-top="0px"
-    >
-      <van-tab title="待审批" :name="0">
-        <van-pull-refresh
-          v-model="requestRefresh"
-          @refresh="orderOnRefresh"
-          animation-duration="500"
-          success-text="刷新成功"
-        >
-          <van-list
-            v-model="requestLoading"
-            offset="30"
-            :finished="requestFinished"
-            finished-text="没有更多了..."
-            @load="orderRequestList"
-          >
-            <div
-              class="list-container"
-              v-for="(item, usageDate) in approvalOrderList"
-              :key="usageDate"
-            >
-              <div class="log-title">{{ usageDate }}</div>
-              <ul
-                v-for="(childItem, index) in item"
-                :class="[
-                  'list-ul',
-                  childItem.longDistanceTag == 1 ? 'longway' : '',
-                ]"
-                :key="childItem.reqNo + index"
-                @click="goOrderDetailClick(childItem.id,childItem.detailId)"
-              >
-                <li class="list-li">
-                  <div class="li-address">
-                    <b class="b1">
-                      {{ childItem.fromAddr.split("/")[2].split(" ")[0] }}
-                    </b>
-                    <b class="b2">
-                      {{ childItem.toAddr.split("/")[2].split(" ")[0] }}
-                    </b>
-                  </div>
-                  <div class="li-timestu">
-                    <time>{{ childItem.usageTime }}</time>
-                    <span>出发</span>
-                    <b class="b-status">
-                      {{ dictData.statusDict[childItem.status] }}
-                    </b>
-                  </div>
-                </li>
-                <li class="info-label">
-                  <span>详细地址：</span>
-                  <span class="infor-overflow" style="margin-right:15px">
-                    {{ childItem.fromAddr.split("/")[2].split(" ")[1] }}
-                    &nbsp;到&nbsp;
-                    {{ childItem.toAddr.split("/")[2].split(" ")[1] }}
-                  </span>
-                </li>
-                <li class="info-label">
-                  <span>分派车辆：</span>
-                  <span class="infor-overflow">
-                    <!-- {{childItem.brand || '空的'}} -->
-                    {{ childItem.assignmentList | checkCarNumber }}
-                  </span>
-                </li>
-                <li class="info-label">
-                  <span>分派司机：</span><span>{{ childItem.assignmentList | checkCarDriver }}</span>
-                </li>
-                <li class="info-label">
-                  <span>订 单 号 ：</span><span>{{ childItem.reqNo }}</span>
-                </li>
-              </ul>
-            </div>
-          </van-list>
-        </van-pull-refresh>
-      </van-tab>
-      <van-tab title="已审批" :name="1">
-        <van-pull-refresh
-          v-model="historyRefresh"
-          @refresh="historyOnRefresh"
-          animation-duration="500"
-          success-text="刷新成功"
-        >
-          <van-list
-            v-model="historyLoading"
-            offset="30"
-            :finished="historyFinished"
-            finished-text="没有更多了..."
-            @load="orderHistoryOrderList"
-          >
-            <div
-              class="list-container"
-              v-for="(item, usageDate) in approvedOrderList"
-              :key="usageDate"
-            >
-              <div class="log-title">{{ usageDate }}</div>
-              <ul
-                v-for="(childItem, index) in item"
-                :class="[
-                  'list-ul',
-                  childItem.longDistanceTag == 1 ? 'longway' : '',
-                ]"
-                :key="childItem.reqNo + index"
-                @click="goOrderDetailClick(childItem.id,childItem.detailId)"
-              >
-                <li class="list-li">
-                  <div
-                    class="li-address"
-                    v-if="childItem.fromAddr && childItem.toAddr"
-                  >
-                    <b class="b1">
-                      {{ childItem.fromAddr.split("/")[2].split(" ")[0] }}
-                    </b>
-                    <b class="b2">
-                      {{ childItem.toAddr.split("/")[2].split(" ")[0] }}
-                    </b>
-                  </div>
-                  <div class="li-timestu">
-                    <time>{{ childItem.usageTime }}</time>
-                    <span>出发</span>
-                    <b class="b-status">
-                      {{ dictData.statusDict[childItem.status] }}
-                    </b>
-                  </div>
-                </li>
-                <li class="info-label">
-                  <span>详细地址：</span>
-                  <span v-if="childItem.fromAddr && childItem.toAddr" class="infor-overflow" style="margin-right:15px">
-                    {{ childItem.fromAddr.split("/")[2].split(" ")[1] }}
-                    &nbsp;到&nbsp;
-                    {{ childItem.toAddr.split("/")[2].split(" ")[1] }}
-                  </span>
-                </li>
-                <li class="info-label">
-                  <span>分派车辆：</span>
-                  <span class="infor-overflow">
-                    <!-- {{childItem.brand || '空的'}} -->
-                    {{ childItem.assignmentList | checkCarNumber }}
-                  </span>
-                </li>
-                <li class="info-label">
-                  <span>分派司机：</span><span>{{ childItem.assignmentList | checkCarDriver }}</span>
-                </li>
-                <li class="info-label">
-                  <span>订 单 号 ：</span><span>{{ childItem.reqNo }}</span>
-                </li>
-              </ul>
-            </div>
-          </van-list>
-        </van-pull-refresh>
-      </van-tab>
-    </van-tabs>
-  </div>
+    <div class="main-container" ref="container">
+        <van-tabs 
+            v-model="menuActiveIndex" 
+            :sticky="true" 
+            type="card"
+            color="#0571ff"
+            title-active-color="#ffffff"
+            title-inactive-color="#2e2e2e">
+            <van-tab title="待审批">
+                <van-pull-refresh v-model="waitRefreshLoading" @refresh="waitRefresh" success-text="刷新成功">
+                    <van-list 
+                        v-model="waitLoading" 
+                        :finished="waitFinished" 
+                        finished-text="没有更多了..." 
+                        @load="getWaitOrderList">
+
+                        <div v-for="(item,index) in waitOrderList" :key="index" class="order-info-item box-container" @click="handleWaitItemClick(item)">
+                            <ul>
+                                <li class="li-item-long" v-if="item.longDistanceTag === 1">
+                                    <i class="order-long"></i>
+                                    <span>长途单</span>
+                                </li>
+                                <li>
+                                    <span>出发时间：</span>
+                                    <span>{{item.usageDate}}{{'\u00A0'}}{{item.usageTime}}</span>
+                                </li>
+                                <li>
+                                    <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span>{{item.fromAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
+                                    <span class="li-item-content">{{item.userName}}</span>
+                                </li>
+                                <li>
+                                    <span>用车事由：</span>
+                                    <span>{{item.reason}}</span>
+                                </li>
+                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
+                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+            <van-tab title="已审批">
+                <van-pull-refresh v-model="historyRefreshLoading" @refresh="historyRefresh" success-text="刷新成功">
+                    <van-list 
+                        v-model="historyLoading" 
+                        :finished="historyFinished" 
+                        finished-text="没有更多了..." 
+                        @load="getHistoryOrderList">
+
+                        <div v-for="(item,index) in historyOrderList" :key="index" class="order-info-item box-container" @click="handleHistoryItemClick(item)">
+                            <ul>
+                                <li class="li-item-long" v-if="item.longDistanceTag === 1">
+                                    <i class="order-long"></i>
+                                    <span>长途单</span>
+                                </li>
+                                <li>
+                                    <span>出发时间：</span>
+                                    <span>{{item.usageDate}}{{'\u00A0'}}{{item.usageTime}}</span>
+                                </li>
+                                <li>
+                                    <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span>{{item.fromAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
+                                    <span class="li-item-content">{{item.userName}}</span>
+                                </li>
+                                <li>
+                                    <span>用车事由：</span>
+                                    <span>{{item.reason}}</span>
+                                </li>
+                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
+                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+        </van-tabs>
+    </div>  
 </template>
 <script>
-import { approvalOrderList ,gcywVehicleRequestListPageForH5} from "@/api/order";
-import getDict from "@/view/mixins/getDict";
-import { mapGetters } from "vuex";
+import { gcywVehicleRequestListPageForH5 } from '@/api/order'
+import { getListByParentId } from "@/api/dict";
+import { mapGetters } from 'vuex'
+
 export default {
-  mixins: [getDict],
-  computed: mapGetters("CarApplication", ["isFefresh"]),
-  beforeRouteEnter(to, from, next) {
-    if (from.name === "SubSuccess") {
-      to.meta.keepAlive = false;
-    } else {
-      to.meta.keepAlive = true;
-    }
-    next((vm) => {
-      let timer = setTimeout(() => {
-        vm.$refs.notClass.scrollTop = to.meta.scrollTop;
-        clearTimeout(timer);
-      }, 0);
-    });
-  },
-  beforeRouteLeave(to, from, next) {
-    if (to.name === "ApprovalDetail") {
-      // 去往详情页
-      let notClass = this.$refs.notClass;
-      let top = notClass.scrollTop;
-      from.meta.scrollTop = top;
-    }
-    next();
-  },
-  data() {
-    return {
-      activeIndex: 0,
+    name:'ApprovalPending',
+    computed: mapGetters('CarApplication', ['isFefresh']),
 
-      requestRefresh: false,
-      requestLoading: false,
-      requestFinished: false,
-
-      approvalOrderList: {},
-      requestKeys: 0,
-      requestQuery: {
-        pageSize: 10,
-        pageNum: 0,
-        orderByColumn: "usageDate",
-        isAsc: "desc",
-      },
-      historyRefresh: false,
-      historyLoading: false,
-      historyFinished: false,
-      approvedOrderList: {},
-      historyQuery: {
-        pageSize: 10,
-        pageNum: 0,
-        orderByColumn: "usageDate",
-        isAsc: "desc",
-      },
-      dictIds: {
-        // 订单状态
-        statusDict: "1522830760585670657",
-      },
-      dictData: {
-        statusDict: "",
-      },
-    };
-  },
-  methods: {
-    orderOnRefresh() {
-      this.requestFinished = false;
-      this.requestQuery.pageNum = 0;
-      this.requestLoading = true;
-      this.orderRequestList();
-    },
-    historyOnRefresh() {
-      this.historyFinished = false;
-      this.historyQuery.pageNum = 0;
-      this.historyLoading = true;
-      this.orderHistoryOrderList();
-    },
-    //
-    dealArrToObject(arr = [], key = "") {
-      //   return Object.fromEntries(arr.map((item) => [item[key], [item]]));
-      return arr.map((item) => [item[key], [item]]);
-    },
-    // 获取当前页面的通用字典下拉数据
-    async handleSystemCardDict(dict = {}) {
-      for (const item in dict) {
-        const res = (await this.getCommonDictList(dict[item])) || [];
-        this.dictData[item] = Object.fromEntries(
-          res.map((item) => [item.code, item.name])
-        );
-      }
-    },
-    orderRequestList() {
-      // 用车审批待审批列表
-      let pageNum = this.requestQuery.pageNum;
-      this.requestLoading = true;
-      this.requestQuery.pageNum = pageNum + 1;
-      const params = {
-        ...this.requestQuery,
-        // 待审审核的状态
-        reviewCompleted: "0",
-      };
-      gcywVehicleRequestListPageForH5(params)
-        .then(({ data }) => {
-          if (this.requestRefresh && this.requestQuery.pageNum === 1) {
-            this.approvalOrderList = {};
-          }
-          this.requestRefresh = false;
-          if (data?.list?.length === 0) {
-            this.requestFinished = true;
-            return;
-          }
-          let list = data?.list || [];
-          list = this.dealArrToObject(list, "usageDate") || [];
-          this.approvalOrderList = this.computedGroupDate(
-            list,
-            "approvalOrderList"
-          );
-        })
-        .catch((e) => {
-          console.error(e);
-          alert("错误");
-        })
-        .finally(() => {
-          this.requestLoading = false;
-        });
-    },
-    orderHistoryOrderList() {
-      // 用车审批已审批列表
-      let pageNum = this.historyQuery.pageNum;
-      this.historyLoading = true;
-      this.historyQuery.pageNum = pageNum + 1;
-      const params = {
-        ...this.historyQuery,
-        // 已审核的固定参数
-        reviewCompleted: "1",
-      };
-      gcywVehicleRequestListPageForH5(params)
-        .then(({ data }) => {
-          if (this.historyRefresh && this.historyQuery.pageNum === 1) {
-            this.approvedOrderList = {};
-          }
-          this.historyRefresh = false;
-          if (data?.list?.length === 0) {
-            this.historyFinished = true;
-          }
-          let list = data?.list || [];
-          list = this.dealArrToObject(list, "usageDate") || [];
-          this.approvedOrderList = this.computedGroupDate(
-            list,
-            "approvedOrderList"
-          );
-        })
-        .catch(() => {
-          alert("错误");
-        })
-        .finally(() => {
-          this.historyLoading = false;
-        });
-    },
-    computedGroupDate(data, dataKey) {
-      let list = this[dataKey];
-      for (let item of data) {
-        if (Object.keys(list).includes(item[0])) {
-          list[item[0]] = list[item[0]].concat(item[1]);
+    beforeRouteEnter (to, from, next) {
+        if (from.name === "SubSuccess") {
+            to.meta.keepAlive = false;
         } else {
-          list[item[0]] = item[1];
+            to.meta.keepAlive = true;
         }
-      }
-      return list;
+        next((vm) => {
+            let timer = setTimeout(() => {
+                vm.$refs.container.scrollTop = to.meta.scrollTop;
+                clearTimeout(timer);
+            }, 0);
+        });
     },
-    goOrderDetailClick(id,detailId) {
-      this.$router.push({
-        name: "ApprovalDetail",
-        params: { id,detailId},
-      });
+    beforeRouteLeave (to, from, next) {
+        if (to.name === 'ApprovalDetail') {  
+            let container = this.$refs.container;
+            let top = container.scrollTop;
+            from.meta.scrollTop = top;
+        }
+        next();
     },
-  },
-  activated() {
-    if (this.isFefresh) {
-      if (this.activeIndex) {
-        this.historyRefresh = true;
-        this.historyOnRefresh();
-      } else {
-        this.requestRefresh = true;
-        this.orderOnRefresh();
-      }
+    data() {
+        return {
+            menuActiveIndex:0,
 
-      let timer = setTimeout(() => {
-        this.$refs.notClass.scrollTop = 0;
-        clearTimeout(timer);
-      }, 0);
-      this.$store.dispatch("CarApplication/triggerFefresh", false);
-    }
-  },
-  filters:{
-    checkCarNumber(assignmentList){
-      if(assignmentList.length===1){
-        return assignmentList[0].carNumber;
-      }else if(assignmentList.length>1){
-        return assignmentList[0].carNumber + ' 等' + assignmentList.length + '辆';
-      } 
+            //待审批
+            waitOrderList:[],
+
+            waitRefreshLoading:false,
+            waitLoading:false,
+            waitFinished:false,
+
+            waitListQuery: {
+                pageNum: 1,
+                pageSize: 10,
+                orderByColumn: "usageDate",
+                isAsc: "desc",
+            },
+            //已审批
+            historyOrderList:[],
+
+            historyRefreshLoading:false,
+            historyLoading:false,
+            historyFinished:false,
+
+            historyListQuery: {
+                pageNum: 1,
+                pageSize: 10,
+                orderByColumn: "usageDate",
+                isAsc: "desc",
+            },
+
+            //订单状态字典
+            orderStatusOptions:[],
+        };
     },
-    checkCarDriver(assignmentList){
-      if(assignmentList.length===1){
-        return assignmentList[0].driver;
-      }else if(assignmentList.length>1){
-        return assignmentList[0].driver + ' 等' + assignmentList.length + '位';
-      } 
-    }
-  },
-  async created() {
-    await this.handleSystemCardDict(this.dictIds);
-  },
+    created () {
+        this.getOrderStatusOptions();
+    },
+    activated () {
+        if (this.isFefresh) {
+            this.waitRefreshLoading = true;
+            this.historyRefreshLoading = true;
+            this.waitRefresh();
+            this.historyRefresh();
+
+            let timer = setTimeout(() => {
+                this.$refs.container.scrollTop = 0;
+                clearTimeout(timer);
+            }, 0);
+            this.$store.dispatch('CarApplication/triggerFefresh', false);
+        }
+    },
+    methods: {
+        //获取订单状态字典
+        getOrderStatusOptions(){
+
+            getListByParentId('1522830760585670657').then(({data}) => {
+                this.orderStatusOptions = data;
+            }).catch((err) => {
+                
+            })
+        },
+        //获取待审批的订单
+        getWaitOrderList(){
+            let toast = this.$toast.loading({
+                duration: 0,
+                message: "正在加载...",
+                forbidClick: true
+            });
+            let  params = {
+                reviewCompleted: '0',
+            }
+            gcywVehicleRequestListPageForH5(Object.assign({}, params,this.waitListQuery)).then(({ data }) => {
+                if(this.waitRefreshLoading){
+                    this.waitOrderList = [];
+                    this.waitRefreshLoading = false;
+                }
+                this.waitLoading = false;
+                this.waitOrderList = [...this.waitOrderList, ...data.list];
+
+                if (!data.hasNextPage) {
+                    this.waitFinished = true;
+                    return;
+                }
+                this.waitListQuery.pageNum = this.waitListQuery.pageNum + 1;
+            }).catch((error) => {
+                this.waitLoading = false;
+                this.waitFinished = true;
+            }).finally(() => {
+                toast.clear();
+            });
+        },
+        //获取已审批订单
+        getHistoryOrderList(){
+            let toast = this.$toast.loading({
+                duration: 0,
+                message: "正在加载...",
+                forbidClick: true
+            });
+            let  params = {
+                reviewCompleted: '1',
+            }
+            gcywVehicleRequestListPageForH5(Object.assign({}, params,this.historyListQuery)).then(({ data }) => {
+                if(this.historyRefreshLoading){
+                    this.historyOrderList = [];
+                    this.historyRefreshLoading = false;
+                }
+                this.historyLoading = false;
+                this.historyOrderList = [...this.historyOrderList, ...data.list];
+                console.log('aaaaaa')
+
+                if (!data.hasNextPage) {
+                    this.historyFinished = true;
+                    return;
+                }
+                this.historyListQuery.pageNum = this.historyListQuery.pageNum + 1;
+            }).catch((error) => {
+                this.historyLoading = false;
+                this.historyFinished = true;
+            }).finally(() => {
+                toast.clear();
+            });
+        },
+        //判断订单状态
+        checkOrderStatus(status){
+            let obj = this.orderStatusOptions.find((item) => {
+                return item.code == status;
+            })
+            return !!obj?obj.name:'';
+        },
+        //判断订单图标
+        checkStatusImage(status){
+            if(status === 1){       //待审核
+                return 'order-dsh'
+            }else if(status === 2){     //审核中
+                return 'order-shz'
+            }else if(status === 3){     //已驳回
+                return 'order-ybh'
+            }else if(status === 4){     //待派单
+                return 'order-dpd'
+            }else if(status === 5){     //已派单
+                return 'order-ypd'
+            }else if(status === 6){     //已取消
+                return 'order-yqx'
+            }else if(status === 8){     //已接单
+                return 'order-yjd'
+            }else if(status === 9){     //已出车
+                return 'order-ycc'
+            }else if(status === 10){    //已还车
+                return 'order-yhc'
+            }else if(status === 11){    //已确认
+                return 'order-yqr'
+            }
+        },
+        //待审核列表条目点击
+        handleWaitItemClick(item){
+            this.$router.push({
+                name: "ApprovalDetail",
+                params: { 
+                    id:item.id,
+                    detailId:item.detailId
+                },
+            });
+        },
+        //已审核列表条目点击
+        handleHistoryItemClick(item){
+            this.$router.push({
+                name: "ApprovalDetail",
+                params: { 
+                    id:item.id,
+                    detailId:item.detailId
+                },
+            });
+        },
+        //待审核列表刷新
+        waitRefresh(){
+            this.waitLoading = true;
+            this.waitFinished = false;
+            this.waitListQuery.pageNum = 1;
+            this.getWaitOrderList();
+        },
+        //已审核列表刷新
+        historyRefresh(){
+            this.historyLoading = true;
+            this.historyFinished = false;
+            this.historyListQuery.pageNum = 1;
+            this.getHistoryOrderList();
+        },
+    },
 };
 </script>
+<style lang="less" scoped>
+.main-container {
+   
+    .order-info-item {
+        margin-bottom: 10px;
+
+        ul {
+
+            li {
+                color: #2e2e2e;
+                font-size: 14px;
+                margin-bottom: 8px;
+                display: flex;
+                line-height: 18px;
+
+                & span:nth-child(1){
+                  min-width: 70px
+                }
+                & span:nth-child(2){
+                    width: calc(100% - 130px);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+            .li-item-long {
+                color: #0E3680;
+                font-weight: 600;
+                position: relative;
+                font-size: 14px;
+
+                .order-long {
+                    width: 16px;
+                    height: 16px;
+                    background-size: cover;
+                    background-position: center;  
+                    background-image:url(/static/order_long.png);
+                    position: relative;
+                    left: 0px;
+                    top: 2px;
+                }
+            }
+        }
+        .order-status {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+            font-size: 12px;
+            color: #2e2e2e;
+        }
+        i {
+            position: absolute;
+            right: 55px;
+            top: 12px;
+        }
+    }
+}
+</style>

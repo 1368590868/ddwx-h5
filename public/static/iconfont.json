@@ -1,0 +1,44 @@
+{
+  "id": "4138582",
+  "name": "公务用车PC",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1727496",
+      "name": "250一般",
+      "font_class": "yiban",
+      "unicode": "e8da",
+      "unicode_decimal": 59610
+    },
+    {
+      "icon_id": "1727497",
+      "name": "249满意",
+      "font_class": "manyi",
+      "unicode": "e8db",
+      "unicode_decimal": 59611
+    },
+    {
+      "icon_id": "3677427",
+      "name": "满意",
+      "font_class": "verymanyi",
+      "unicode": "e6a5",
+      "unicode_decimal": 59045
+    },
+    {
+      "icon_id": "15726727",
+      "name": "不满意",
+      "font_class": "bumanyi",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "27876480",
+      "name": "不满意 不开心 难过",
+      "font_class": "verybumanyi",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    }
+  ]
+}

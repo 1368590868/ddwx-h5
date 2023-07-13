@@ -46,6 +46,7 @@ import {
 import {
   carPic,
   dispatchOrder,
+  gcywVehicleRequestCheckRequestInfo
 } from '@/api/dispatch';
 import { mapGetters } from 'vuex'
 import platform from '@/view/mixins/platform'
@@ -156,7 +157,31 @@ export default {
       // }
       // this.assigneeList = this.dealTreeListEmptyChildren(data.assigneeList);
       // this.assigneeShow = true;
-      this.confirmDistribute()
+      // fromAddr  toAddr  usageDate usageTime id
+      let params = {
+        fromAddr:this.orderDetail.fromAddr,
+        toAddr:this.orderDetail.toAddr,
+        usageDate:this.orderDetail.usageDate,
+        usageTime:this.orderDetail.usageTime,
+        id:this.orderDetail.id,
+      }
+      gcywVehicleRequestCheckRequestInfo(params).then(({message}) => {
+          if(message.includes('建议合理派车')){
+              this.$dialog.confirm({
+                  title: message,
+                  message: '是否继续派车?',
+                  getContainer:'.container'
+              }).then(() => {
+                  this.confirmDistribute();
+              }).catch(() => {
+            
+              });
+          }else{
+              this.confirmDistribute();
+          }
+      }).catch((err) => {
+          this.confirmDistribute();
+      })
     },
     // 派单请求
     async confirmDistribute() {
@@ -267,6 +292,13 @@ export default {
 }
 </script>
 <style scoped lang="less">
+.container {
+    ::v-deep.van-dialog {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
 .warnning {
   color: #e6a23c !important;
 }
@@ -329,4 +361,5 @@ export default {
     border-right: 0px;
   }
 }
+
 </style>

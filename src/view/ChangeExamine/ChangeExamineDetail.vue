@@ -66,7 +66,7 @@
                         <van-field
                             v-model="formData.comment"
                             type="textarea"
-                            maxlength="50"
+                            maxlength="40"
                             placeholder="请输入驳回原因"
                             show-word-limit
                             :rules="[{ required: true}]"/>

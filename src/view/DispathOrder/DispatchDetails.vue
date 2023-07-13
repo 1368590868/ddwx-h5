@@ -32,7 +32,7 @@
         <div class="text">取消订单</div>
       </div>
       <van-button block type="info" @click="distribute"> 派单 </van-button>
-      <van-button block type="info" @click="reDispatch"> 转派 </van-button>
+      <!-- <van-button block type="info" @click="reDispatch"> 转派 </van-button> -->
     </div>
     <div
       class="button-box"
@@ -282,10 +282,11 @@ export default {
               type: "success",
               message: "取消成功!",
             });
-            this.isCancelVis = "";
-            this.showCancel = false;
-            this.getOrderDetail();
-            this.orderApprovalLog();
+            this.$store.dispatch("DispathOrder/triggerFefresh", true).then(() => {
+              this.$router.push({
+                name: "DispatchOrderList",
+              });
+            });
           } else {
             this.$notify({
               type: "warning",

@@ -16,10 +16,10 @@
       >
         <div class="reject-title">驳回原因：</div>
         <van-notice-bar
-          :scrollable="orderDetail.auditComment && orderDetail.auditComment.length > 20"
+          :scrollable="orderDetail.auditDesc && orderDetail.auditDesc.length > 20"
           color="#2e2e2e"
           background="#fef9e9"
-        >{{orderDetail.auditComment || '未填写明确申请原因'}}</van-notice-bar>
+        >{{orderDetail.auditDesc || '未填写明确申请原因'}}</van-notice-bar>
       </div>
       <div
         class="reject-box"
@@ -63,7 +63,7 @@
               <h3 class="link_h3" v-if="orderDetail.status===10 || orderDetail.status===11" @click="handleRouteClick(car)">{{car.carNumber}}</h3>
               <h3 v-else>{{car.carNumber}}</h3>
               <p>{{car.carBrand}} {{car.carSeries}}</p>
-              <p>司机：{{car.driver}}<span style="color:blue;" @click="teleponeClick(car.driverPhone)">{{car.driverPhone}}</span></p>
+              <p>司机：{{car.driver.substr(0,1)}}师傅<span style="color:blue;" @click="teleponeClick(car.driverPhone)">{{car.driverPhone}}</span></p>
             </li>
           </ul>
         </div>

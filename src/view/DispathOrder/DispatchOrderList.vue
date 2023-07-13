@@ -1,387 +1,559 @@
 <template>
-  <div
-    class="not-class"
-    ref="notClass"
-  >
-    <van-tabs
-      type="card"
-      :sticky="true"
-      v-model="activeIndex"
-      :animated="true"
-      offset-top="0px"
-    >
-      <van-tab
-        title="待派单"
-        :name="0"
-      >
-        <van-pull-refresh
-          v-model="dispatchRefresh"
-          @refresh="dispatchOnRefresh"
-          success-text="刷新成功"
-        >
-          <van-list
-            v-model="dispatchLoading"
-            offset="30"
-            :finished="dispatchFinished"
-            finished-text="没有更多了..."
-            @load="dispatchDispatchList"
-          >
-            <div
-              class="list-container"
-              v-for="(item, usageDate) in dispatchList"
-              :key="usageDate"
-            >
-              <div class="log-title">{{usageDate}}</div>
-              <div
-                :key="childItem.reqNo + index"
-                v-for="(childItem, index) in item"
-                @click="goOrderDetailClick(childItem.id, detailType, 'dispatch')"
-              >
-                <OrderListCardItem
-                  :child-item="childItem"
-                  :dict-data="dictData"
-                />
-              </div>
-            </div>
-          </van-list>
-        </van-pull-refresh>
-      </van-tab>
-      <van-tab
-        title="已派单"
-        :name="1"
-      >
-        <van-pull-refresh
-          v-model="dispatchedRefreshLoading"
-          @refresh="dispatchedRefresh"
-          success-text="刷新成功"
-        >
-          <van-list
-            v-model="dispatchedLoading"
-            offset="30"
-            :finished="dispatchedFinished"
-            finished-text="没有更多了..."
-            @load="dispatchDispatchedList"
-          >
-            <div
-              class="list-container"
-              v-for="(item, usageDate) in dispatchedList"
-              :key="usageDate"
-            >
-              <div class="log-title">{{usageDate}}</div>
-              <div
-                :key="childItem.reqNo + index"
-                v-for="(childItem, index) in item"
-                @click="goOrderDetailClick(childItem.id, detailType, 'dispatched')"
-              >
-                <OrderListCardItem
-                  :child-item="childItem"
-                  :dict-data="dictData"
-                />
-              </div>
-            </div>
-          </van-list>
-        </van-pull-refresh>
-      </van-tab>
-      <van-tab
-        title="历史订单"
-        :name="2"
-      >
-        <van-pull-refresh
-          v-model="historyRefreshLoading"
-          @refresh="historyRefresh"
-          success-text="刷新成功"
-        >
-          <van-list
-            v-model="historyLoading"
-            offset="30"
-            :finished="historyFinished"
-            finished-text="没有更多了..."
-            @load="dispatchHistoryList"
-          >
-            <div
-              class="list-container"
-              v-for="(item, usageDate) in historyList"
-              :key="usageDate"
-            >
-              <div class="log-title">{{usageDate}}</div>
-              <div
-                :key="childItem.reqNo + index"
-                v-for="(childItem, index) in item"
-                @click="goOrderDetailClick(childItem.id, detailType, 'history')"
-              >
-                <OrderListCardItem
-                  :child-item="childItem"
-                  :dict-data="dictData"
-                />
-              </div>
-            </div>
-          </van-list>
-        </van-pull-refresh>
-      </van-tab>
-    </van-tabs>
+    <div class="main-container" ref="container">
+        <van-tabs 
+            v-model="menuActiveIndex" 
+            :sticky="true" 
+            type="card"
+            color="#0571ff"
+            title-active-color="#ffffff"
+            title-inactive-color="#2e2e2e">
+            <van-tab title="待派单">
+                <van-pull-refresh v-model="waitRefreshLoading" @refresh="waitRefresh" success-text="刷新成功">
+                    <van-list 
+                        v-model="waitLoading" 
+                        :finished="waitFinished" 
+                        finished-text="没有更多了..." 
+                        @load="getWaitOrderList">
 
-    <div
-      class="add-btn"
-      @click="goStartDispatch"
-    ></div>
+                        <div v-for="(item,index) in waitOrderList" :key="index" class="order-info-item box-container" @click="handleWaitItemClick(item)">
+                            <ul>
+                                <li class="li-item-long" v-if="item.longDistanceTag === 1">
+                                    <i class="order-long"></i>
+                                    <span>长途单</span>
+                                </li>
+                                <li>
+                                    <span>出发时间：</span>
+                                    <span>{{item.usageTimeStr}}</span>
+                                </li>
+                                <li>
+                                    <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span>{{item.fromAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
+                                    <span class="li-item-content">{{item.userName}}</span>
+                                </li>
+                                <li>
+                                    <span>用车事由：</span>
+                                    <span>{{item.reason}}</span>
+                                </li>
+                              
+                                <li v-if="![1,2,3,4,6].includes(item.status)">
+                                    <span>分派司机：</span>
+                                    <span v-if="item.reqAssignments.length === 1">{{item.reqAssignments[0].driver}}</span>
+                                    <span v-else>{{item.reqAssignments[0].driver}}{{'\u00A0'}}等 
+                                        <span style="color:#0571ff;font-weight:600">{{item.reqAssignments.length}}</span>
+                                        <span>{{'\u00A0'}}人</span>
+                                    </span>
+                                </li>
+                                <li v-if="![1,2,3,4,6].includes(item.status)">
+                                    <span>分派车辆：</span>
+                                    <span v-if="item.reqAssignments.length === 1">{{item.reqAssignments[0].carBrand}}{{'\u00A0'}}{{item.reqAssignments[0].carSeries}}</span>
+                                    <span v-else>{{item.reqAssignments[0].carBrand}}{{'\u00A0'}}{{item.reqAssignments[0].carSeries}}{{'\u00A0'}}等 
+                                        <span style="color:#0571ff;font-weight:600">{{item.reqAssignments.length}}</span>
+                                        <span>{{'\u00A0'}}辆</span>
+                                    </span>
+                                </li>
+                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
+                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <img v-if="![1,2,3,4,6].includes(item.status)" :src="checkCarImagePath(item.reqAssignments[0].carBrand, item.reqAssignments[0].carSeries)">
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+            <van-tab title="已派单">
+                <van-pull-refresh v-model="overRefreshLoading" @refresh="overRefresh" success-text="刷新成功">
+                    <van-list 
+                        v-model="overLoading" 
+                        :finished="overFinished" 
+                        finished-text="没有更多了..." 
+                        @load="getOverOrderList">
 
-  </div>
+                        <div v-for="(item,index) in overOrderList" :key="index" class="order-info-item box-container" @click="handleOverItemClick(item)">
+                            <ul>
+                                <li class="li-item-long" v-if="item.longDistanceTag === 1">
+                                    <i class="order-long"></i>
+                                    <span>长途单</span>
+                                </li>
+                                <li>
+                                    <span>出发时间：</span>
+                                    <span>{{item.usageTimeStr}}</span>
+                                </li>
+                                <li>
+                                    <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span>{{item.fromAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
+                                    <span class="li-item-content">{{item.userName}}</span>
+                                </li>
+                                <li>
+                                    <span>用车事由：</span>
+                                    <span>{{item.reason}}</span>
+                                </li>
+                              
+                                <li v-if="![1,2,3,4,6].includes(item.status)">
+                                    <span>分派司机：</span>
+                                    <span v-if="item.reqAssignments.length === 1">{{item.reqAssignments[0].driver}}</span>
+                                    <span v-else>{{item.reqAssignments[0].driver}}{{'\u00A0'}}等 
+                                        <span style="color:#0571ff;font-weight:600">{{item.reqAssignments.length}}</span>
+                                        <span>{{'\u00A0'}}人</span>
+                                    </span>
+                                </li>
+                                <li v-if="![1,2,3,4,6].includes(item.status)">
+                                    <span>分派车辆：</span>
+                                    <span v-if="item.reqAssignments.length === 1">{{item.reqAssignments[0].carBrand}}{{'\u00A0'}}{{item.reqAssignments[0].carSeries}}</span>
+                                    <span v-else>{{item.reqAssignments[0].carBrand}}{{'\u00A0'}}{{item.reqAssignments[0].carSeries}}{{'\u00A0'}}等 
+                                        <span style="color:#0571ff;font-weight:600">{{item.reqAssignments.length}}</span>
+                                        <span>{{'\u00A0'}}辆</span>
+                                    </span>
+                                </li>
+                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
+                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <img v-if="![1,2,3,4,6].includes(item.status)" :src="checkCarImagePath(item.reqAssignments[0].carBrand, item.reqAssignments[0].carSeries)">
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+            <van-tab title="历史订单">
+                <van-pull-refresh v-model="historyRefreshLoading" @refresh="historyRefresh" success-text="刷新成功">
+                    <van-list 
+                        v-model="historyLoading" 
+                        :finished="historyFinished" 
+                        finished-text="没有更多了..." 
+                        @load="getHistoryOrderList">
+
+                        <div v-for="(item,index) in historyOrderList" :key="index" class="order-info-item box-container" @click="handleHistoryItemClick(item)">
+                            <ul>
+                                <li class="li-item-long" v-if="item.longDistanceTag === 1">
+                                    <i class="order-long"></i>
+                                    <span>长途单</span>
+                                </li>
+                                <li>
+                                    <span>出发时间：</span>
+                                    <span>{{item.usageTimeStr}}</span>
+                                </li>
+                                <li>
+                                    <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span>{{item.fromAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
+                                    <span class="li-item-content">{{item.userName}}</span>
+                                </li>
+                                <li>
+                                    <span>用车事由：</span>
+                                    <span>{{item.reason}}</span>
+                                </li>
+                              
+                                <li v-if="![1,2,3,4,6].includes(item.status)">
+                                    <span>分派司机：</span>
+                                    <span v-if="item.reqAssignments.length === 1">{{item.reqAssignments[0].driver}}</span>
+                                    <span v-else>{{item.reqAssignments[0].driver}}{{'\u00A0'}}等 
+                                        <span style="color:#0571ff;font-weight:600">{{item.reqAssignments.length}}</span>
+                                        <span>{{'\u00A0'}}人</span>
+                                    </span>
+                                </li>
+                                <li v-if="![1,2,3,4,6].includes(item.status)">
+                                    <span>分派车辆：</span>
+                                    <span v-if="item.reqAssignments.length === 1">{{item.reqAssignments[0].carBrand}}{{'\u00A0'}}{{item.reqAssignments[0].carSeries}}</span>
+                                    <span v-else>{{item.reqAssignments[0].carBrand}}{{'\u00A0'}}{{item.reqAssignments[0].carSeries}}{{'\u00A0'}}等 
+                                        <span style="color:#0571ff;font-weight:600">{{item.reqAssignments.length}}</span>
+                                        <span>{{'\u00A0'}}辆</span>
+                                    </span>
+                                </li>
+                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
+                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <img v-if="![1,2,3,4,6].includes(item.status)" :src="checkCarImagePath(item.reqAssignments[0].carBrand, item.reqAssignments[0].carSeries)">
+                            </ul>
+                        </div>
+                    </van-list>
+                </van-pull-refresh>
+            </van-tab>
+        </van-tabs>
+        <div class="add-btn" @click="goStartDispatch"></div>
+    </div>  
 </template>
 <script>
 import { gcywVehicleRequestDispatchList } from '@/api/order'
-import getDict from "@/view/mixins/getDict"
-// import keepPages from '@/view/mixins/keepPages'
 import { mapGetters } from 'vuex'
+import { getListByParentId } from "@/api/dict";
+import checkCarImagePath from '@/utils/carPath'
+import keepPages from '@/view/mixins/keepPages'
+
 export default {
-  name: 'DispatchOrderList',
-  mixins: [
-    getDict,
-    // keepPages,
-  ],
-  computed: mapGetters('DispathOrder', ['isFefresh']),
-  beforeRouteEnter(to, from, next) {
-    if (from.name === 'SubSuccess') {
-      to.meta.keepAlive = false;
-    } else {
-      to.meta.keepAlive = true;
-    }
-    next((vm) => {
-      let timer = setTimeout(() => {
-        vm.$refs.notClass.scrollTop = to.meta.scrollTop;
-        clearTimeout(timer);
-      }, 0);
-    });
-  },
-  beforeRouteLeave(to, from, next) {
-    if (to.name === 'DispatchDetails') {   // 去往详情页
-      let notClass = this.$refs.notClass;
-      let top = notClass.scrollTop;
-      from.meta.scrollTop = top;
-    }
-    next();
-  },
-  data() {
-    return {
-      activeIndex: 0,
-      dispatchLoading: false,
-      dispatchFinished: false,
-      dispatchRefresh: false,
-      dispatchList: {},
-      dispatchQuery: {
-        pageSize: 10,
-        pageNum: 0,
-        status: 4,
-      },
+    name: 'DispatchOrderList',
+    mixins: [keepPages],
+    computed: mapGetters('DispathOrder', ['isFefresh']),
 
-      dispatchedLoading: false,
-      dispatchedFinished: false,
-      dispatchedRefreshLoading: false,
-      dispatchedList: {},
-      dispatchedQuery: {
-        pageSize: 10,
-        pageNum: 0,
-        dispatchedStatus: 1,
-      },
-
-      historyLoading: false,
-      historyFinished: false,
-      historyRefreshLoading: false,
-      historyList: {},
-      historyQuery: {
-        pageSize: 10,
-        pageNum: 0,
-        historyStatus: 11,
-      },
-      detailType: 1,
-
-      // 按照出发日期升序
-      commonQuery: {
-        orderByColumn: 'usageDate',
-        isAsc: 'asc'
-      },
-      dictIds: {
-        // 订单状态
-        statusDict: '1522830760585670657',
-      },
-      dictData: {
-        statusDict: '',
-      },
-    }
-
-  },
-  methods: {
-    dispatchOnRefresh() {
-      //清空
-      this.dispatchFinished = false;
-      this.dispatchQuery.pageNum = 0;
-      //重新加载
-      this.dispatchRefresh = true;
-      this.dispatchDispatchList();
-    },
-    historyRefresh() {
-      //清空
-      this.historyFinished = false;
-      this.historyQuery.pageNum = 0;
-      //重新加载
-      this.historyRefreshLoading = true;
-      this.dispatchHistoryList();
-    },
-    dispatchedRefresh() {
-      //清空
-      this.dispatchedFinished = false;
-      this.dispatchedQuery.pageNum = 0;
-      //重新加载
-      this.dispatchedRefreshLoading = true;
-      this.dispatchDispatchedList();
-    },
-    // 
-    dealArrToObject(arr = [], key = '') {
-      //   return Object.fromEntries(arr.map((item) => [item[key], [item]]));
-      return arr.map((item) => [item[key], [item]]);
-    },
-    // 获取当前页面的通用字典下拉数据
-    async handleSystemCardDict(dict = {}) {
-      for (const item in dict) {
-        const res = await this.getCommonDictList(dict[item]) || [];
-        this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
-      }
-    },
-    dispatchDispatchList() {    // 待派单
-      let pageNum = this.dispatchQuery.pageNum;
-      this.dispatchLoading = true;
-      this.dispatchQuery.pageNum = pageNum + 1;
-      const params = {
-        ...this.dispatchQuery,
-        // ...this.commonQuery
-      }
-      gcywVehicleRequestDispatchList(params).then(({ data }) => {
-        if (this.dispatchRefresh && this.dispatchQuery.pageNum === 1) {
-          this.dispatchList = {};
-        }
-        this.dispatchRefresh = false;
-        if (data?.list?.length === 0) {
-          this.dispatchFinished = true;
-          return;
-        }
-        let list = data?.list || [];
-        list = this.dealArrToObject(list, 'usageDate') || [];
-        this.dispatchList = this.computedGroupDate(list, 'dispatchList')
-      }).catch((e) => {
-        console.error(e);
-
-        this.dispatchFinished = true;
-        alert("错误");
-      }).finally(() => {
-        this.dispatchLoading = false;
-      });
-    },
-    dispatchDispatchedList() {  // 已派单
-      let pageNum = this.dispatchedQuery.pageNum;
-      this.dispatchedLoading = true;
-      this.dispatchedQuery.pageNum = pageNum + 1;
-      const params = {
-        ...this.dispatchedQuery,
-        // ...this.commonQuery
-      }
-      gcywVehicleRequestDispatchList(params).then(({ data }) => {
-        if (this.dispatchedRefreshLoading && this.dispatchedQuery.pageNum === 1) {
-          this.dispatchedList = {};
-        }
-        this.dispatchedRefreshLoading = false;
-        if (data?.list?.length === 0) {
-          this.dispatchedFinished = true;
-          return;
-        }
-        let list = data?.list || [];
-        list = this.dealArrToObject(list, 'usageDate') || [];
-        this.dispatchedList = this.computedGroupDate(list, 'dispatchedList')
-      }).catch((e) => {
-        this.dispatchedFinished = true;
-        console.error(e);
-        alert("错误");
-      }).finally(() => {
-        this.dispatchedLoading = false;
-      });
-    },
-
-    dispatchHistoryList() {  // 历史订单
-      let pageNum = this.historyQuery.pageNum;
-      this.historyLoading = true;
-      this.historyQuery.pageNum = pageNum + 1;
-
-      const params = {
-        ...this.historyQuery,
-        // ...this.commonQuery
-      }
-      gcywVehicleRequestDispatchList(params).then(({ data }) => {
-        if (this.historyRefreshLoading && this.historyQuery.pageNum === 1) {
-          this.historyList = {};
-        }
-        this.historyRefreshLoading = false;
-        if (data?.list?.length === 0) {
-          this.historyFinished = true;
-        }
-        let list = data?.list || [];
-        list = this.dealArrToObject(list, 'usageDate') || [];
-        this.historyList = this.computedGroupDate(list, 'historyList')
-      }).catch((e) => {
-        this.historyFinished = true;
-        console.error(e);
-        alert("错误");
-      }).finally(() => {
-        this.historyLoading = false;
-      });
-    },
-
-    // 处理返回的数据 将相同日期的数据合并    
-    computedGroupDate(data, dataKey) {
-      let list = this[dataKey];
-      for (let item of data) {
-        if (Object.keys(list).includes(item[0])) {
-          list[item[0]] = list[item[0]].concat(item[1]);
+    beforeRouteEnter(to, from, next) {
+        if (from.name === 'SubSuccess') {
+            to.meta.keepAlive = false;
         } else {
-          list[item[0]] = item[1];
+            to.meta.keepAlive = true;
         }
-      }
-      return list;
+        next((vm) => {
+            let timer = setTimeout(() => {
+                vm.$refs.container.scrollTop = to.meta.scrollTop;
+                clearTimeout(timer);
+            }, 0);
+        });
     },
-    goStartDispatch() {
-      this.$router.push({
-        name: 'DispathApply',
-        params: { id: '0', type: '0' }
-      });
+    beforeRouteLeave(to, from, next) {
+        if (to.name === 'DispatchDetails') {  
+            let container = this.$refs.container;
+            let top = container.scrollTop;
+            from.meta.scrollTop = top;
+        }
+        next();
     },
-    goOrderDetailClick(id, type, orderType) {
-      this.$router.push({
-        name: 'DispatchDetails',
-        params: { id, type },
-        query: { orderType }
-      });
-    }
-  },
-  activated() {
-    if (this.$route.query.refresh) {
-      this.dispatchOnRefresh();
-    }
-    if (this.isFefresh) {
-      if (this.activeIndex === 0) {
-        this.dispatchOnRefresh();
-      } else if (this.activeIndex === 1) {
-        this.dispatchedRefresh();
-      } else if (this.activeIndex === 2) {
-        this.historyRefresh();
-      }
+    data() {
+        return {
+            menuActiveIndex:0,
 
-      let timer = setTimeout(() => {
-        this.$refs.notClass.scrollTop = 0;
-        clearTimeout(timer);
-      }, 0);
-      this.$store.dispatch('DispathOrder/triggerFefresh', false);
-    }
-  },
-  async created() {
-    this.$store.commit('removeThisPage', 'DispathApply')
-    await this.handleSystemCardDict(this.dictIds);
-  },
+            //待派单
+            waitOrderList:[],
+
+            waitRefreshLoading:false,
+            waitLoading:false,
+            waitFinished:false,
+
+            waitListQuery: {
+                pageNum: 1,
+                pageSize: 10,
+                status: 4,
+            },
+            //已派单
+            overOrderList:[],
+
+            overRefreshLoading:false,
+            overLoading:false,
+            overFinished:false,
+
+            overListQuery: {
+                pageNum: 1,
+                pageSize: 10,
+                dispatchedStatus: 1,
+            },
+            //历史订单
+            historyOrderList:[],
+
+            historyRefreshLoading:false,
+            historyLoading:false,
+            historyFinished:false,
+
+            historyListQuery: {
+                pageNum: 1,
+                pageSize: 10,
+                historyStatus: 11,
+            },
+            detailType: 1,
+            //订单状态字典
+            orderStatusOptions:[],
+            //车辆图片
+            checkCarImagePath,
+        }
+    },
+    created () {
+        this.getOrderStatusOptions();
+    },
+    activated () {
+        if (this.isFefresh) {
+            this.waitRefreshLoading = true;
+            this.overRefreshLoading = true;
+            this.historyRefreshLoading = true;
+            this.waitRefresh();
+            this.overRefresh();
+            this.historyRefresh();
+
+            let timer = setTimeout(() => {
+                this.$refs.container.scrollTop = 0;
+                clearTimeout(timer);
+            }, 0);
+            this.$store.dispatch('DispathOrder/triggerFefresh', false);
+        }
+        this.$store.commit('removeThisPage', 'DispathApply')
+    },
+    methods: {
+        //获取订单状态字典
+        getOrderStatusOptions(){
+
+            getListByParentId('1522830760585670657').then(({data}) => {
+                this.orderStatusOptions = data;
+            }).catch((err) => {
+                
+            })
+        },
+        //获取待派单列表
+        getWaitOrderList(){
+            let toast = this.$toast.loading({
+                duration: 0,
+                message: "正在加载...",
+                forbidClick: true
+            });
+            gcywVehicleRequestDispatchList(Object.assign({},this.waitListQuery)).then(({ data }) => {
+                if(this.waitRefreshLoading){
+                    this.waitOrderList = [];
+                    this.waitRefreshLoading = false;
+                }
+                this.waitLoading = false;
+                this.waitOrderList = [...this.waitOrderList, ...data.list];
+
+                if (!data.hasNextPage) {
+                    this.waitFinished = true;
+                    return;
+                }
+                this.waitListQuery.pageNum = this.waitListQuery.pageNum + 1;
+            }).catch((error) => {
+                this.waitLoading = false;
+                this.waitFinished = true;
+            }).finally(() => {
+                toast.clear();
+            });
+        },
+        //获取已派单列表
+        getOverOrderList(){
+            let toast = this.$toast.loading({
+                duration: 0,
+                message: "正在加载...",
+                forbidClick: true
+            });
+            gcywVehicleRequestDispatchList(Object.assign({},this.overListQuery)).then(({ data }) => {
+                if(this.overRefreshLoading){
+                    this.overOrderList = [];
+                    this.overRefreshLoading = false;
+                }
+                this.overLoading = false;
+                this.overOrderList = [...this.overOrderList, ...data.list];
+
+                if (!data.hasNextPage) {
+                    this.overFinished = true;
+                    return;
+                }
+                this.overListQuery.pageNum = this.overListQuery.pageNum + 1;
+            }).catch((error) => {
+                this.overLoading = false;
+                this.overFinished = true;
+            }).finally(() => {
+                toast.clear();
+            });
+        },
+        //获取历史订单列表
+        getHistoryOrderList(){
+            let toast = this.$toast.loading({
+                duration: 0,
+                message: "正在加载...",
+                forbidClick: true
+            });
+            gcywVehicleRequestDispatchList(Object.assign({},this.historyListQuery)).then(({ data }) => {
+                if(this.historyRefreshLoading){
+                    this.historyOrderList = [];
+                    this.historyRefreshLoading = false;
+                }
+                this.historyLoading = false;
+                this.historyOrderList = [...this.historyOrderList, ...data.list];
+
+                if (!data.hasNextPage) {
+                    this.historyFinished = true;
+                    return;
+                }
+                this.historyListQuery.pageNum = this.historyListQuery.pageNum + 1;
+            }).catch((error) => {
+                this.historyLoading = false;
+                this.historyFinished = true;
+            }).finally(() => {
+                toast.clear();
+            });
+        },
+        //判断订单状态
+        checkOrderStatus(status){
+            let obj = this.orderStatusOptions.find((item) => {
+                return item.code == status;
+            })
+            return !!obj?obj.name:'';
+        },
+        //判断订单图标
+        checkStatusImage(status){
+            if(status === 1){       //待审核
+                return 'order-dsh'
+            }else if(status === 2){     //审核中
+                return 'order-shz'
+            }else if(status === 3){     //已驳回
+                return 'order-ybh'
+            }else if(status === 4){     //待派单
+                return 'order-dpd'
+            }else if(status === 5){     //已派单
+                return 'order-ypd'
+            }else if(status === 6){     //已取消
+                return 'order-yqx'
+            }else if(status === 8){     //已接单
+                return 'order-yjd'
+            }else if(status === 9){     //已出车
+                return 'order-ycc'
+            }else if(status === 10){    //已还车
+                return 'order-yhc'
+            }else if(status === 11){    //已确认
+                return 'order-yqr'
+            }
+        },
+        //待派单列表条目点击
+        handleWaitItemClick(item){
+            this.$router.push({
+                name: 'DispatchDetails',
+                params: { 
+                    id:item.id,
+                    type:this.detailType,
+                },
+                query: { 
+                    orderType:'dispatch',
+                }
+            });
+        },
+        //已派单列表条目点击
+        handleOverItemClick(item){
+            this.$router.push({
+                name: 'DispatchDetails',
+                params: { 
+                    id:item.id,
+                    type:this.detailType,
+                },
+                query: { 
+                    orderType:'dispatched',
+                }
+            });
+        },
+        //历史订单列表条目点击
+        handleHistoryItemClick(item){
+            this.$router.push({
+                name: 'DispatchDetails',
+                params: { 
+                    id:item.id,
+                    type:this.detailType,
+                },
+                query: { 
+                    orderType:'history',
+                }
+            });
+        },
+        goStartDispatch() {
+            this.$router.push({
+                name: 'DispathApply',
+                params: { 
+                    id: '0', 
+                    type: '0'
+                }
+            });
+        },
+        //待派单列表刷新
+        waitRefresh(){
+            this.waitLoading = true;
+            this.waitFinished = false;
+            this.waitListQuery.pageNum = 1;
+            this.getWaitOrderList();
+        },
+        //已派单列表刷新
+        overRefresh(){
+            this.overLoading = true;
+            this.overFinished = false;
+            this.overListQuery.pageNum = 1;
+            this.getOverOrderList();
+        },
+        //历史订单列表刷新
+        historyRefresh(){
+            this.historyLoading = true;
+            this.historyFinished = false;
+            this.historyListQuery.pageNum = 1;
+            this.getHistoryOrderList();
+        },
+    },
 }
 </script>
+<style lang="less" scoped>
+.main-container {
+
+    .order-info-item {
+        margin-bottom: 10px;
+
+        ul {
+
+            li {
+                color: #2e2e2e;
+                font-size: 14px;
+                margin-bottom: 8px;
+                display: flex;
+                line-height: 18px;
+
+                & span:nth-child(1){
+                  min-width: 70px
+                }
+                & span:nth-child(2){
+                    width: calc(100% - 130px);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+            .li-item-long {
+                color: #0E3680;
+                font-weight: 600;
+                position: relative;
+                font-size: 14px;
+
+                .order-long {
+                    width: 16px;
+                    height: 16px;
+                    background-size: cover;
+                    background-position: center;  
+                    background-image:url(/static/order_long.png);
+                    position: relative;
+                    left: 0px;
+                    top: 2px;
+                }
+            }
+        }
+        .order-status {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+            font-size: 12px;
+            color: #2e2e2e;
+        }
+        i {
+            position: absolute;
+            right: 55px;
+            top: 12px;
+        }
+        img {
+            width: 64px;
+            height: 64px;
+            position: absolute;
+            right: 15px;
+            bottom: 0px;
+        }
+    }
+    .add-btn {
+        width: 48px;
+        height: 48px;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: url(/static/add_btn.png) no-repeat center;
+        border-radius: 50%;
+        background-size: 125%;
+    }
+}
+</style>

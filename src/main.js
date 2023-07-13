@@ -5,10 +5,12 @@ import router from "./router/index.js";
 import store from "./store/index.js";
 import "vant/lib/index.css";
 import "./styles/index.less";
+import '@/styles/main.less' 
 import * as filters from "./utils/filters.js"; // global filters
 import { parseTime } from "@/utils/index.js";
 import MobilePlatform from "@/utils/MobilePlatform.js";
 import * as echarts from "echarts";
+import '@/assets/icons/iconfont.js' //iconfont js
 Vue.prototype.$echarts = echarts;
 Vue.use(MobilePlatform);
 import "./permission"; // permission control
@@ -18,11 +20,14 @@ import AllOrderDetail from "@/components/AllOrderDetail";
 import OrderListCardItem from "@/components/OrderListCardItem";
 import OrderListCardItemInfo from "@/components/OrderListCardItemInfo";
 import SelectCarIAndDrive from "@/components/SelectCarIAndDrive";
+// iconfont图标组件
+import IconSvg from '@/components/iconComponent'
 Vue.component("NotEmpty", NotEmpty);
 Vue.component("AllOrderDetail", AllOrderDetail);
 Vue.component("OrderListCardItem", OrderListCardItem);
 Vue.component("OrderListCardItemInfo", OrderListCardItemInfo);
 Vue.component("SelectCarIAndDrive", SelectCarIAndDrive);
+Vue.component('IconSvg', IconSvg)
 import {
   Row,
   Col,
@@ -64,7 +69,10 @@ import {
   Grid,
   GridItem,
   Uploader,
-  TreeSelect ,
+  TreeSelect,
+  CheckboxGroup,
+  Checkbox,
+  Rate,
 } from "vant";
 Vue.use(Row);
 Vue.use(Col);
@@ -107,6 +115,9 @@ Vue.use(VanImage);
 Vue.use(Grid);
 Vue.use(GridItem);
 Vue.use(TreeSelect);
+Vue.use(Checkbox);
+Vue.use(CheckboxGroup);
+Vue.use(Rate);
 
 Vue.prototype.parseTime = parseTime;
 

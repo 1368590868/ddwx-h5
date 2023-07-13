@@ -1,50 +1,108 @@
 <template>
-    <div class="not-class" ref="notClass">
-        <van-tabs type="card" :sticky="true" animated>
+    <div class="main-container" ref="container">
+        <van-tabs 
+            v-model="menuActiveIndex" 
+            :sticky="true" 
+            type="card"
+            color="#0571ff"
+            title-active-color="#ffffff"
+            title-inactive-color="#2e2e2e">
             <van-tab title="待处理">
-                <van-pull-refresh v-model="requestrefresh" @refresh="orderOnRefresh"  animation-duration="500" success-text="刷新成功">
-                    <van-list v-model="requestLoading" offset="30" :finished="requestFinished" finished-text="没有更多了..." @load="drivingDrivingList">
-                        <div class="list-container" v-for="(item, index) in requestList" :key="index">
-                            <div class="log-title">{{item.usageDate }}</div>
-                            <ul :class="['list-ul', childItem.longDistanceTag === '1'?'longway':''] " v-for="(childItem, childIndex) in item.children" :key="childIndex" @click="goOrderDetailClick(childItem.id,childItem.assignmentId)">
-                                <li class="list-li">
-                                    <div class="li-address"><b class="b1">{{childItem.fromAddr | checkArea()}}</b><b class="b2">{{childItem.toAddr | checkArea()}}</b></div>
-                                    <div class="li-timestu"><time>{{childItem.startDate}}</time><span>出发</span><b class="b-status">{{childItem.status | checkStatus()}}</b></div>
+                <van-pull-refresh v-model="waitRefreshLoading" @refresh="waitRefresh" success-text="刷新成功">
+                    <van-list 
+                        v-model="waitLoading" 
+                        :finished="waitFinished" 
+                        finished-text="没有更多了..." 
+                        @load="getWaitOrderList">
+
+                        <div v-for="(item,index) in waitOrderList" :key="index" class="order-info-item box-container" @click="handleWaitItemClick(item)">
+                            <ul>
+                                <li class="li-item-long" v-if="item.longDistanceTag === 1">
+                                    <i class="order-long"></i>
+                                    <span>长途单</span>
                                 </li>
-                                <li class="info-label"><span>详细地址：</span><span class="infor-overflow" style="margin-right:80px">{{childItem.fromAddr.split(' ')[1]}} 到 {{childItem.toAddr.split(' ')[1]}}</span></li>
-                                <li class="info-label"><span>分派车辆：</span><span class="infor-overflow">{{childItem.carBrand}} {{childItem.carNumber}}</span></li>
-                                <li class="info-label"><span>分派司机：</span><span>{{childItem.driver}}</span></li>
-                                <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.reqNo}}</span></li>
+                                <li>
+                                    <span>出发时间：</span>
+                                    <span>{{item.usageDate}}{{'\u00A0'}}{{item.usageTime}}</span>
+                                </li>
+                                <li>
+                                    <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span>{{item.fromAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>分派司机：</span>
+                                    <span>{{item.driver}}</span>
+                                </li>
+                                <li>
+                                    <span>分派车辆：</span>
+                                    <span>{{item.carBrand}}{{'\u00A0'}}{{item.carSeries}}</span>
+                                </li>
+                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
+                                <i :class="checkStatusImage(item.status)"  class="default-icon-i"></i>
+                                <img :src="checkCarImagePath(item.carBrand, item.carSeries)">
                             </ul>
                         </div>
                     </van-list>
                 </van-pull-refresh>
             </van-tab>
             <van-tab title="历史订单">
-                <van-pull-refresh v-model="historyrefresh" @refresh="histyOnRefresh"  animation-duration="500" success-text="刷新成功">
-                    <van-list v-model="historyLoading" offset="30" :finished="historyFinished" finished-text="没有更多了..." @load="drivingHistoryList">
-                        <div class="list-container" v-for="(item, index) in historyList" :key="index">
-                            <div class="log-title">{{item.usageDate }}</div>
-                            <ul :class="['list-ul', childItem.longDistanceTag === '1'?'longway':''] " v-for="(childItem, childIndex) in item.children" :key="childIndex" @click="goOrderDetailClick(childItem.id,childItem.assignmentId)">
-                                <li class="list-li">
-                                    <div class="li-address"><b class="b1">{{childItem.fromAddr | checkArea()}}</b><b class="b2">{{childItem.toAddr | checkArea()}}</b></div>
-                                    <div class="li-timestu"><time>{{childItem.startDate}}</time><span>出发</span><b class="b-status">{{childItem.status | checkStatus()}}</b></div>
+                <van-pull-refresh v-model="historyRefreshLoading" @refresh="historyRefresh" success-text="刷新成功">
+                    <van-list 
+                        v-model="historyLoading" 
+                        :finished="historyFinished" 
+                        finished-text="没有更多了..." 
+                        @load="getHistoryOrderList">
+
+                        <div v-for="(item,index) in historyOrderList" :key="index" class="order-info-item box-container" @click="handleHistoryItemClick(item)">
+                            <ul>
+                                <li class="li-item-long" v-if="item.longDistanceTag === 1">
+                                    <i class="order-long"></i>
+                                    <span>长途单</span>
                                 </li>
-                                <li class="info-label"><span>详细地址：</span><span class="infor-overflow" style="margin-right:80px">{{childItem.fromAddr.split(' ')[1]}} 到 {{childItem.toAddr.split(' ')[1]}}</span></li>
-                                <li class="info-label"><span>分派车辆：</span><span class="infor-overflow">{{childItem.carBrand}} {{childItem.carNumber}}</span></li>
-                                <li class="info-label"><span>分派司机：</span><span>{{childItem.driver}}</span></li>
-                                <li class="info-label"><span>订 单 号 ：</span><span>{{childItem.reqNo}}</span></li>
+                                <li>
+                                    <span>出发时间：</span>
+                                    <span>{{item.usageDate}}{{'\u00A0'}}{{item.usageTime}}</span>
+                                </li>
+                                <li>
+                                    <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span>{{item.fromAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
+                                    <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>分派司机：</span>
+                                    <span>{{item.driver}}</span>
+                                </li>
+                                <li>
+                                    <span>分派车辆：</span>
+                                    <span>{{item.carBrand}}{{'\u00A0'}}{{item.carSeries}}</span>
+                                </li>
+                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
+                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <img :src="checkCarImagePath(item.carBrand, item.carSeries)">
                             </ul>
                         </div>
                     </van-list>
                 </van-pull-refresh>
             </van-tab>
         </van-tabs>
-    </div>
+    </div>  
 </template>
 <script>
 import {drivingDrivingList, drivingHistoryList} from '@/api/driving'
+import checkCarImagePath from '@/utils/carPath'
+import { mapGetters } from 'vuex'
+
 export default {
+    name: 'DrivingList',
+    computed: mapGetters('CarApplication', ['isFefresh']),
+
     beforeRouteEnter (to, from, next) {
         if (from.name === 'DriSuccess') {
             to.meta.keepAlive = false;
@@ -53,129 +111,132 @@ export default {
         }
         next((vm) => {
             let timer = setTimeout(() => {
-                vm.$refs.notClass.scrollTop = to.meta.scrollTop;
+                vm.$refs.container.scrollTop = to.meta.scrollTop;
                 clearTimeout(timer);
             }, 0);
         });
     },
     beforeRouteLeave (to, from, next) {
-        if (to.name === 'DrivingDetails') {   // 去往详情页
-            let notClass = this.$refs.notClass;
-            let top = notClass.scrollTop;
+        if (to.name === 'DrivingDetails') {  
+            let container = this.$refs.container;
+            let top = container.scrollTop;
             from.meta.scrollTop = top;
         }
         next();
     },
     data () {
         return {
-            requestrefresh: false,
-            requestLoading: false,
-            requestFinished: false,
-            requestList: [],
-            requestKeys: 0,
-            requestQuery: {
+            menuActiveIndex:0,
+
+            //待处理
+            waitOrderList:[],
+
+            waitRefreshLoading:false,
+            waitLoading:false,
+            waitFinished:false,
+
+            waitListQuery: {
+                pageNum: 1,
                 pageSize: 10,
-                pageNum: 0,
                 orderByColumn:"usageDate",
                 isAsc:"asc",
                 statusList:"1,2,4"
             },
-            historyrefresh: false,
-            historyLoading: false,
-            historyFinished: false,
-            historyList: [],
-            historyQuery: {
+            //历史
+            historyOrderList:[],
+
+            historyRefreshLoading:false,
+            historyLoading:false,
+            historyFinished:false,
+
+            historyListQuery: {
+                pageNum: 1,
                 pageSize: 10,
-                pageNum: 0,
                 orderByColumn:"usageDate",
                 isAsc:"desc",
                 statusList:"3,5,7"
-            }
-        }
+            },
 
+            //订单状态字典
+            orderStatusOptions:[],
+            //车辆图片
+            checkCarImagePath,
+        }
+    },
+    created () {
+        
+    },
+    activated () {
+        if (this.isFefresh) {
+            this.waitRefreshLoading = true;
+            this.historyRefreshLoading = true;
+            this.waitRefresh();
+            this.historyRefresh();
+
+            let timer = setTimeout(() => {
+                this.$refs.container.scrollTop = 0;
+                clearTimeout(timer);
+            }, 0);
+            this.$store.dispatch('CarApplication/triggerFefresh', false);
+        }
     },
     methods: {
-        orderOnRefresh() {
-            this.requestFinished = false;
-            this.requestQuery.pageNum = 0;
-            this.requestLoading = true;
-            this.drivingDrivingList();
-        },
-        histyOnRefresh () {
-            this.historyFinished = false;
-            this.historyQuery.pageNum = 0;
-            this.historyLoading = true;
-            this.drivingHistoryList();
-        },
-        drivingDrivingList() {    // 用车申请未完成列表
-            let pageNum = this.requestQuery.pageNum;
-            this.requestLoading = true;
-            this.requestQuery.pageNum = pageNum + 1;
-            drivingDrivingList(this.requestQuery).then(({data}) => {
-                if (this.requestrefresh && this.requestQuery.pageNum === 1) {
-                    this.requestList = [];
+        //获取待处理的订单
+        getWaitOrderList(){
+            let toast = this.$toast.loading({
+                duration: 0,
+                message: "正在加载...",
+                forbidClick: true
+            });
+            drivingDrivingList(Object.assign({},this.waitListQuery)).then(({ data }) => {
+                if(this.waitRefreshLoading){
+                    this.waitOrderList = [];
+                    this.waitRefreshLoading = false;
                 }
-                if(!data.hasNextPage){
-                    this.requestFinished = true;
+                this.waitLoading = false;
+                this.waitOrderList = [...this.waitOrderList, ...data.list];
+
+                if (!data.hasNextPage) {
+                    this.waitFinished = true;
+                    return;
                 }
-                this.requestrefresh = false;
-                this.requestLoading = false;
-                this.requestList = [...this.requestList, ...this.computedGroupDate(data.list)];
-            }).catch(()=>{
-                this.requestLoading = false;
+                this.waitListQuery.pageNum = this.waitListQuery.pageNum + 1;
+            }).catch((error) => {
+                this.waitLoading = false;
+                this.waitFinished = true;
+            }).finally(() => {
+                toast.clear();
             });
         },
-        drivingHistoryList () {  // 用车申请历史订单列表
-            let pageNum = this.historyQuery.pageNum;
-            this.historyLoading = true;
-            this.historyQuery.pageNum = pageNum + 1;
-            drivingHistoryList(this.historyQuery).then(({data}) => {
-                if (this.historyrefresh && this.historyQuery.pageNum === 1) { 
-                    this.historyList = [];
+        //获取历史订单
+        getHistoryOrderList(){
+            let toast = this.$toast.loading({
+                duration: 0,
+                message: "正在加载...",
+                forbidClick: true
+            });
+            drivingHistoryList(Object.assign({},this.historyListQuery)).then(({ data }) => {
+                if(this.historyRefreshLoading){
+                    this.historyOrderList = [];
+                    this.historyRefreshLoading = false;
                 }
-                if(!data.hasNextPage){
+                this.historyLoading = false;
+                this.historyOrderList = [...this.historyOrderList, ...data.list];
+
+                if (!data.hasNextPage) {
                     this.historyFinished = true;
+                    return;
                 }
-                this.historyrefresh = false;
+                this.historyListQuery.pageNum = this.historyListQuery.pageNum + 1;
+            }).catch((error) => {
                 this.historyLoading = false;
-                this.historyList = [...this.historyList, ...this.computedGroupDate(data.list)];
-            }).catch(()=>{
-                this.historyLoading = false;
+                this.historyFinished = true;
+            }).finally(() => {
+                toast.clear();
             });
         },
-        computedGroupDate (arr) { 
-            let newArr = [];
-            arr.forEach((item) => {
-                let index = -1;
-                let isExists = newArr.some((newItem, j) => {
-                    if(item.usageDate  == newItem.usageDate ) {
-                        index = j;
-                        return true;
-                    }
-                })
-                if(!isExists) {
-                    newArr.push({
-                        usageDate : item.usageDate ,
-                        children: [item]
-                    })
-                } else {
-                    newArr[index].children.push(item);
-                }
-            })
-            return newArr;
-        },
-        goOrderDetailClick (id,assignmentId) {
-            this.$router.push({
-                name: 'DrivingDetails',
-                params: {id:id,assignmentId:assignmentId}
-            });
-        },
-    },
-    filters:{
-        checkArea(address){
-            return address.split(' ')[0].split("/")[2];
-        },
-        checkStatus(status){
+        //判断订单状态
+        checkOrderStatus(status){
             let msg = "";
             switch (status) {
                 case '1':
@@ -206,10 +267,126 @@ export default {
                     break
             }
             return msg;
-        }
+        },
+        //判断订单图标
+        checkStatusImage(status){
+            if(status === '1'){       //待接单
+                return 'order-dsh'
+            }else if(status === '2'){     //待出车
+                return 'order-dsh'
+            }else if(status === '3'){     //拒绝接单
+                return 'order-ybh'
+            }else if(status === '4'){     //已出车
+                return 'order-ycc'
+            }else if(status === '5'){     //已还车
+                return 'order-yhc'
+            }else if(status === '6'){     //转派
+                return 'order-ybh'
+            }else if(status === '7'){     //已确认
+                return 'order-yqr'
+            }else if(status === '8'){     //拒绝再派单
+                return 'order-ybh'
+            }
+        },
+        //待处理列表条目点击
+        handleWaitItemClick(item){
+            this.$router.push({
+                name: 'DrivingDetails',
+                params: { 
+                    id:item.id,
+                    assignmentId:item.assignmentId,
+                }
+            });
+        },
+        //历史列表条目点击
+        handleHistoryItemClick(item){
+            this.$router.push({
+                name: 'DrivingDetails',
+                params: { 
+                    id:item.id,
+                    assignmentId:item.assignmentId,
+                }
+            });
+        },
+        //待处理列表刷新
+        waitRefresh(){
+            this.waitLoading = true;
+            this.waitFinished = false;
+            this.waitListQuery.pageNum = 1;
+            this.getWaitOrderList();
+        },
+        //历史列表刷新
+        historyRefresh(){
+            this.historyLoading = true;
+            this.historyFinished = false;
+            this.historyListQuery.pageNum = 1;
+            this.getHistoryOrderList();
+        },
     },
-    created () {
-        
-    }
 }
 </script>
+<style lang="less" scoped>
+.main-container {
+   
+    .order-info-item {
+        margin-bottom: 10px;
+
+        ul {
+
+            li {
+                color: #2e2e2e;
+                font-size: 14px;
+                margin-bottom: 8px;
+                display: flex;
+                line-height: 18px;
+
+                & span:nth-child(1){
+                  min-width: 70px
+                }
+                & span:nth-child(2){
+                    width: calc(100% - 130px);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+            .li-item-long {
+                color: #0E3680;
+                font-weight: 600;
+                position: relative;
+                font-size: 14px;
+
+                .order-long {
+                    width: 16px;
+                    height: 16px;
+                    background-size: cover;
+                    background-position: center;  
+                    background-image:url(/static/order_long.png);
+                    position: relative;
+                    left: 0px;
+                    top: 2px;
+                }
+            }
+        }
+        .order-status {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+            font-size: 12px;
+            color: #2e2e2e;
+        }
+        i {
+            position: absolute;
+            right: 55px;
+            top: 12px;
+        }
+        img {
+            width: 64px;
+            height: 64px;
+            position: absolute;
+            right: 15px;
+            bottom: 0px;
+        }
+    }
+}
+</style>
