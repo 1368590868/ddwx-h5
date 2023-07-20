@@ -73,6 +73,7 @@ import {
   CheckboxGroup,
   Checkbox,
   Rate,
+  Search,
 } from "vant";
 Vue.use(Row);
 Vue.use(Col);
@@ -118,6 +119,7 @@ Vue.use(TreeSelect);
 Vue.use(Checkbox);
 Vue.use(CheckboxGroup);
 Vue.use(Rate);
+Vue.use(Search);
 
 Vue.prototype.parseTime = parseTime;
 

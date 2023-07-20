@@ -113,7 +113,7 @@
       </li>
       <li class="info-label">
         <i class="font_family icon-icon-mine-24"></i>
-        <span>乘车人：</span><span>{{orderDetail.userName}}</span>
+        <span>乘车人：</span><span class="info-address">{{orderDetail.userName}}</span>
       </li>
       <li class="info-label">
         <i class="icon font_family icon-icon-contacts-20"></i>
@@ -129,6 +129,7 @@
       </li>
     </ul>
     <ul class="info-text">
+      <li class="info-label"><span>优先保障：</span><span>{{dictData.guaranteeDict[orderDetail.guarantee]}}</span></li>
       <li class="info-label"><span>用车事由：</span><span>{{orderDetail.reason}}</span></li>
       <li class="info-label"><span>用车需求：</span><span>{{orderDetail.demand}}</span></li>
       <li class="info-label"><span>用车时长：</span><span>{{orderDetail.timeLength}}小时</span></li>

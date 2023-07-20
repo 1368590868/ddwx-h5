@@ -87,13 +87,13 @@ export default {
             carInfo:{},
             checkCarImagePath,
             //总体评价
-            evaluateLevel:0,
+            evaluateLevel:4,
             //司机平分
-            evaluateDriver:0,
+            evaluateDriver:4,
             //服务平分
-            evaluateService:0,
+            evaluateService:4,
             //车内平分
-            evaluateIncar:0,
+            evaluateIncar:4,
             //评价内容
             evaluateContent:'',
         }

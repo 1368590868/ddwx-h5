@@ -34,6 +34,10 @@
                                     <span class="li-item-content">{{item.toAddr}}</span>
                                 </li>
                                 <li>
+                                    <span>优先保障：</span>
+                                    <span>{{checkGuarantee(item.guarantee)}}</span>
+                                </li>
+                                <li>
                                     <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
                                     <span class="li-item-content">{{item.userName}}</span>
                                 </li>
@@ -93,6 +97,10 @@
                                     <span class="li-item-content">{{item.toAddr}}</span>
                                 </li>
                                 <li>
+                                    <span>优先保障：</span>
+                                    <span>{{checkGuarantee(item.guarantee)}}</span>
+                                </li>
+                                <li>
                                     <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
                                     <span class="li-item-content">{{item.userName}}</span>
                                 </li>
@@ -150,6 +158,10 @@
                                 <li>
                                     <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
                                     <span class="li-item-content">{{item.toAddr}}</span>
+                                </li>
+                                <li>
+                                    <span>优先保障：</span>
+                                    <span>{{checkGuarantee(item.guarantee)}}</span>
                                 </li>
                                 <li>
                                     <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
@@ -264,12 +276,15 @@ export default {
             detailType: 1,
             //订单状态字典
             orderStatusOptions:[],
+             //优先保障字典
+            guaranteeOptions:[],
             //车辆图片
             checkCarImagePath,
         }
     },
     created () {
         this.getOrderStatusOptions();
+        this.getGuaranteeOptions();
     },
     activated () {
         if (this.isFefresh) {
@@ -294,6 +309,15 @@ export default {
 
             getListByParentId('1522830760585670657').then(({data}) => {
                 this.orderStatusOptions = data;
+            }).catch((err) => {
+                
+            })
+        },
+         //获取优先保障字典
+        getGuaranteeOptions(){
+
+            getListByParentId('1679651627836055552').then(({data}) => {
+                this.guaranteeOptions = data;
             }).catch((err) => {
                 
             })
@@ -383,6 +407,13 @@ export default {
         checkOrderStatus(status){
             let obj = this.orderStatusOptions.find((item) => {
                 return item.code == status;
+            })
+            return !!obj?obj.name:'';
+        },
+        //判断优先保障
+        checkGuarantee(guarantee){
+            let obj = this.guaranteeOptions.find((item) => {
+                return item.code == guarantee;
             })
             return !!obj?obj.name:'';
         },

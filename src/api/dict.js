@@ -30,3 +30,12 @@ export function getListByParentId(parentId) {
     method: 'GET',
   })
 }
+
+// 用户列表-部门的全部用户(tree)
+export function userListAllForDept(params) {
+  return request({
+    url: `/user/listAllForDept`,
+    method: 'GET',
+	params
+  })
+}

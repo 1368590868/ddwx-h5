@@ -19,8 +19,38 @@
                 </li>
             </ul>
         </div>
+        <div class="user-container box-container">
+            <span>乘车人</span>
+            <div class="user-item-container">
+                <ul>
+                    <li v-for="(item,index) in defaultUser" :key="index">
+                         {{item.realName}}
+                         <i class="default-icon-i" @click="handleTagClose(index)"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <div class="detail-container">
             <ul>
+                <li>
+                    <van-field v-model="form.guaranteeName" 
+                        name="guarantee" 
+                        readonly 
+                        right-icon="arrow-down"
+                        clickable 
+                        label="优先保障：" 
+                        placeholder="点击选择优先保障类型"
+                        @click="sGuaranteePicker = true"/>
+                    <van-popup v-model="sGuaranteePicker" position="bottom">
+                        <van-picker 
+                            show-toolbar 
+                            value-key="name" 
+                            :default-index="sGuaranteeActiveIndex"
+                            :columns="dictGuarantee" 
+                            @confirm="sGuaranteeConfirm" 
+                            @cancel="sGuaranteePicker = false" />
+                    </van-popup>
+                </li>
                 <li>
                     <van-field v-model="form.reason" 
                         name="reason" 
@@ -89,13 +119,6 @@
                     </van-field>
                 </li>
                 <li>
-                    <van-field v-model="form.userName" 
-                        name="userName" 
-                        :label="'乘\u00A0\u00A0车\u00A0\u00A0人：'" 
-                        placeholder="请输入乘车人"
-                        maxlength="20"/>
-                </li>
-                <li>
                     <van-field v-model="form.phone" 
                         name="phone" 
                         type="tel" 
@@ -146,6 +169,11 @@
                 </li>
             </ul>
         </div>
+        <div class="default-button-container-two">
+            <van-button block type="default" @click="handleAddUser" round icon="/static/add_user.png">添加乘车人</van-button>
+            <van-button block type="info" @click="handleConfirmClick" round>提交</van-button>
+        </div>
+         <!--选择审批人-->
         <van-popup v-model="assigneeShow" position="bottom">
             <div class="popup-title">
                 <span>请选择审批人</span>
@@ -154,17 +182,35 @@
             <van-tree-select :active-id.sync="activeIds" :main-active-index.sync="activeIndex" :items="assigneeList" />
             <van-button class="van-button-sure" @click="handleTreeSelect">确定</van-button>
         </van-popup>
-        <div class="bottom-container">
-            <div class="button-confirm" @click="handleConfirmClick()">提交</div>
-        </div>
+        <!--选择添加乘车人方式-->
+        <van-popup v-model="showAddUserPop" round position="bottom">
+            <div class="add-user-type-container">
+                <van-button block type="info" @click="handleAddUserSelect" round icon="/static/add_user_select.png">内部用户</van-button>
+                <van-button block type="default" @click="handleAddUserInput" round icon="/static/add_user_input.png">手动添加</van-button>
+            </div>
+        </van-popup>
+        <!--手动输入乘车人弹框-->
+        <van-dialog v-model="showAddUserInput" 
+            class="add-user-input-container" 
+            title="请输入乘车人姓名:" 
+            show-cancel-button 
+            confirmButtonColor="#0571ff"
+            :before-close="onBeforeClose">
+            <van-field label="" v-model="addUserInputText" maxlength="5" placeholder="请输入乘车人姓名"/>
+        </van-dialog>
     </div>
 </template>
 <script>
 import { mapGetters } from 'vuex'
 import { addVehicleRequest, activitiAssigneeListByType } from '@/api/order'
 import { getListByParentId } from '@/api/dict'
+import eventBus from '@/utils/eventBus.js'
+import keepPages from '@/view/mixins/keepPages'
 
 export default {
+    name:'PerfectInfo',
+    mixins: [keepPages],
+
     computed: {
         ...mapGetters(['userInfo']),
         ...mapGetters('CarApplication', ['CarOneData', 'CarCopData', 'CarOneHist']),
@@ -176,15 +222,18 @@ export default {
             dictReqReason: [],   //用车事由
             dictReqRange: [],   //用车需求
             dictModelType: [],   //期望车型
+            dictGuarantee: [],   //优先保障
 
             nReasonShowPicker: false,   // 用车事由弹窗
             nRangeShowPicker: false,    // 用车需求弹窗
             sHopeCartyPicker: false,    // 期望车型弹窗
+            sGuaranteePicker: false,    // 优先保障弹窗
             assigneeShow: false,         //选择审批人弹框
 
             nReasonActiveIndex: 0,      // 用车事由默认
             nRangeActiveIndex: 0,       // 用车需求默认
             sHopeCartyActiveIndex: 1,   // 期望车型默认
+            sGuaranteeActiveIndex: 0,   // 优先保障默认
 
             //工作流原始数据
             originAssigneeList:[],
@@ -210,17 +259,30 @@ export default {
                 timeLength: "2",        //预计时长
                 longDistanceTag: "0",      //是否长途
                 userName: "",  //乘车人
+                userId:'',
                 phone: "",      //手机号码
                 hopeBrand: "",     //期望车型
                 hopeBrandName: "",
-                usagePersons: "1",  //乘坐人数
+                usagePersons: "",  //乘坐人数
                 remark: "",  //备注
                 source: "2",      //来源 1PC 2APP
                 procDefId: "",
                 assignee: "",
+                guaranteeName:'',
+                guarantee:'',   //优先保障
             },
             activeIds: [],
             activeIndex: 0,
+            //可用车辆数
+            carUsableCount:0,
+            //添加乘车人弹框
+            showAddUserPop:false,
+            //手动输入乘车人弹框
+            showAddUserInput:false,
+            //手动输入乘车人内容
+            addUserInputText:'',
+            //乘车人数据
+            defaultUser:[],
 
             activeIcon: '/static/radio_checked.png',
             inactiveIcon: '/static/radio_default.png',
@@ -236,12 +298,15 @@ export default {
                 }
             });
         }
+        this.carUsableCount = this.$route.query.carUsableCount;
         this.dictGetReqReason();
         this.dictGetReqRange();
         this.dictGetModelType();
+        this.dictGetGuarantee();
        
-        this.form.userName = this.userInfo.realName;
+        
         this.form.phone = this.userInfo.phone;
+        this.initDefaultUser();
 
         this.form.fromAddr = this.CarOneHist.sFromAddr + ' ' + this.CarOneHist.sFromAddrDetail;
         this.form.fromAreaId = this.CarOneHist.fromProvinceId + ',' + this.CarOneHist.fromCityId + ',' + this.CarOneHist.fromAreaId;
@@ -260,9 +325,26 @@ export default {
             this.form.hopeBrand = this.CarCopData.hopeBrand;
             this.form.usagePersons = this.CarCopData.usagePersons;
             this.form.remark = this.CarCopData.remark;
+            this.form.guarantee = this.CarCopData.guarantee;
         }
+        //选择乘车人回调
+        eventBus.$off('addUserConfirm');
+        eventBus.$on('addUserConfirm',function(item){
+            this.addUserConfirm(item)
+        }.bind(this));
     },
     methods: {
+        //初始化乘车人
+        initDefaultUser(){
+            let obj = {
+                id:this.userInfo.id,
+                realName:this.userInfo.realName,
+                deptId:this.userInfo.deptId,
+                navMenuId:this.userInfo.deptId,
+            }
+            this.defaultUser.push(obj)
+            this.form.usagePersons = this.defaultUser.length;
+        },
         //获取车型字典
         dictGetModelType() {
             getListByParentId("101801").then(({ data }) => {
@@ -323,6 +405,26 @@ export default {
 
             })
         },
+        //获取优先保障字典
+        dictGetGuarantee() {
+            getListByParentId("1679651627836055552").then(({ data }) => {
+                this.dictGuarantee = data;
+                this.form.guaranteeName = data[this.sGuaranteeActiveIndex].name;
+                this.form.guarantee = data[this.sGuaranteeActiveIndex].code;
+
+                if (Object.keys(this.CarCopData).length) {
+                    this.sGuaranteeActiveIndex = this.dictGetGuarantee.findIndex((item) => {
+                        return item.code === this.form.guarantee;
+                    });
+                    let obj = this.dictGetGuarantee.find((item) => {
+                        return item.code === this.form.guarantee;
+                    })
+                    this.form.guaranteeName = obj.name;
+                }
+            }).catch((err) => {
+
+            })
+        },
         //用车事由确定
         nReasonConfirm(values) {
             this.form.reason = values.name;
@@ -335,48 +437,127 @@ export default {
             this.form.demandCode = values.code;
             this.nRangeShowPicker = false;
         },
-         // 期望车型确定
+        // 期望车型确定
         sHopeCartyConfirm(values) {   
             this.form.hopeBrandName = values.name;
             this.form.hopeBrand = values.code;
             this.sHopeCartyPicker = false;
         },
+        // 优先保障确定
+        sGuaranteeConfirm(values) {   
+            this.form.guaranteeName = values.name;
+            this.form.guarantee = values.code;
+            this.sGuaranteePicker = false;
+        },
+        //添加乘车人
+        handleAddUser(){
+            this.showAddUserPop = true;
+        },
+        //内部用户
+        handleAddUserSelect(){
+            this.showAddUserPop = false;
+            this.$router.push({
+                name: 'AddUserList',
+                params: {
+                    checkedUser:JSON.stringify(this.defaultUser),
+                },
+            })
+        },
+        //手动添加
+        handleAddUserInput(){
+            this.addUserInputText = '';
+            this.showAddUserInput = true;
+        },
+        //手动添加关闭前回调
+        onBeforeClose(action, done){
+            if (action === "confirm") {
+                if(!this.addUserInputText){
+                    this.$notify({
+                        type: 'warning',
+                        message: '请填写乘车人姓名!',
+                    });
+                    return done(false);
+                }else {
+                    if(this.defaultUser.length === 30){
+                        this.$notify({
+                            type: 'warning',
+                            message: '最多只能选择30名乘车人，请重新选择!',
+                        });
+                    }else{
+                        let obj = {
+                            id:'',
+                            deptId:'',
+                            realName:this.addUserInputText,
+                        }
+                        this.defaultUser.push(obj)
+                        this.form.usagePersons = this.defaultUser.length;
+                    }
+                }
+            }   
+            this.showAddUserPop = false;
+            done(true)
+        },
+        //内部用户选择回调
+        addUserConfirm(checkedUser){
+            this.defaultUser = checkedUser;
+            this.form.usagePersons = this.defaultUser.length;
+        },
+        //删除乘车人回调
+        handleTagClose(index){
+            this.defaultUser.splice(index, 1);
+            this.form.usagePersons = this.defaultUser.length;
+        },
         //提交
         handleConfirmClick(){
             if(!this.form.reasonCode){
-                 this.$notify({
+                this.$notify({
                     type: 'warning',
                     message: '请选择用车事由!',
                 });
                 return
             }
             if(!this.form.demandCode){
-                 this.$notify({
+                this.$notify({
                     type: 'warning',
                     message: '请选择用车需求!',
                 });
                 return
             }
             if(!this.form.timeLength || this.form.timeLength === '0'){
-                 this.$notify({
+                this.$notify({
                     type: 'warning',
                     message: '请填写用车时长!',
                 });
                 return
             }
             if(!this.form.longDistanceTag){
-                 this.$notify({
+                this.$notify({
                     type: 'warning',
                     message: '请选择是否长途!',
                 });
                 return
             }
-            if(!this.form.userName){
-                 this.$notify({
+            if(!this.defaultUser.length === 0){
+                this.$notify({
                     type: 'warning',
                     message: '请选择乘车人!',
                 });
                 return
+            }else {
+                let tempUserName = '';
+                let tempUserId = '';
+
+                this.defaultUser.forEach((item,index) => {
+                    if(index === this.defaultUser.length-1){
+                        tempUserName = tempUserName + item.realName;
+                        tempUserId = tempUserId + item.id;
+                    }else{
+                        tempUserName = tempUserName + item.realName + ',';
+                        tempUserId = tempUserId + item.id + ',';
+                    }
+                })
+                this.form.userName = tempUserName;
+                this.form.userId = tempUserId;
             }
             if(!this.form.phone){
                 this.$notify({
@@ -393,14 +574,21 @@ export default {
                 return
             }
             if(!this.form.hopeBrand){
-                 this.$notify({
+                this.$notify({
                     type: 'warning',
                     message: '请选择期望车型!',
                 });
                 return
             }
+            if(!this.form.guarantee){
+                this.$notify({
+                    type: 'warning',
+                    message: '请选择优先保障类型!',
+                });
+                return
+            }
             if(!this.form.usagePersons){
-                 this.$notify({
+                this.$notify({
                     type: 'warning',
                     message: '请填写乘坐人数!',
                 });
@@ -466,6 +654,12 @@ export default {
                 forbidClick: true
             });
             addVehicleRequest(Object.assign({}, this.form)).then(({ data }) => {
+                if(this.carUsableCount === 0){
+                    this.$notify({
+                        type: 'warning',
+                        message: '抱歉，所选时间暂无可用车辆，请耐心等待，我们会尽快为您安排车辆，感谢您的理解与支持！',
+                    });
+                }
                 this.$store.dispatch('CarApplication/clearOneDataAction');
                 this.$router.push({ name: 'SubSuccess', params: { id: data } });
             }).catch((err) => {
@@ -531,6 +725,52 @@ export default {
             }
         }
     }
+    .user-container {
+        color: #272b31;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        
+        span {
+            margin-bottom: 10px;
+        }
+        .user-item-container {
+            display: flex;
+            justify-content: space-between;
+
+
+            li {
+                display: inline-block;
+                width: 100px;
+                height: 26px;
+                box-sizing: border-box;
+                background: #f6f6f6;
+                border-radius: 50px;
+                line-height: 26px;
+                padding-left: 10px;
+                padding-right: 20px;
+                position: relative;
+                margin-right: 8px;
+                margin-bottom: 8px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+                span {
+                    font-size: 13px;
+                    color: #272b31;
+                 
+                }
+                i {
+                    background-image:url(/static/add_user_delete.png);
+                    position: absolute;
+                    right: 10px;
+                    top: 5px;
+                }
+            }
+        }
+    }
     .detail-container {
         background: #ffffff;
         border-radius: 7px;
@@ -571,25 +811,44 @@ export default {
             }
         }
     }
-    .bottom-container {
+    .add-user-type-container {
         width: 100%;
-        height: 54px;
-        line-height: 54px;
         background: #ffffff;
-        position: fixed;
-        bottom: 0px;
-        padding: 8px 24px;
+        display: flex;
+        flex-direction: column;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+        padding: 38px;
         box-sizing: border-box;
-        
-        .button-confirm {
+
+        .van-button--info {
+            background-color: #0571FF;
+            border-color: #0571FF;
+        }
+        .van-button {
             width: 100%;
-            height: 38px;
-            background: #0571ff;
-            border-radius: 50px;
-            color: #ffffff;
-            font-size: 14px;
-            text-align: center;
-            line-height: 38px;
+            height: 44px;
+        }
+        & .van-button:nth-child(1){
+            margin-bottom: 10px;
+        }
+        .van-icon__image {
+            width: 24px;
+            height: 24px;
+        }
+    }
+    .add-user-input-container {
+
+        ::v-deep .van-dialog__header {
+            text-align: left;
+            padding-left: 25px;
+        }
+        .van-cell {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        ::v-deep .van-field__body {
+            border-bottom: 1px solid #434951;
         }
     }
 }

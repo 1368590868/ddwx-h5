@@ -4,7 +4,7 @@
     <!-- TODO button-box的v-if的条件处理 -->
 
     <div class="button-box" v-if="!orderDetail.endTimeMe">
-      <van-button block type="default" @click="transferCar = true">驳回</van-button>
+      <van-button block type="default" @click="approvalOrdeReject">驳回</van-button>
       <van-button block type="info" @click="approvalOrderChange">通过</van-button>
     </div>
     <van-popup v-model="transferCar" position="bottom">
@@ -24,6 +24,16 @@
       </div>
       <van-tree-select :active-id.sync="activeIds" :main-active-index.sync="activeIndex" :items="assigneeList" />
       <van-button class="van-button-sure" @click="handleTreeSelect">确定</van-button>
+    </van-popup>
+    <!--优先保障-->
+    <van-popup v-model="guaranteePicker" position="bottom">
+        <van-picker 
+            show-toolbar 
+            value-key="name" 
+            :default-index="guaranteeActiveIndex"
+            :columns="dictGuarantee" 
+            @confirm="guaranteeConfirm" 
+            @cancel="guaranteeCancel" />
     </van-popup>
   </div>
 </template>
@@ -71,15 +81,26 @@ export default {
         // 订单状态
         statusDict: '1522830760585670657',
         // 期望车型I
-        hopeBrandDict: '101801'
+        hopeBrandDict: '101801',
+         //优先保障
+        guaranteeDict:'1679651627836055552',
       },
       dictData: {
         statusDict: '',
         hopeBrandDict: '',
+        guaranteeDict:'',
       },
       cascaderValue: '',
       activeIds: [],
       activeIndex: 0,
+      //优先保障弹框
+      guaranteePicker:false,
+      //优先保障默认位置
+      guaranteeActiveIndex:0,
+      //优先保障数据
+      dictGuarantee: [],  
+      //当前审核按钮
+      currentExamine:null,
     };
   },
   methods: {
@@ -88,6 +109,12 @@ export default {
       for (const item in dict) {
         const res = await this.getCommonDictList(dict[item]) || [];
         this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
+        if(item === 'guaranteeDict'){
+          this.dictGuarantee = res;
+          this.guaranteeActiveIndex = this.dictGuarantee.findIndex((item) => {
+              return item.code === this.orderDetail.guarantee;
+          });
+        }
       }
     },
     // 获取订单详情
@@ -129,8 +156,22 @@ export default {
       });
     },
     onFailed() { },
+    approvalOrdeReject(){
+      this.currentExamine = 1;
+   
+      this.$dialog.confirm({
+        title: '提示',
+        message: '是否修改优先保障类型?',
+        confirmButtonText:'是',
+        cancelButtonText:'否'
+      }).then(() => {
+        this.guaranteePicker = true;
+      }).catch((err) => {
+        this.requestApprovalOrdeReject();
+      })
+    },
     // 驳回请求
-    approvalOrdeReject() {
+    requestApprovalOrdeReject() {
       // this.$router.push({ name: 'reject', params: { id: id } });
       let toast = this.$toast.loading({
         duration: 0,
@@ -142,6 +183,7 @@ export default {
         businessId: this.$route.params.id || this.orderDetail.id,
         procInstId: this.orderDetail.procInstId,
         taskId: this.orderDetail.taskId,
+        guarantee:this.orderDetail.guarantee,
       }
       rejectApprovalOrder(param).then(({ data }) => {
         toast.clear();
@@ -155,7 +197,20 @@ export default {
     },
     // 开始
     // 通过按钮
-    async approvalOrderChange() {
+    approvalOrderChange() {
+      this.currentExamine = 0;
+      this.$dialog.confirm({
+        title: '提示',
+        message: '是否修改优先保障类型?',
+        confirmButtonText:'是',
+        cancelButtonText:'否'
+      }).then(() => {
+        this.guaranteePicker = true;
+      }).catch((err) => {
+        this.requestApprovalOrderChange();
+      })
+    },
+    async requestApprovalOrderChange(){
       const res = await activityAssigneeList({
         businessId: this.$route.params.id || this.orderDetail.id,
         procDefId: '',
@@ -171,6 +226,7 @@ export default {
             procInstId: this.orderDetail.procInstId || '',
             comment: '同意',
             taskId: this.orderDetail.taskId || '',
+            guarantee:this.orderDetail.guarantee,
           }
           this.$dialog.confirm({
             title: '提示',
@@ -205,11 +261,33 @@ export default {
             procInstId: this.orderDetail.procInstId || '',
             comment: '同意',
             taskId: this.orderDetail.taskId || '',
+            guarantee:this.orderDetail.guarantee,
           }
           this.approvalOrderApi(param)
         }).catch(() => {
           // on cancel
         });
+      }
+    },
+    //优先保障选择确定
+    guaranteeConfirm(values){
+      this.orderDetail.guarantee = values.code;
+      this.guaranteePicker = false;
+
+      if(this.currentExamine = 0){
+        this.requestApprovalOrdeReject();
+      }else{
+        this.requestApprovalOrderChange();
+      }
+    },
+    //优先保障选择取消
+    guaranteeCancel(){
+      this.guaranteePicker = false;
+
+      if(this.currentExamine = 0){
+        this.requestApprovalOrdeReject();
+      }else{
+        this.requestApprovalOrderChange();
       }
     },
     // 去除空数组

@@ -192,6 +192,7 @@ export default {
             this.$store.dispatch('CarApplication/triggerFefresh', false);
         }
         this.$store.commit('removeThisPage', 'StartApplying')
+        this.$store.commit('removeThisPage', 'PerfectInfo')
     },
     methods: {
         //获取订单状态字典

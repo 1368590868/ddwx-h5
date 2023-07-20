@@ -45,7 +45,7 @@
                 </li>
                 <li class="info-label">
                     <i class="font_family icon-icon-mine-24"></i>
-                    <span>乘车人：</span><span>{{orderDetail.userName}}</span>
+                    <span>乘车人：</span><span class="info-address">{{orderDetail.userName}}</span>
                 </li>
                 <li class="info-label">
                     <i class="icon font_family icon-icon-contacts-20"></i>

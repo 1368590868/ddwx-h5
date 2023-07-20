@@ -58,6 +58,11 @@ export const routes = [
 				name: 'DefalultAddress',
 				meta: {title: '常用地址'},
 				component: () => import('@/view/CarApplication/DefalultAddress.vue')
+			},{
+				path: 'AddUserList/:checkedUser',
+				name: 'AddUserList',
+				meta: {title: '人员列表'},
+				component: () => import('@/view/CarApplication/AddUserList.vue')
 			}
 		]
 	},

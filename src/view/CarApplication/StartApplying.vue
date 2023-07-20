@@ -99,7 +99,7 @@
             </van-popup>
         </div>
         <div class="bottom-container">
-            <div class="car-count" v-if="carUsableCount !== -1 && carTotalCount !== -1">
+            <div class="car-count">
                 <span>可用车辆：</span>
                 <span>{{carUsableCount}}{{'\u00A0'}}</span>
                 <span>/{{'\u00A0'}}{{carTotalCount}}</span>
@@ -126,10 +126,10 @@ export default {
             id:"",
             //出发日期和时间
             startDateAndTime:'',
-            //已用车辆
-            carUsableCount:-1,
             //可用车辆
-            carTotalCount:-1,
+            carUsableCount:0,
+            //总车辆
+            carTotalCount:0,
             //临时存储出发时刻
             tempDepartureTime:'',      
 
@@ -490,18 +490,21 @@ export default {
                 });
                 return
             }
-            if(this.carUsableCount === -1 || this.carTotalCount === -1){
-                this.$notify({
-                    type: 'warning',
-                    message: '当前时间无可用车辆，请重新选择出发时间!',
-                });
-                return
-            }
             this.$store.dispatch('CarApplication/setOneDataAction', this.formData).then(() => {
                 if (this.id !=='0') {   // 复制订单
-                    this.$router.push({name: 'PerfectInfo', query: {id:this.id}});
+                    this.$router.push({
+                        name: 'PerfectInfo',
+                        query: {
+                            carUsableCount:this.carUsableCount,
+                        },
+                    })
                 } else {   // 正常提交
-                    this.$router.push({name: 'PerfectInfo'});
+                    this.$router.push({
+                        name: 'PerfectInfo',
+                        query: {
+                            carUsableCount:this.carUsableCount,
+                        },
+                    })
                 }
             });
         },
