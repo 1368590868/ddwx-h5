@@ -48,11 +48,14 @@ export default {
         // 订单状态
         statusDict: '1522830760585670657',
         // 期望车型I
-        hopeBrandDict: '101801'
+        hopeBrandDict: '101801',
+        //优先保障
+        guaranteeDict:'1679651627836055552',
       },
       dictData: {
         statusDict: '',
         hopeBrandDict: '',
+        guaranteeDict:'',
       },
       // 订单类型，订单来源
       orderType: '',

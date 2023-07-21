@@ -299,12 +299,6 @@ export default {
             });
         }
         this.carUsableCount = this.$route.query.carUsableCount;
-        this.dictGetReqReason();
-        this.dictGetReqRange();
-        this.dictGetModelType();
-        this.dictGetGuarantee();
-       
-        
         this.form.phone = this.userInfo.phone;
         this.initDefaultUser();
 
@@ -327,6 +321,12 @@ export default {
             this.form.remark = this.CarCopData.remark;
             this.form.guarantee = this.CarCopData.guarantee;
         }
+
+        this.dictGetReqReason();
+        this.dictGetReqRange();
+        this.dictGetModelType();
+        this.dictGetGuarantee();
+
         //选择乘车人回调
         eventBus.$off('addUserConfirm');
         eventBus.$on('addUserConfirm',function(item){
@@ -349,9 +349,7 @@ export default {
         dictGetModelType() {
             getListByParentId("101801").then(({ data }) => {
                 this.dictModelType = data;
-                this.form.hopeBrandName = data[this.sHopeCartyActiveIndex].name;
-                this.form.hopeBrand = data[this.sHopeCartyActiveIndex].code;
-
+              
                 if (Object.keys(this.CarCopData).length) {
                     this.sHopeCartyActiveIndex = this.dictModelType.findIndex((item) => {
                         return item.code === this.form.hopeBrand;
@@ -360,6 +358,9 @@ export default {
                         return item.code === this.form.hopeBrand;
                     });
                     this.form.hopeBrandName = obj.name;
+                }else{
+                    this.form.hopeBrandName = data[this.sHopeCartyActiveIndex].name;
+                    this.form.hopeBrand = data[this.sHopeCartyActiveIndex].code;
                 }
             }).catch((err) => {
 
@@ -369,9 +370,7 @@ export default {
         dictGetReqRange() {
             getListByParentId("10018").then(({ data }) => {
                 this.dictReqRange = data;
-                this.form.demand = data[this.nRangeActiveIndex].name;
-                this.form.demandCode = data[this.nRangeActiveIndex].code;
-
+              
                 if (Object.keys(this.CarCopData).length) {
                     this.nRangeActiveIndex = this.dictReqRange.findIndex((item) => {
                         return item.code === this.form.demandCode;
@@ -380,6 +379,9 @@ export default {
                         return item.code === this.form.demandCode;
                     })
                     this.form.demand = obj.name;
+                }else{
+                    this.form.demand = data[this.nRangeActiveIndex].name;
+                    this.form.demandCode = data[this.nRangeActiveIndex].code;
                 }
             }).catch((err) => {
 
@@ -389,8 +391,6 @@ export default {
         dictGetReqReason() {
             getListByParentId("1016").then(({ data }) => {
                 this.dictReqReason = data;
-                this.form.reason = data[this.nReasonActiveIndex].name;
-                this.form.reasonCode = data[this.nReasonActiveIndex].code;
 
                 if (Object.keys(this.CarCopData).length) {
                     this.nReasonActiveIndex = this.dictReqReason.findIndex((item) => {
@@ -400,6 +400,9 @@ export default {
                         return item.code === this.form.reasonCode;
                     })
                     this.form.reason = obj.name;
+                }else{
+                    this.form.reason = data[this.nReasonActiveIndex].name;
+                    this.form.reasonCode = data[this.nReasonActiveIndex].code;
                 }
             }).catch((err) => {
 
@@ -409,17 +412,18 @@ export default {
         dictGetGuarantee() {
             getListByParentId("1679651627836055552").then(({ data }) => {
                 this.dictGuarantee = data;
-                this.form.guaranteeName = data[this.sGuaranteeActiveIndex].name;
-                this.form.guarantee = data[this.sGuaranteeActiveIndex].code;
 
                 if (Object.keys(this.CarCopData).length) {
-                    this.sGuaranteeActiveIndex = this.dictGetGuarantee.findIndex((item) => {
+                    this.sGuaranteeActiveIndex = this.dictGuarantee.findIndex((item) => {
                         return item.code === this.form.guarantee;
                     });
-                    let obj = this.dictGetGuarantee.find((item) => {
+                    let obj = this.dictGuarantee.find((item) => {
                         return item.code === this.form.guarantee;
                     })
                     this.form.guaranteeName = obj.name;
+                }else{
+                    this.form.guaranteeName = data[this.sGuaranteeActiveIndex].name;
+                    this.form.guarantee = data[this.sGuaranteeActiveIndex].code;
                 }
             }).catch((err) => {
 
@@ -537,7 +541,7 @@ export default {
                 });
                 return
             }
-            if(!this.defaultUser.length === 0){
+            if(this.defaultUser.length === 0){
                 this.$notify({
                     type: 'warning',
                     message: '请选择乘车人!',
