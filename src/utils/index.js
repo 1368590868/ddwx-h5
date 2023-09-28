@@ -181,3 +181,32 @@ export function debounce(func, wait, immediate) {
 		return result
 	}
 }
+
+/**
+ * 规范数字输入,整数位默认8,小数位2
+ * @param obj 表单项或绑定的对象
+ * @param key 对象的属性名
+ * @param intLimit 整数位限制,默认为8
+ */
+ export function handleNumberLimit(obj, key, intLimit = 8) {
+	 console.log(obj)
+	 console.log(key)
+	 console.log(intLimit)
+	 console.log(obj[key])
+	// 先把非数字的都替换掉，除了数字和 .
+	obj[key] = obj[key].replace(/[^\d.]/g, '')
+	// 保证只有出现一个 . 而没有多个 .
+	obj[key] = obj[key].replace(/\.{2,}/g, '.')
+	// 必须保证第一个为数字而不是 .
+	obj[key] = obj[key].replace(/^\./g, '')
+	// 保证 . 只出现一次，而不能出现两次以上
+	obj[key] = obj[key]
+	  .replace('.', '$#$')
+	  .replace(/\./g, '')
+	  .replace('$#$', '.')
+	// 只能输入 2 位小数
+	obj[key] = obj[key].replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3')
+	// 动态生成整数位限制正则
+	let intReg = new RegExp(`^\\D*(\\d{0,${intLimit}}(?:\\.\\d{0,2})?).*$`, 'g')
+	obj[key] = obj[key].replace(intReg, '$1')
+  }

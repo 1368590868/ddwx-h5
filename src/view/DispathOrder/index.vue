@@ -1,24 +1,27 @@
 <template>
-  <keep-alive :include="keepPages">
-    <router-view :key="key" />
-  </keep-alive>
+    <div class="not-scroll">
+        <app-header></app-header>
+        <keep-alive :include="keepPages">
+            <router-view :key="key" />
+        </keep-alive>
+    </div>
 </template>
-
-
 <script>
-export default {
-  data() {
-    return {
+import AppHeader from '@/components/AppHeader'
 
-    }
-  },
-  computed: {
-    key() {
-      return this.$route.fullPath
+export default {
+     components:{AppHeader},
+
+    data() {
+        return {};
     },
-    keepPages() {
-      return this.$store.getters.getKeepPages;
+    computed: {
+        key() {
+            return this.$route.path
+        },
+        keepPages() {
+            return this.$store.getters.getKeepPages;
+        },
     },
-  }
-}
+};
 </script>

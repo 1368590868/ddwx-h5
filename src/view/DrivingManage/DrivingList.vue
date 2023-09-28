@@ -41,8 +41,10 @@
                                     <span>分派车辆：</span>
                                     <span>{{item.carBrand}}{{'\u00A0'}}{{item.carSeries}}</span>
                                 </li>
-                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
-                                <i :class="checkStatusImage(item.status)"  class="default-icon-i"></i>
+                                <div class="order-status-container">
+                                    <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                    <span class="order-status-text">{{checkOrderStatus(item.status)}}</span>
+                                </div>
                                 <img :src="checkCarImagePath(item.carBrand, item.carSeries)">
                             </ul>
                         </div>
@@ -83,8 +85,10 @@
                                     <span>分派车辆：</span>
                                     <span>{{item.carBrand}}{{'\u00A0'}}{{item.carSeries}}</span>
                                 </li>
-                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
-                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <div class="order-status-container">
+                                    <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                    <span class="order-status-text">{{checkOrderStatus(item.status)}}</span>
+                                </div>
                                 <img :src="checkCarImagePath(item.carBrand, item.carSeries)">
                             </ul>
                         </div>
@@ -368,17 +372,20 @@ export default {
                 }
             }
         }
-        .order-status {
+        .order-status-container {
+            display: flex;
             position: absolute;
             right: 15px;
             top: 12px;
-            font-size: 12px;
-            color: #2e2e2e;
-        }
-        i {
-            position: absolute;
-            right: 55px;
-            top: 12px;
+            align-items: center;
+
+            i {
+                margin-right: 5px;
+            }
+            .order-status-text {
+                font-size: 12px;
+                color: #2e2e2e;
+            }
         }
         img {
             width: 64px;

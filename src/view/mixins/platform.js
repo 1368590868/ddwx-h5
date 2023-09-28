@@ -5,14 +5,14 @@ export default {
     },
     methods: {
         teleponeClick (phone) {  // 拨打电话 api
-            this.$ww.biz.telephone.showCallMenu({
-                phoneNumber: phone,
-                code: '+86',
-                onSuccess: function () {
-                    alert("拨打电话成功!");
-                },
-                onFail: function (err) {alert(err)} 
-            });
+            // this.$ww.biz.telephone.showCallMenu({
+            //     phoneNumber: phone,
+            //     code: '+86',
+            //     onSuccess: function () {
+            //         alert("拨打电话成功!");
+            //     },
+            //     onFail: function (err) {alert(err)} 
+            // });
         },
         dialogConfirm(options, beforeCloseCallback) {
             

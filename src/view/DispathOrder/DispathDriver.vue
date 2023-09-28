@@ -93,7 +93,8 @@ export default {
       radio: '',
       radioData: {},
       driverData: [],
-      typeDriver: ''
+      typeDriver: '',
+      status:'',
     }
   },
   computed: {
@@ -132,9 +133,6 @@ export default {
       });
     },
     returnChoiceVehicie() {
-      const { reqAssignmentsIndex } = this.$route.query || {};
-      this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'carInfo' })
-
       this.$router.go(-1);
     },
     async determine() {
@@ -143,16 +141,19 @@ export default {
         this.$toast("请选择司机！");
         return false;
       }
-      let obj = this.reqAssignments.some((item) => {
-          if(!!item.driverInfo){
-             return item.driverInfo.driverCode===radio;
-          }
-          return null;
-      })
-      if(!!obj){
-        this.$toast("该司机已经选择过，无法重复选择!");
-        return false;
+      if(this.status !== 'reset'){
+        let obj = this.reqAssignments.some((item) => {
+            if(!!item.driverInfo){
+              return item.driverInfo.driverCode===radio;
+            }
+            return null;
+        })
+        if(!!obj){
+          this.$toast("该司机已经选择过，无法重复选择!");
+          return false;
+        }
       }
+    
       //   await this.$store.dispatch("DispathOrder/setChoiceDriver", Object.assign({}, this.radioData));
       const { reqAssignmentsIndex } = this.$route.query;
       this.$store.dispatch('DispathOrder/setCarAndDriverData', { ...this.radioData, reqAssignmentsIndex, setDataType: 'driverInfo' })
@@ -181,7 +182,7 @@ export default {
         return
       }
       if (type == 3) {
-        // type = 2 复制调度单  人工派车
+        // type = 3 改派  人工派车
         this.$router.push({
           name: 'ReassignmentOrder',
           params: { ...this.$route.params },
@@ -209,6 +210,12 @@ export default {
     let typeDriver = this.$route.params.typeDriver;
     this.typeDriver = typeDriver
     // this.getAvailableDriver();
+    const { reqAssignmentsIndex } = this.$route.query || {};
+    this.status = this.$route.query.status;
+
+    if( this.status !== 'add' &&  this.status !== 'reset'){
+        this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'driverInfo' })
+    }
   },
   mounted() {
   }
@@ -217,7 +224,7 @@ export default {
 <style scoped lang="less">
 .ChoiceDriver {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 45px);
   background-color: #fff;
   display: flex;
   -webkit-box-orient: vertical;
@@ -226,7 +233,7 @@ export default {
   -webkit-flex-direction: column;
   overflow: hidden;
   .overflow-auto {
-    height: 100%;
+    flex: 1;
     overflow: auto;
   }
   .titleVeh {

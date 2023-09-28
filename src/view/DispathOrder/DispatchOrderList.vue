@@ -62,8 +62,10 @@
                                         <span>{{'\u00A0'}}辆</span>
                                     </span>
                                 </li>
-                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
-                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <div class="order-status-container">
+                                    <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                    <span class="order-status-text">{{checkOrderStatus(item.status)}}</span>
+                                </div>
                                 <img v-if="![1,2,3,4,6].includes(item.status)" :src="checkCarImagePath(item.reqAssignments[0].carBrand, item.reqAssignments[0].carSeries)">
                             </ul>
                         </div>
@@ -125,8 +127,10 @@
                                         <span>{{'\u00A0'}}辆</span>
                                     </span>
                                 </li>
-                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
-                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <div class="order-status-container">
+                                    <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                    <span class="order-status-text">{{checkOrderStatus(item.status)}}</span>
+                                </div>
                                 <img v-if="![1,2,3,4,6].includes(item.status)" :src="checkCarImagePath(item.reqAssignments[0].carBrand, item.reqAssignments[0].carSeries)">
                             </ul>
                         </div>
@@ -188,8 +192,10 @@
                                         <span>{{'\u00A0'}}辆</span>
                                     </span>
                                 </li>
-                                <span class="order-status">{{checkOrderStatus(item.status)}}</span>
-                                <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                <div class="order-status-container">
+                                    <i :class="checkStatusImage(item.status)" class="default-icon-i"></i>
+                                    <span class="order-status-text">{{checkOrderStatus(item.status)}}</span>
+                                </div>
                                 <img v-if="![1,2,3,4,6].includes(item.status)" :src="checkCarImagePath(item.reqAssignments[0].carBrand, item.reqAssignments[0].carSeries)">
                             </ul>
                         </div>
@@ -213,11 +219,6 @@ export default {
     computed: mapGetters('DispathOrder', ['isFefresh']),
 
     beforeRouteEnter(to, from, next) {
-        if (from.name === 'SubSuccess') {
-            to.meta.keepAlive = false;
-        } else {
-            to.meta.keepAlive = true;
-        }
         next((vm) => {
             let timer = setTimeout(() => {
                 vm.$refs.container.scrollTop = to.meta.scrollTop;
@@ -226,7 +227,7 @@ export default {
         });
     },
     beforeRouteLeave(to, from, next) {
-        if (to.name === 'DispatchDetails') {  
+        if (to.name === 'DispatchDetails' || to.name === 'StartApplying') {  
             let container = this.$refs.container;
             let top = container.scrollTop;
             from.meta.scrollTop = top;
@@ -301,7 +302,8 @@ export default {
             }, 0);
             this.$store.dispatch('DispathOrder/triggerFefresh', false);
         }
-        this.$store.commit('removeThisPage', 'DispathApply')
+        this.$store.commit('removeThisPage', 'DispathApply');
+        this.$store.commit('removeThisPage', 'DispathPerfect');
     },
     methods: {
         //获取订单状态字典
@@ -431,6 +433,8 @@ export default {
                 return 'order-ypd'
             }else if(status === 6){     //已取消
                 return 'order-yqx'
+            }else if(status === 7){     //部分接单
+                return 'order-yjd'
             }else if(status === 8){     //已接单
                 return 'order-yjd'
             }else if(status === 9){     //已出车
@@ -556,17 +560,21 @@ export default {
                 }
             }
         }
-        .order-status {
+        .order-status-container {
+            display: flex;
             position: absolute;
             right: 15px;
             top: 12px;
-            font-size: 12px;
-            color: #2e2e2e;
-        }
-        i {
-            position: absolute;
-            right: 55px;
-            top: 12px;
+            align-items: center;
+
+            i {
+                margin-right: 5px;
+            }
+            .order-status-text {
+                font-size: 12px;
+                color: #2e2e2e;
+            }
+           
         }
         img {
             width: 64px;

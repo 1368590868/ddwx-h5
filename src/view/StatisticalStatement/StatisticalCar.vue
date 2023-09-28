@@ -321,6 +321,10 @@ export default {
 }
 </script>
 <style lang="less">
+.stats-container {
+  height: calc(100% - 45px);
+  overflow: auto;
+}
 
   .UseByYear{
     width:100%;

@@ -1,5 +1,6 @@
 <template>
 	<div class="app-wrapper">
+		<app-header></app-header>
 		<div class="main-container">
 			<app-main />
 		</div>
@@ -10,30 +11,26 @@
 </template>
 
 <script>
-	import {
+import {Navbar,AppMain} from './components'
+import AppHeader from '@/components/AppHeader'
+
+export default {
+	name: 'Layout',
+	components: {
 		Navbar,
-		// Sidebar,
-		AppMain
-	} from './components'
-	// import ResizeMixin from './mixin/ResizeHandler'
-
-	export default {
-		name: 'Layout',
-		// mixins: [ResizeMixin],
-		components: {
-			Navbar,
-			// Sidebar,
-			AppMain
-		},
-
-		methods: {
-			handleClickOutside() {
-
-			}
+		AppMain,
+		AppHeader,
+	},
+	data () {
+		return {
+			
 		}
+	},
+	methods: {
+	
 	}
+}
 </script>
-
 <style scoped>
 
 </style>

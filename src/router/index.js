@@ -8,6 +8,12 @@ import Layout from '@/layout'
 
 export const routes = [
 	{
+		path:'/mobile/login',
+		name:'mobileLogin',
+		component: () => import('@/view/MobileLogin/index.vue'),
+		meta: {keepAlive: false},
+	},
+	{
 		path: '/',
 		component: Layout,
 		redirect: '/dashboard',
@@ -54,10 +60,10 @@ export const routes = [
 				meta: {title: '用车申请单'},
 				component: () => import('@/view/CarApplication/OutstandOrder.vue')
 			},{
-				path: 'DefalultAddress',
-				name: 'DefalultAddress',
+				path: 'DefaultAddress',
+				name: 'DefaultAddress',
 				meta: {title: '常用地址'},
-				component: () => import('@/view/CarApplication/DefalultAddress.vue')
+				component: () => import('@/view/CarApplication/DefaultAddress.vue')
 			},{
 				path: 'AddUserList/:checkedUser',
 				name: 'AddUserList',
@@ -173,7 +179,7 @@ export const routes = [
 			{
 				path: 'DispathApply/:type/:id',
 				name: 'DispathApply',
-				meta: {title: '人工调配', keepAlive: true},
+				meta: {title: '人工调配'},
 				component: () => import('@/view/DispathOrder/DispathApply.vue')
 			},
 			{
@@ -207,7 +213,7 @@ export const routes = [
 				component: () => import('@/view/DispathOrder/ConfirmDistribute.vue')
 			},
 			{
-				path: 'CreateOder', // 创建调度单 人工派车
+				path: 'CreateOder/:type/:id', // 创建调度单 人工派车
 				name: 'CreateOder',
 				meta: {title: '派单详情'},
 				component: () => import('@/view/DispathOrder/CreateOder.vue')
@@ -232,7 +238,7 @@ export const routes = [
 			},
 			{
 				path: 'DefaultAddress',
-				name: 'DefaultAddress',
+				name: 'DispathDefaultAddress',
 				meta: {title: '常用地址'},
 				component: () => import('@/view/DispathOrder/DefaultAddress.vue')
 			},
@@ -242,6 +248,12 @@ export const routes = [
 				meta: {title: '提交成功'},
 				component: () => import('@/view/DispathOrder/DispathSuccess.vue')
 			}, 
+			{
+				path: 'AddUserList/:checkedUser',
+				name: 'DispathAddUserList',
+				meta: {title: '人员列表'},
+				component: () => import('@/view/DispathOrder/AddUserList.vue')
+			}
 		]
 	},
 

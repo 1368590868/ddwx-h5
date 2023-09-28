@@ -128,6 +128,7 @@ export default {
         query: {
           ...this.$route.query,
           reqAssignmentsIndex,
+          status:'add',
         }
       });
     },
@@ -262,6 +263,7 @@ export default {
         query: {
           ...this.$route.query,
           reqAssignmentsIndex: index,
+          status:'reset'
         }
       });
     },

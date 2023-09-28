@@ -129,7 +129,7 @@
       </li>
     </ul>
     <ul class="info-text">
-      <li class="info-label"><span>优先保障：</span><span>{{dictData.guaranteeDict[orderDetail.guarantee]}}</span></li>
+      <li class="info-label" v-if="isShowGuarantee"><span>优先保障：</span><span>{{dictData.guaranteeDict[orderDetail.guarantee]}}</span></li>
       <li class="info-label"><span>用车事由：</span><span>{{orderDetail.reason}}</span></li>
       <li class="info-label"><span>用车需求：</span><span>{{orderDetail.demand}}</span></li>
       <li class="info-label"><span>用车时长：</span><span>{{orderDetail.timeLength}}小时</span></li>
@@ -222,6 +222,12 @@ export default {
       type: Boolean,
       default() {
         return false
+      },
+    },
+    isShowGuarantee: {
+      type: Boolean,
+      default() {
+        return true
       },
     },
   },

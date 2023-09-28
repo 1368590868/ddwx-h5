@@ -149,22 +149,22 @@
                 <van-field type="digit" required label="出车里程：" center v-model="transferCarData.beginMiles" :disabled="true" :rules="[{ required: true }, {validator: asyncValidate, message: '还车里程必须大于出车里程!'}]" name="beginMiles">
                     <template #extra><span>千米</span></template>
                 </van-field>
-                <van-field type="digit" required label="还车里程：" center v-model="transferCarData.endMiles" placeholder="请输入当前表显里程数" :rules="[{ required: true }, {validator: asyncValidate, message: '还车里程必须大于出车里程!'}]" name="endMiles">
+                <van-field required label="还车里程：" center v-model="transferCarData.endMiles" placeholder="请输入当前表显里程数" :rules="[{ required: true }, {validator: asyncValidate, message: '还车里程必须大于出车里程!'}]" name="endMiles"  @input="handleNumberLimit(transferCarData,'endMiles')">
                     <template #extra><span>千米</span></template>
                 </van-field>
-                <van-field type="digit" required label="等待时长：" center v-model="transferCarData.waitTimes" placeholder="请输入当前等待时长数" :rules="[{ required: true}]" name="waitTimes">
+                <van-field required label="等待时长：" center v-model="transferCarData.waitTimes" placeholder="请输入当前等待时长数" :rules="[{ required: true}]" name="waitTimes" @input="handleNumberLimit(transferCarData,'waitTimes',2)">
                     <template #extra><span>小时</span></template>
                 </van-field>
-                <van-field type="digit" required label="路桥费：" center v-model="transferCarData.etcCost" placeholder="请输入路桥费" :rules="[{ required: true}]" name="etcCost">
+                <van-field required label="路桥费：" center v-model="transferCarData.etcCost" placeholder="请输入路桥费" :rules="[{ required: true}]" name="etcCost" @input="handleNumberLimit(transferCarData,'etcCost')">
                     <template #extra><span>元</span></template>
                 </van-field>
-                <van-field type="digit" required label="加油费：" center v-model="transferCarData.oilCost" placeholder="请输入加油费" :rules="[{ required: true}]" name="oilCost">
+                <van-field required label="加油费：" center v-model="transferCarData.oilCost" placeholder="请输入加油费" :rules="[{ required: true}]" name="oilCost" @input="handleNumberLimit(transferCarData,'oilCost')">
                     <template #extra><span>元</span></template>
                 </van-field>
-                <van-field type="digit" required label="其他费：" center v-model="transferCarData.otherCost" placeholder="请输入其他费" :rules="[{ required: true}]" name="otherCost">
+                <van-field required label="其他费：" center v-model="transferCarData.otherCost" placeholder="请输入其他费" :rules="[{ required: true}]" name="otherCost" @input="handleNumberLimit(transferCarData,'otherCost')">
                     <template #extra><span>元</span></template>
                 </van-field>
-                <van-field type="digit" required label="停车费：" center v-model="transferCarData.parkCost" placeholder="请输入停车费" :rules="[{ required: true}]" name="parkCost">
+                <van-field required label="停车费：" center v-model="transferCarData.parkCost" placeholder="请输入停车费" :rules="[{ required: true}]" name="parkCost" @input="handleNumberLimit(transferCarData,'parkCost')">
                     <template #extra><span>元</span></template>
                 </van-field>
                 <van-field label="行程描述：" class="form-textarea" v-model="transferCarData.remark" name="remark" rows="1" autosize type="textarea" maxlength="50" placeholder="请输入行程描述" show-word-limit />
@@ -202,6 +202,7 @@ import {gcywVehicleRequesTakeOrder,
 import platform from '@/view/mixins/platform'
 import checkCarImagePath from '@/utils/carPath'
 import teleponeClick from '@/view/mixins/platform'
+import { handleNumberLimit } from '@/utils'
 
 let that;
 export default {
@@ -214,6 +215,7 @@ export default {
     },
     data (){
         return {
+            handleNumberLimit: handleNumberLimit,
             imagePath:"",
             transferCar: false, // 确认还车
             dispatchCar:false,  //确认出车

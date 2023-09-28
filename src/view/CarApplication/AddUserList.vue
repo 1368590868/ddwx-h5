@@ -414,6 +414,7 @@ export default {
         padding-right: 8px;
         box-sizing: border-box;
         overflow-y: auto;
+        padding-bottom: 54px;
 
         .list-item {
             width: 100%;

@@ -330,7 +330,7 @@ export default {
     padding: 15px;
     background-color: #ffffff;
     overflow: auto;
-    height: calc(100% - 65px);
+    height: calc(100% - 110px);
 
     .top-info {
         border-bottom: 1px solid #f0f0f0;

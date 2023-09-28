@@ -61,6 +61,8 @@ export default {
         }
     },
     created () {
+        //清空所有缓存页面
+        this.$store.commit('changeKeepPages', 'index') // 经测试include为空值时所有页面都会缓存
         this.$store.dispatch('auth/readCount');
         this.activeIndex(this.$route);
     }

@@ -94,8 +94,11 @@
                 <van-datetime-picker v-model="formData.dDepartureTimeDetail"
                     type="time" 
                     :filter="timefilter" 
+                    :min-hour="checkMinHour()" 
+                    :min-minute="checkMinMinute()"
                     @confirm="timeDetailConfirm" 
-                    @cancel="showsTimeDetail=false"/>
+                    @cancel="showsTimeDetail=false"
+                    @change="onTimeChange"/>
             </van-popup>
         </div>
         <div class="bottom-container">
@@ -119,7 +122,7 @@ import keepPages from '@/view/mixins/keepPages'
 export default {
     name:"StartApplying",
     mixins: [keepPages],
-    
+
     data() {
         return {
             //复制订单id
@@ -132,6 +135,8 @@ export default {
             carTotalCount:0,
             //临时存储出发时刻
             tempDepartureTime:'',      
+            //临时存储出发时间(小时)
+            tempHour:'',      
 
             formData:{
                 fromId:'',
@@ -181,6 +186,7 @@ export default {
         if(this.id==='0'){
             this.$nextTick(() => {
                 this.formData.dDepartureTime = parseTime(Date.now(), '{y}-{m}-{d}');
+                this.tempDepartureTime = parseTime(Date.now(), '{y}-{m}-{d}');
                 this.initUsageTime();
             })
             this.getProvinceOptions(0);
@@ -189,8 +195,6 @@ export default {
         }else{  
             this.orderGetOrderDetail(); // 如果id不等于'0'则是复制订单
         }
-    },
-    activated(){
         //选择常用地址回调
         eventBus.$off('defaultAddress');
         eventBus.$on('defaultAddress',function(item){
@@ -275,33 +279,68 @@ export default {
             let hh = new Date().getHours();
             let mf = new Date().getMinutes();
 
-            hh = hh +1;
+            let diff = mf % 5;
 
-            if(mf >= 0 && mf <= 15){
-                mf = '30';
-            }else if(mf > 15 && mf <= 30){
-                mf = '45';
-            }else if(mf > 30 && mf <= 45){
-                mf = '00';
-                hh = hh +1 ;
-            }else if(mf > 45){
-                mf = '15';
-                hh = hh +1 ;
+            if(diff !== 0 ){
+                diff = 5 - diff;
+            }
+
+            if(mf < 55){
+                mf = mf + diff + 5;
+            }else if(mf === 55){
+                mf = 0;
+                hh = hh +1;
+            }else{
+                mf = 5;
+                hh = hh +1;
             }
             if(hh < 10){
-                hh = '0'+hh;
+                hh = '0'+ hh;
             }
-            if(hh == 25){
+            if(mf < 10){
+                mf = '0'+ mf;
+            }
+            if(hh == 24){
                 hh = '00'
             }
             this.formData.dDepartureTimeDetail = hh +':'+ mf;
             this.startDateAndTime = this.formData.dDepartureTime + ' ' + this.formData.dDepartureTimeDetail;
             this.getCarCount(this.formData.dDepartureTime)
+
+            if(hh.toString().startsWith('0')){
+                this.tempHour = hh.substr(1);
+            }else{
+                this.tempHour = hh;
+            }
+        },
+        //设置最小小时
+        checkMinHour(){
+            if(this.tempDepartureTime === this.parseTime(new Date().getTime(),'{y}-{m}-{d}')){
+                return new Date().getHours();
+            }
+            return ''
+        },
+        //设置最小分钟
+        checkMinMinute(){
+            if(this.tempDepartureTime === this.parseTime(new Date().getTime(),'{y}-{m}-{d}')){
+                if(this.tempHour == new Date().getHours()){
+                    return new Date().getMinutes();
+                }
+            }
+            return ''
+        },
+        onTimeChange(picker){
+            let pickerArr = picker.getValues();
+            
+            if(pickerArr[0].startsWith('0')){
+                pickerArr[0] = pickerArr[0].substr(1);
+            }
+            this.tempHour = pickerArr[0];
         },
         //选择时间过滤器
         timefilter(type, options){
             if (type === 'minute') {
-                return options.filter((option) => option % 15 === 0);
+                return options.filter((option) => option % 5 === 0);
             }
             return options;
         },
@@ -447,7 +486,7 @@ export default {
         //地址列表点击
         handleListClick(addressType){
             this.$router.push({
-                name: 'DefalultAddress',
+                name: 'DefaultAddress',
                 params: {
                     addressType
                 },
@@ -491,21 +530,12 @@ export default {
                 return
             }
             this.$store.dispatch('CarApplication/setOneDataAction', this.formData).then(() => {
-                if (this.id !=='0') {   // 复制订单
-                    this.$router.push({
-                        name: 'PerfectInfo',
-                        query: {
-                            carUsableCount:this.carUsableCount,
-                        },
-                    })
-                } else {   // 正常提交
-                    this.$router.push({
-                        name: 'PerfectInfo',
-                        query: {
-                            carUsableCount:this.carUsableCount,
-                        },
-                    })
-                }
+                this.$router.push({
+                    name: 'PerfectInfo',
+                    query: {
+                        carUsableCount:this.carUsableCount,
+                    },
+                })
             });
         },
     },

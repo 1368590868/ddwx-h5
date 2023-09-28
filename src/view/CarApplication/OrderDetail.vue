@@ -1,5 +1,5 @@
 <template>
-  <div class="apply-container container">
+  <div class="container">
     <div class="wrapper">
       <div class="order-top">
         <span>订单号：{{orderDetail.reqNo}}</span>

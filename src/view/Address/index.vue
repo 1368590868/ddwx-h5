@@ -1,5 +1,6 @@
 <template>
     <div class="not-scroll">
+        <app-header></app-header>
         <keep-alive>
             <router-view v-if="$route.meta.keepAlive" :key="key" />
         </keep-alive>
@@ -9,7 +10,11 @@
 
 
 <script>
+import AppHeader from '@/components/AppHeader'
+
 export default {
+    components:{AppHeader},
+
     data () {
         return {
 

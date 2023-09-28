@@ -61,21 +61,21 @@ export default {
         }
     },
     mounted (){
-        this.bizNavigationSetRight();
+        // this.bizNavigationSetRight();
         this.getIndexMenu();
 	},
     methods: {
 		bizNavigationSetRight () {
-			let _this = this;
-            this.$ww.biz.navigation.setRight({
-                show: true, //控制按钮显示， true 显示， false 隐藏， 默认true
-                control: true, //是否控制点击事件，true 控制，false 不控制， 默认false
-                text: '首页', //控制显示文本，空字符串表示显示默认文本
-                onSuccess: function() {
-					_this.$router.push('/dashboard');
-                },
-                onFail: function(err) {}
-            });
+			// let _this = this;
+            // this.$ww.biz.navigation.setRight({
+            //     show: true, //控制按钮显示， true 显示， false 隐藏， 默认true
+            //     control: true, //是否控制点击事件，true 控制，false 不控制， 默认false
+            //     text: '首页', //控制显示文本，空字符串表示显示默认文本
+            //     onSuccess: function() {
+			// 		_this.$router.push('/dashboard');
+            //     },
+            //     onFail: function(err) {}
+            // });
         },
         //获取首页菜单信息
         async getIndexMenu(){

@@ -231,8 +231,8 @@ export default {
             assigneeShow: false,         //选择审批人弹框
 
             nReasonActiveIndex: 0,      // 用车事由默认
-            nRangeActiveIndex: 0,       // 用车需求默认
-            sHopeCartyActiveIndex: 1,   // 期望车型默认
+            nRangeActiveIndex: 1,       // 用车需求默认
+            sHopeCartyActiveIndex: 0,   // 期望车型默认
             sGuaranteeActiveIndex: 0,   // 优先保障默认
 
             //工作流原始数据
@@ -317,7 +317,6 @@ export default {
             this.form.userName = this.CarCopData.userName;
             this.form.phone = this.CarCopData.phone;
             this.form.hopeBrand = this.CarCopData.hopeBrand;
-            this.form.usagePersons = this.CarCopData.usagePersons;
             this.form.remark = this.CarCopData.remark;
             this.form.guarantee = this.CarCopData.guarantee;
         }
@@ -459,7 +458,6 @@ export default {
         },
         //内部用户
         handleAddUserSelect(){
-            this.showAddUserPop = false;
             this.$router.push({
                 name: 'AddUserList',
                 params: {
@@ -505,6 +503,10 @@ export default {
         addUserConfirm(checkedUser){
             this.defaultUser = checkedUser;
             this.form.usagePersons = this.defaultUser.length;
+
+            this.$nextTick(() => {
+                this.showAddUserPop = false;
+            })
         },
         //删除乘车人回调
         handleTagClose(index){

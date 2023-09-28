@@ -18,11 +18,11 @@
                             </li>
                             <li>
                                 <span>出{{'\u00A0'}}{{'\u00A0'}}发{{'\u00A0'}}{{'\u00A0'}}地：</span>
-                                <span>{{item.fromAddr}}</span>
+                                <span>{{item.simpleFromAddr}}</span>
                             </li>
                             <li>
                                 <span>目{{'\u00A0'}}{{'\u00A0'}}的{{'\u00A0'}}{{'\u00A0'}}地：</span>
-                                <span>{{item.toAddr}}</span>
+                                <span>{{item.simpleToAddr}}</span>
                             </li>
                         </ul>
                     </div>

@@ -8,7 +8,7 @@
         <div v-for="item in addressList" :key="item.id" class="item-address" @click="handleDetail(item)">
             <span class="span-alias">{{item.name}}</span>
             <div class="div-address">
-                <p>{{item.areaLongName}}{{item.areaLongName}}</p>
+                <p>{{item.areaLongName}}</p>
                 <p>{{item.address}}</p>
             </div>
             <span class="span-default" v-show="item.defualtTag==='1'">默认</span>
@@ -62,17 +62,12 @@ export default {
         },
         handleDetail(item){
             eventBus.$emit('defaultAddress',item);
-            this.$router.back();
-        }
+            this.$router.go(-1);
+        },
     }
 }
 </script>
 <style>
-    p{
-        overflow: hidden;
-		text-overflow: ellipsis;
-        white-space: nowrap;
-    }
     .app-container {
         height: 100%;
         overflow: auto;
@@ -96,9 +91,8 @@ export default {
     }
     .item-address{
         display: flex;
-        flex-flow: row nowrap;
         align-items: center;
-        height: 80px;
+        min-height: 80px;
         background: #ffffff;
         margin-bottom: 5px;
     }

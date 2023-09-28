@@ -44,21 +44,20 @@ const mutations = {
   },
 
   SET_CARONEDATA: (state, data) => {
-    console.log("🚀 ~ file: DispathOrder.js ~ line 47 ~ data", data);
-    let fromAddr = data.fromAddr;
-    let toAddr = data.toAddr;
+    let fromAddr = data.sFromAddr;
+    let toAddr = data.sTargetAddr;
     state.CarOneHist = data;
     state.CarOneData = {
       fromAreaId:
         data.fromProvinceId + "," + data.fromCityId + "," + data.fromAreaId,
-      fromAddr: fromAddr + " " + data.fromAddrDetail, // (string, optional): 出发地 ,
+      fromAddr: fromAddr + " " + data.sFromAddrDetail, // (string, optional): 出发地 ,
       toAreaIdd:
         data.targetProvinceId +
         "," +
         data.targetCityId +
         "," +
         data.targetAreaId,
-      toAddr: toAddr + " " + data.toAddrDetail, // (string, optional): 目的地
+      toAddr: toAddr + " " + data.sTargetAddrDetail, // (string, optional): 目的地
       usageDate: data.usageDate, // (string, optional): 出发日期 ,
       usageTime: data.usageTime, // (string, optional): 出发时刻 ,
     };
@@ -75,6 +74,9 @@ const mutations = {
   SET_CARCOPdATA: (state, data) => {
     // 复制订单操作
     state.CarCopData = data;
+  },
+  CLEAR_CARCOPdATA: (state) => {
+    state.CarCopData = {};
   },
   SET_CARPERFECT: (state, data) => {
     // 选择车辆上一步数据
@@ -131,7 +133,9 @@ const actions = {
   setCopyDataAction({ commit }, data) {
     commit("SET_CARCOPdATA", data);
   },
-
+  clearCopyDataAction ({commit}){
+    commit('CLEAR_CARCOPdATA');
+  },
   setPerfectAction({ commit }, data) {
     return new Promise((resolve) => {
       commit("SET_CARPERFECT", data);
@@ -146,10 +150,6 @@ const actions = {
   },
   // 多选司机和车辆
   setCarAndDriverData({ commit }, data) {
-    console.log(
-      "🚀 ~ file: DispathOrder.js ~ line 135 ~ setCarAndDriverData ~ data",
-      data
-    );
     commit("SET_REQ_ASSIGNMENTS", data);
   },
   // 回复司机和车辆初始值  空数组
@@ -158,10 +158,6 @@ const actions = {
   },
   // 删除谋一个司机和车辆信息
   deleteReqAssignmentsItem({ commit }, index) {
-    console.log(
-      "🚀 ~ file: DispathOrder.js ~ line 152 ~ deleteReqAssignmentsItem ~ index",
-      index
-    );
     commit("DELETE_REQ_ASSIGNMENTS_ITEM", index);
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="apply-container container">
+  <div class="container">
     <AllOrderDetail :order-detail="orderDetail" :approve-log-list="approveLogList" :dict-data="dictData" />
     <!-- TODO button-box的v-if的条件处理 -->
 

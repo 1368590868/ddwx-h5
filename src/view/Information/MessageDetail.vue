@@ -86,6 +86,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+    .container {
+        height: 100%;
+    }
     .message-wapper {
         background-color:#f3f5f7;
     }

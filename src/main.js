@@ -8,11 +8,11 @@ import "./styles/index.less";
 import '@/styles/main.less' 
 import * as filters from "./utils/filters.js"; // global filters
 import { parseTime } from "@/utils/index.js";
-import MobilePlatform from "@/utils/MobilePlatform.js";
+// import MobilePlatform from "@/utils/MobilePlatform.js";
 import * as echarts from "echarts";
 import '@/assets/icons/iconfont.js' //iconfont js
 Vue.prototype.$echarts = echarts;
-Vue.use(MobilePlatform);
+// Vue.use(MobilePlatform);
 import "./permission"; // permission control
 
 import NotEmpty from "@/components/NotEmpty";
@@ -126,14 +126,14 @@ Vue.prototype.parseTime = parseTime;
 Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key]);
 });
-if (process.env.NODE_ENV === "development") {
-  (function () {
-    var src =
-      "https://cdn.bootcdn.net/ajax/libs/vConsole/3.4.1/vconsole.min.js";
-    document.write("<scr" + 'ipt src="' + src + '"></scr' + "ipt>");
-    document.write("<scr" + "ipt>var vConsole = new VConsole();</scr" + "ipt>");
-  })();
-}
+// if (process.env.NODE_ENV === "development") {
+//   (function () {
+//     var src =
+//       "https://cdn.bootcdn.net/ajax/libs/vConsole/3.4.1/vconsole.min.js";
+//     document.write("<scr" + 'ipt src="' + src + '"></scr' + "ipt>");
+//     document.write("<scr" + "ipt>var vConsole = new VConsole();</scr" + "ipt>");
+//   })();
+// }
 new Vue({
   store,
   router,

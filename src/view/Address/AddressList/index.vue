@@ -91,7 +91,7 @@ export default {
         white-space: nowrap;
     }
     .app-container {
-        height: 100%;
+        height: calc(100% - 45px);
         overflow: auto;
     }
     .title-address{

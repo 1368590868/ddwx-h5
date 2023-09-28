@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="message-container">
     <div class="wrapper">
       <van-list
         v-model="messageLoading"
@@ -98,5 +98,19 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.message-container {
+  width: 100%;
+  background-color: #fff;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+</style>
 
 

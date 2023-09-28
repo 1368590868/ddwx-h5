@@ -123,6 +123,7 @@ export default {
       typeVehicie: '',
       type: '',
       checkCarImagePath,
+      status:'',
     }
   },
   methods: {
@@ -143,6 +144,7 @@ export default {
     getAvailableCar() {
       this.requestLoading = true;
       const { unitCode, deptId, reassignUnitCode, } = this.$route.query || {};
+
       let params = {
         unitCode,
         deptId,
@@ -166,13 +168,16 @@ export default {
         this.$toast("请选择车型！");
         return false;
       }
-      let obj = this.reqAssignments.some((item) => {
-        return item.carInfo.carNumber===radio;
-      })
-      if(!!obj){
-        this.$toast("该车辆已经选择过，无法重复选择!");
-        return false;
+      if(this.status !== 'reset'){
+        let obj = this.reqAssignments.some((item) => {
+          return item.carInfo.carNumber===radio;
+        })
+        if(!!obj){
+          this.$toast("该车辆已经选择过，无法重复选择!");
+          return false;
+        }
       }
+      
       // return
       // const id = this.$route.params.id;
       // const type = this.$route.params.type;
@@ -227,14 +232,26 @@ export default {
     this.typeVehicie = typeVehicie
     let type = this.$route.params.type
     this.type = type
+     
     this.getAvailableCar();
+
+    const { reqAssignmentsIndex } = this.$route.query || {};
+    this.status = this.$route.query.status;
+
+
+    //  this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'carInfo' })
+    //   this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'driverInfo' })
+
+    if( this.status !== 'add' &&  this.status !== 'reset'){
+      this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'carInfo' })
+    }
   }
 }
 </script>
 <style scoped lang="less">
 .ChoiceVehicies {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 45px);
   background-color: #fff;
   display: flex;
   -webkit-box-orient: vertical;
@@ -243,7 +260,7 @@ export default {
   -webkit-flex-direction: column;
   overflow: hidden;
   .list_overflow {
-    height: 100%;
+    flex: 1;
     overflow: auto;
   }
   .titleVeh {

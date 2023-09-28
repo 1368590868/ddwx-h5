@@ -6,6 +6,7 @@
       :approve-log-list="approveLogList"
       :dict-data="dictData"
       :is-show-operate-car="true"
+      :is-show-guarantee="false"
       @reselect="reselect"
       @deleteCar="deleteCar"
     />
@@ -45,11 +46,14 @@ export default {
         // 订单状态
         statusDict: '1522830760585670657',
         // 期望车型I
-        hopeBrandDict: '101801'
+        hopeBrandDict: '101801',
+         //优先保障
+        guaranteeDict:'1679651627836055552',
       },
       dictData: {
         statusDict: '',
         hopeBrandDict: '',
+        guaranteeDict:'',
       },
       // 订单类型，订单来源
       orderType: '',
@@ -78,6 +82,7 @@ export default {
         query: {
           ...this.$route.query,
           reqAssignmentsIndex,
+          status:"add",
         }
       });
     },
@@ -138,10 +143,6 @@ export default {
     },
     // 重新选择
     reselect(index) {
-      const { reqAssignmentsIndex } = this.$route.query || {};
-      this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'carInfo' })
-      this.$store.dispatch('DispathOrder/setCarAndDriverData', { undefined, reqAssignmentsIndex, setDataType: 'driverInfo' })
-
       // const { id, unitCode, deptId, reassignUnitCode, usageDate, } = this.orderDetail;
       this.$router.push({
         name: 'DispatchVehicle',
@@ -149,6 +150,7 @@ export default {
         query: {
           ...this.$route.query,
           reqAssignmentsIndex: index,
+          status:"reset",
         }
       });
     },
@@ -172,7 +174,7 @@ export default {
     computedDetailData(detailData) {
       const {
         createType = "1",
-        demandName: demand = "",
+        demand,
         demandCode,
         deptId,
         deptName,
@@ -181,7 +183,7 @@ export default {
         hopeBrand,
         longDistanceTag,
         phone,
-        reasonName: reason,
+        reason,
         reasonCode = "1",
         remark,
         reqAssignments = [],
@@ -221,6 +223,7 @@ export default {
         usagePersons,
         usageTime,
         userName,
+        handleUserName:this.userInfo.realName,
       }
     },
   },
@@ -228,12 +231,14 @@ export default {
     // const { type, id } = this.$route.params;
     this.orderType = this.$route.query.orderType;
     this.handleSystemCardDict(this.dictIds);
+   
     const orderDetail = {
       ...this.CarPerfect,
       // ...this.ChoiceVehicie,
       ...this.ChoiceDriver,
     }
     this.orderDetail = this.dealReqAssignments(orderDetail);
+
     this.computedDetailData(orderDetail);
   },
 }

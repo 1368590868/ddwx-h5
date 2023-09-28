@@ -23,7 +23,18 @@ const actions = {
     return new Promise((resolve, reject) => {
       authAuth({ id_token: getIdToken() })
         .then(({ data }) => {
-          console.log("🚀 ~ file: auth.js ~ line 33 ~ .then ~ data", data);
+          setToken(data.token);
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+  authAuthMobile({ commit },idToken) {
+    return new Promise((resolve, reject) => {
+      authAuth({ id_token: idToken })
+        .then(({ data }) => {
           setToken(data.token);
           resolve(data);
         })
