@@ -284,7 +284,6 @@ export default {
             if(diff !== 0 ){
                 diff = 5 - diff;
             }
-
             if(mf < 55){
                 mf = mf + diff + 5;
             }else if(mf === 55){
@@ -294,11 +293,15 @@ export default {
                 mf = 5;
                 hh = hh +1;
             }
-            if(hh < 10){
-                hh = '0'+ hh;
-            }
             if(mf < 10){
                 mf = '0'+ mf;
+            }
+            if(mf == 60){
+                mf = '00'
+                hh = hh + 1;
+            }
+            if(hh < 10){
+                hh = '0'+ hh;
             }
             if(hh == 24){
                 hh = '00'

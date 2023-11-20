@@ -63,9 +63,9 @@
                     </li>
                 </ul>
             </div>
-        </div>
-        <div class="version-code-container">
-            <span>版本信息：v1.0.0</span>
+            <div class="version-code-container">
+                <span>版本信息：v1.0.0</span>
+            </div>
         </div>
     </div>
 </template>
@@ -418,8 +418,8 @@ export default {
     }
     .version-code-container {
         width: 100%;
-        position: absolute;
-        bottom: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
         text-align: center;
         color: #b3b4b7;
         font-size: 12px;
