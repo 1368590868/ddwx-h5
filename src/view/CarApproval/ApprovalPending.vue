@@ -35,7 +35,7 @@
                                 </li>
                                 <li>
                                     <span>优先保障：</span>
-                                    <span>{{checkGuarantee(item.guarantee)}}</span>
+                                    <span :class="[checkGuarantee(item.guarantee) === '否'?'':'hight-red']">{{checkGuarantee(item.guarantee)}}</span>
                                 </li>
                                 <li>
                                     <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
@@ -82,7 +82,7 @@
                                 </li>
                                 <li>
                                     <span>优先保障：</span>
-                                    <span>{{checkGuarantee(item.guarantee)}}</span>
+                                    <span :class="[checkGuarantee(item.guarantee) === '否'?'':'hight-red']">{{checkGuarantee(item.guarantee)}}</span>
                                 </li>
                                 <li>
                                     <span>乘{{'\u00A0'}}{{'\u00A0'}}车{{'\u00A0'}}{{'\u00A0'}}人：</span>
@@ -405,5 +405,8 @@ export default {
            
         }
     }
+}
+.hight-red {
+    color: red !important;
 }
 </style>
