@@ -55,12 +55,14 @@
                     <i class="icon font_family icon-icon-company-20"></i>
                     <span>单位：</span><span>{{orderDetail.unitName}}</span>
                 </li>
-                <li class="info-label" v-if="false">
+                <li class="info-label">
                     <i class="icon font_family icon-icon-department-20"></i>
-                    <span>部门：</span><span>{{orderDetail.deptName}}</span>
+                    <span>部门：</span><span>{{orderDetail.deptLongName}}</span>
                 </li>
             </ul>
             <ul class="info-text">
+                <li class="info-label"><span>优先保障：</span><span :class="[dictData.guaranteeDict[orderDetail.guarantee] === '否'?'':'hight-red']">
+                    {{dictData.guaranteeDict[orderDetail.guarantee]}}</span></li>
                 <li class="info-label"><span>用车事由：</span><span>{{orderDetail.reason}}</span></li>
                 <li class="info-label"><span>用车需求：</span><span>{{orderDetail.demand}}</span></li>
                 <li class="info-label"><span>用车时长：</span><span>{{orderDetail.timeLength}}小时</span></li>
@@ -203,12 +205,12 @@ import platform from '@/view/mixins/platform'
 import checkCarImagePath from '@/utils/carPath'
 import teleponeClick from '@/view/mixins/platform'
 import { handleNumberLimit } from '@/utils'
+import getDict from "@/view/mixins/getDict"
 
 let that;
 export default {
     name:'DrivingDetails',
-
-    mixins: [platform],
+    mixins: [platform,getDict],
 
     beforeCreate() {
         that = this
@@ -243,10 +245,26 @@ export default {
             },
             isShowCatch:false,
             transferFileList:[],
-            dispatchFileList:[]
+            dispatchFileList:[],
+
+            // 字典编号
+            dictIds: {
+                //优先保障
+                guaranteeDict:'1679651627836055552',
+            },
+            dictData: {
+                guaranteeDict:'',
+            },
         };
     },
     methods: {
+         // 获取当前页面的通用字典下拉数据
+        async handleSystemCardDict(dict = {}) {
+            for (const item in dict) {
+                const res = await this.getCommonDictList(dict[item]) || [];
+                this.dictData[item] = Object.fromEntries(res.map(item => [item.code, item.name]))
+            }
+        },
         asyncValidate () {
             let endMiles = this.transferCarData.endMiles*1;
             let beginMiles = this.transferCarData.beginMiles*1;
@@ -606,6 +624,7 @@ export default {
         }
     },
     created () {
+        this.handleSystemCardDict(this.dictIds);
         this.orderGetOrderDetail();
         this.dictGetModelType();
         this.orderApprovalLog();
@@ -626,4 +645,7 @@ export default {
     padding-left: 15px;
     padding-right: 15px;
 } 
+.hight-red {
+    color: red !important;
+}
 </style>
