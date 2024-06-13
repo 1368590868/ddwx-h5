@@ -101,6 +101,15 @@ export function gcywVehicleRequesReturning(data) {
 	})
 }
 
+//开柜门
+export function gcywVehicleReqAssignmenntReturnCarKey(data) {
+	return request({
+		url: `/gcywVehicleReqAssignmennt/returnCarKey`,
+		method: 'post',
+		data
+	})
+}
+
 //上传附件
 export function minioUpload(data) {
 	return request({
@@ -126,3 +135,4 @@ export function vehicleInfoDetail(vinNumber) {
 	  method: 'get',
 	})
   }
+

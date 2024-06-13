@@ -106,8 +106,9 @@
             <van-button block type="info" @click="dispatchCar=true">确认出车</van-button>
         </div>
         <!-- <div class="button-box" v-else-if="orderDetail.stateCode == 5"> -->
-        <div class="button-box" v-else-if="orderDetail.status == '4'">
+        <div class="button-box-three" v-else-if="orderDetail.status == '4'">
             <van-button block type="default" @click="drivingPickupReminder">接车提醒</van-button>
+            <van-button block type="default"  @click="handleReturnCarKey()">开柜门</van-button>
             <van-button block type="info"  @click="handleTransferCarClick()">确认还车</van-button>
         </div>
 
@@ -197,6 +198,7 @@ import {gcywVehicleRequesTakeOrder,
         gcywVehicleRequesDriving, 
         gcywVehicleRequesRemind, 
         gcywVehicleRequesReturning,
+        gcywVehicleReqAssignmenntReturnCarKey,
         checkDriving,
         gcywVehicleRequesCancelOrder,
         minioUpload,
@@ -450,6 +452,31 @@ export default {
             }).catch(()=>{
 
             })
+        },
+        //开柜门
+        handleReturnCarKey(){
+            this.$dialog.confirm({
+                title: '提示',
+                message: '是否要开柜门?',
+            }).then(() => {
+                let toast = this.$toast.loading({
+                    duration: 0,
+                    message: "正在加载...",
+                    forbidClick: true
+                });
+                let params = {
+                    id:this.orderDetail.assignmentId,
+                }
+                gcywVehicleReqAssignmenntReturnCarKey(params).then((data) => {
+                    this.$notify({type: 'success',message: '开柜门成功!'});
+                }).catch(() => {
+                    alert("开柜门失败!");
+                }).finally(() => {
+                    toast.clear();
+                });
+            }).catch(() => {
+           
+            });
         },
         //确认还车点击回调
         handleTransferCarClick(){
