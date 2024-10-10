@@ -43,13 +43,11 @@
 <script>
 import {userMenu} from '@/api/auth'
 import {mapGetters} from 'vuex'
-import dash1 from '@/assets/icon/dash1.png';
 export default {
     computed: mapGetters(['userInfo']),
 
     data (){
         return {
-            dash1,
             //菜单数据
             menuData:[],
             //菜单列表

@@ -33,6 +33,21 @@
         <div class="detail-container">
             <ul>
                 <li>
+                    <van-field v-model="form.handledUserManual" 
+                        name="handledUserManual" 
+                        label="经办人："
+                        maxlength="5"
+                        placeholder="请输入经办人"/>
+                </li>
+                <li>
+                    <van-field v-model="form.handledPhoneManual" 
+                        name="handledPhoneManual" 
+                        type="tel" 
+                        label="经办人电话："
+                        maxlength="11"
+                        placeholder="请输入经办人电话"/>
+                </li>
+                <li>
                     <van-field v-model="form.guaranteeName" 
                         name="guarantee" 
                         readonly 
@@ -122,8 +137,8 @@
                     <van-field v-model="form.phone" 
                         name="phone" 
                         type="tel" 
-                        label="手机号码："
-                        placeholder="请输入手机号码"/>
+                        label="乘车人电话："
+                        placeholder="请输入乘车人电话"/>
                 </li>
                 <li>
                     <van-field v-model="form.hopeBrandName" 
@@ -270,6 +285,8 @@ export default {
                 assignee: "",
                 guaranteeName:'',
                 guarantee:'',   //优先保障
+                handledUserManual: '',  //经办人
+                handledPhoneManual: '', //经办人电话
             },
             activeIds: [],
             activeIndex: 0,
@@ -299,7 +316,8 @@ export default {
             });
         }
         this.carUsableCount = this.$route.query.carUsableCount;
-        this.form.phone = this.userInfo.phone;
+        this.form.handledUserManual = this.userInfo.realName;
+        this.form.handledPhoneManual = this.userInfo.phone;
         this.initDefaultUser();
 
         this.form.fromAddr = this.CarOneHist.sFromAddr + ' ' + this.CarOneHist.sFromAddrDetail;
@@ -515,6 +533,27 @@ export default {
         },
         //提交
         handleConfirmClick(){
+            if(!this.form.handledUserManual){
+                this.$notify({
+                    type: 'warning',
+                    message: '请填写经办人!',
+                });
+                return
+            }
+            if(!this.form.handledPhoneManual){
+                this.$notify({
+                    type: 'warning',
+                    message: '请填写经办人电话!',
+                });
+                return
+            }
+            if(!this.pattern.test(this.form.handledPhoneManual)){
+                this.$notify({
+                    type: 'warning',
+                    message: '手机号码格式有误,请输入正确的手机号码!',
+                });
+                return
+            }
             if(!this.form.reasonCode){
                 this.$notify({
                     type: 'warning',
@@ -568,7 +607,7 @@ export default {
             if(!this.form.phone){
                 this.$notify({
                     type: 'warning',
-                    message: '请填写手机号码!',
+                    message: '请填写乘车人电话!',
                 });
                 return
             }

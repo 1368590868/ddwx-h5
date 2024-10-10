@@ -106,6 +106,8 @@
         </li>
       </ul>
       <ul class="info-text">
+        <li class="info-label"><span>经办人：</span><span>{{orderDetail.handledUserManual}}</span></li>
+        <li class="info-label"><span>经办人电话：</span><span>{{orderDetail.handledPhoneManual}}</span></li>
         <li class="info-label"><span>优先保障：</span><span :class="[dictData.guaranteeDict[orderDetail.guarantee] === '否'?'':'hight-red']">
           {{dictData.guaranteeDict[orderDetail.guarantee]}}</span></li>
         <li class="info-label"><span>用车事由：</span><span>{{orderDetail.reason}}</span></li>
