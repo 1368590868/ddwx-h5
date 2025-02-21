@@ -137,6 +137,7 @@ export const routes = [
 			}
 		]
 	},
+	
 	{
 		path:'/address',
 		redirect:"/address/index",

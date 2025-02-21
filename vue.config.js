@@ -46,7 +46,8 @@ module.exports = {
         // 开发
         // target: `http://172.28.20.247:8018/gwyc`,
         // target: `http://10.59.248.230:8018/gwyc`,
-        target: `http://192.168.61.141:8039/gwyc`,
+        // target: `http://192.168.61.141:8039/gwyc`,
+        target: `http://192.168.8.39:8018/ddwx`,
         changeOrigin: true,
         pathRewrite: {
           "^/api": "",
