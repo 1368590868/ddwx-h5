@@ -446,6 +446,19 @@ export const routes = [
 		component: () => import('@/view/ArcgisMap/index.vue'),
 		meta: {keepAlive: false},
 	},
+	{
+		path: '/My',
+		component: Layout,
+		redirect: '/My/index',
+		meta: {title: '我的'},
+		children: [
+			{
+				path: 'index',
+				meta: {title: '我的'},
+				component: () => import('@/view/My/index.vue')
+			}
+		]
+	},
 ];
 
 // add route path

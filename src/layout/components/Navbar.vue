@@ -10,7 +10,7 @@
                 <img :src="props.active ? activeIconMsg : inactiveIconMsg" />
             </template>
         </van-tabbar-item>
-        <van-tabbar-item name="/MyManager" icon="manager-o" to="/MyManager">我的
+        <van-tabbar-item name="/My" icon="manager-o" to="/My">我的
             <template #icon="props">
                 <img :src="props.active ? activeIconUser : inactiveIconUser" />
             </template>
@@ -52,8 +52,8 @@ export default {
                 this.active = '/dashboard';
             } else if (route.path.includes('/Information')){
                 this.active = '/Information';
-            } else if (route.path.includes('/MyManager')) {
-                this.active = '/MyManager';
+            } else if (route.path.includes('/My')) {
+                this.active = '/My';
             }
         },
         checkBadgeNo(){

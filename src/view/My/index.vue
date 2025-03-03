@@ -228,7 +228,7 @@ export default {
     .user-top-container {
         width: 100%;
         height: 239px;
-        background-image: url(/static/user_center_top_bg.png);
+        background-image: url(/static/my_bg.png);
         background-size: cover;
         background-position: center;  
         padding: 21px 0 0 22px;
